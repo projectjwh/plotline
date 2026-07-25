@@ -1,0 +1,41 @@
+# Core
+python-dotenv>=1.0.0
+pyyaml>=6.0
+
+# Scraping
+playwright>=1.40.0
+beautifulsoup4>=4.12.0
+fake-useragent>=1.4.0
+requests>=2.31.0
+
+# Data Processing
+polars>=0.20.0
+pandas>=2.1.0
+pyarrow>=14.0.0
+duckdb>=0.9.0
+pydantic>=2.0.0
+
+# API (query layer / premium data feed)
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+slowapi>=0.1.9              # per-IP rate limiting (gracefully skipped if absent)
+
+# Deployment (SaaS) — used only when the matching env vars are set; imported lazily.
+psycopg[binary]>=3.1.0     # Neon Postgres: app state (api_keys, plans) — needs DATABASE_URL
+stripe>=8.0.0              # billing webhook / checkout — needs STRIPE_* keys
+boto3>=1.34.0              # publish warehouse artifact to Cloudflare R2 (S3 API)
+
+# Computer Vision & ML
+Pillow>=10.0.0             # cover-art thumbnails + painting-style analysis
+opencv-python-headless>=4.8.0
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+bertopic>=0.16.0
+torch>=2.1.0  # For advanced embeddings if needed
+transformers>=4.35.0
+
+# Notebooks & Utils
+jupyterlab>=4.0.0
+tqdm>=4.66.0
+matplotlib>=3.8.0
+seaborn>=0.13.0

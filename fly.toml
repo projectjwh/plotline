@@ -1,0 +1,35 @@
+# Fly.io deployment for the Plotline read API (free-tier: shared-cpu-1x / 256 MB).
+# Deploy:   fly deploy
+# Secrets (never commit these — set once with `fly secrets set`):
+#   PLOTLINE_WAREHOUSE_URL   https URL of the published plotline.duckdb (R2/Release)
+#   PLOTLINE_CORS_ORIGINS    https://plotline.vercel.app (your frontend origin)
+#   PLOTLINE_API_KEYS        comma list (static keys) — or leave unset once DATABASE_URL is live
+#   DATABASE_URL             Neon Postgres (app state: api_keys, plans)
+#   STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET   billing (D4)
+app = "plotline-api"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PLOTLINE_ENV = "prod"
+  PORT = "8000"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"   # scale to zero when idle → stays inside the free allowance
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "25s"
+    interval = "30s"
+    method = "GET"
+    path = "/ready"
+    timeout = "4s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

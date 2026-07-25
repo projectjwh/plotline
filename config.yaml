@@ -1,0 +1,143 @@
+# Web Comic Research System Configuration
+
+scraping:
+  user_agent_rotation: true
+  min_delay_seconds: 3
+  max_delay_seconds: 8
+  max_retries: 3
+  timeout_seconds: 30
+  headless: true
+  
+  targets:
+    webtoon_global:
+      base_url: "https://www.webtoons.com/en"
+      daily_schedule_url: "https://www.webtoons.com/en/dailySchedule"
+      genre_url_template: "https://www.webtoons.com/en/genre/{genre_name}"
+      genres: ["romance", "drama", "fantasy", "comedy", "slice-of-life", "action", "thriller", "supernatural", "mystery", "historical", "sports", "sci-fi", "horror", "tiptoon"]
+      selectors:
+        title: ".subj, .info .title"
+        author: ".author, .by_author"
+        genre: ".genre, .info_genre"
+        likes: ".grade_num, ._like"
+        views: ".view_count, ._view"
+        # Enhanced selectors for robust analytics
+        rating: ".grade_num"
+        subscribers: ".subscribe_cnt, .cnt"
+        episode_count: ".episode_len, .ep_count"
+        comments: ".viewer_cnt, .comment_cnt"
+        synopsis: ".summary, .intro"
+        cover: ".info img, .thumb img"
+        tags: ".tag_lst .tag, .keyword"
+        update_schedule: ".update_day, .day"
+        
+    tapas_io:
+      base_url: "https://tapas.io"
+      daily_schedule_url: "https://tapas.io/comics?browse=NEW"
+      selectors:
+        title: ".title"
+        author: ".author"
+
+    tappytoon:
+      base_url: "https://www.tappytoon.com"
+      daily_schedule_url: "https://www.tappytoon.com/en/ranking"
+      selectors:
+        title: ".title"
+
+    manta:
+      base_url: "https://manta.net"
+      daily_schedule_url: "https://manta.net/en/calendar"
+      selectors:
+        title: ".title"
+        
+    globalcomix:
+      base_url: "https://globalcomix.com"
+      daily_schedule_url: "https://globalcomix.com/search"
+      selectors:
+        title: ".title"
+
+    royalroad:
+      base_url: "https://www.royalroad.com"
+      daily_schedule_url: "https://www.royalroad.com/fictions/active-popular"
+      selectors:
+        title: ".fiction-title"
+
+    wattpad:
+      base_url: "https://www.wattpad.com"
+      daily_schedule_url: "https://www.wattpad.com/stories/popular"
+      selectors:
+        title: ".story-title"
+
+    webnovel:
+      base_url: "https://www.webnovel.com"
+      daily_schedule_url: "https://www.webnovel.com/ranking/power-rank"
+      selectors:
+        title: ".tit"
+
+    lezhin:
+      base_url: "https://www.lezhin.com"
+      daily_schedule_url: "https://www.lezhin.com/en/scheduled"
+      selectors:
+        title: ".title"
+
+    toomics:
+      base_url: "https://toomics.com"
+      daily_schedule_url: "https://toomics.com/en/webtoon/schedule"
+      selectors:
+        title: ".title"
+
+    pocket_comics:
+      base_url: "https://www.pocketcomics.com"
+      daily_schedule_url: "https://www.pocketcomics.com/ranking"
+      selectors:
+        title: ".title"
+
+    bilibilicomics:
+      base_url: "https://www.bilibilicomics.com"
+      daily_schedule_url: "https://www.bilibilicomics.com/ranking"
+      selectors:
+        title: ".title"
+
+    mangaplus:
+      base_url: "https://mangaplus.shueisha.co.jp"
+      daily_schedule_url: "https://mangaplus.shueisha.co.jp/updates"
+      selectors:
+        title: ".title"
+
+    webcomics_app:
+      base_url: "https://www.webcomicsapp.com"
+      daily_schedule_url: "https://www.webcomicsapp.com/ranking"
+      selectors:
+        title: ".title"
+        
+    inkitt:
+      base_url: "https://www.inkitt.com"
+      daily_schedule_url: "https://www.inkitt.com/novels"
+      selectors:
+        title: ".title"
+
+    munpia:
+      base_url: "https://www.munpia.com"
+      daily_schedule_url: "https://www.munpia.com/page/novel/best/free/today"
+      selectors:
+        title: ".title"
+
+    ridibooks:
+      base_url: "https://ridibooks.com"
+      daily_schedule_url: "https://ridibooks.com/bestsellers/general"
+      selectors:
+        title: ".title_text"
+
+    joara:
+      base_url: "https://www.joara.com"
+      daily_schedule_url: "https://www.joara.com/best/today"
+      selectors:
+        title: ".subj"
+      
+storage:
+  bronze_path: "data/bronze"
+  silver_path: "data/silver"
+  gold_path: "data/gold"
+  
+processing:
+  image_cluster_k: 5
+  trend_window_days: 30

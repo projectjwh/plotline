@@ -1,0 +1,39 @@
+# --- Scraped data & generated artifacts (large; not source; ToS-sensitive) ---
+data/
+!data/platforms_reference.md
+logs/
+reports/
+quarantine/
+*.duckdb
+*.parquet
+
+# --- Generated explorer artifacts ---
+**/leesearch_explorer.html
+**/plotline_explorer.html
+explorer_data.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Virtual envs & secrets ---
+.env
+.env.*
+*.env
+.venv/
+venv/
+env/
+
+# --- Node (frontend, if any) ---
+node_modules/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
