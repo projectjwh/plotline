@@ -36,8 +36,9 @@ CONFIG = yaml.safe_load(open(os.path.join(_ROOT, "config.yaml"), encoding="utf-8
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
 # Sources whose listings are known to render server-side (requests-friendly).
+# bilibilicomics dropped: domain dead (ERR_NAME_NOT_RESOLVED) as of 2026-07-25.
 DARK = ["royalroad", "lezhin", "manta", "tappytoon", "toomics", "munpia",
-        "joara", "inkitt", "pocket_comics", "bilibilicomics"]
+        "joara", "inkitt", "pocket_comics"]
 
 # Paginated server-rendered lists: (url_template, n_pages). Each page is a full
 # listing snapshot the adapter parses, so this deepens catalog coverage.

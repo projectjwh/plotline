@@ -91,11 +91,14 @@ scraping:
       selectors:
         title: ".title"
 
-    bilibilicomics:
-      base_url: "https://www.bilibilicomics.com"
-      daily_schedule_url: "https://www.bilibilicomics.com/ranking"
-      selectors:
-        title: ".title"
+    # DEAD DOMAIN (2026-07-25): www.bilibilicomics.com no longer resolves
+    # (net::ERR_NAME_NOT_RESOLVED). BiliBili Comics shut down its global service.
+    # Disabled to avoid wasted retries; re-enable if a replacement domain appears.
+    # bilibilicomics:
+    #   base_url: "https://www.bilibilicomics.com"
+    #   daily_schedule_url: "https://www.bilibilicomics.com/ranking"
+    #   selectors:
+    #     title: ".title"
 
     mangaplus:
       base_url: "https://mangaplus.shueisha.co.jp"

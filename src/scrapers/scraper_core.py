@@ -52,14 +52,27 @@ class WebComicScraper:
         Returns the path to the saved file.
         """
         page = await self.context.new_page()
-        
+
         try:
             print(f"Navigating to {url}...")
-            await page.goto(url, wait_until="networkidle", timeout=CONFIG['scraping']['timeout_seconds'] * 1000)
-            
+            timeout_ms = CONFIG['scraping']['timeout_seconds'] * 1000
+            # `networkidle` never settles on ad/telemetry-heavy SPAs (RoyalRoad,
+            # Wattpad, Inkitt, PocketComics all timed out on it). Load on the
+            # cheap `domcontentloaded` signal, then give the page a bounded
+            # window to hydrate — this rescues those sources instead of failing.
+            try:
+                await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+            except Exception:
+                # last-resort: 'commit' just needs the server response to start.
+                await page.goto(url, wait_until="commit", timeout=timeout_ms)
+            try:
+                await page.wait_for_load_state("networkidle", timeout=8000)
+            except Exception:
+                pass  # good enough; content is usually already in the DOM
+
             # Simulate scrolling to trigger lazy loading
             await self._simulate_scroll(page)
-            
+
             await self._random_sleep()
             
             # Save Snapshot
@@ -83,14 +96,18 @@ class WebComicScraper:
         finally:
             await page.close()
 
-    async def _simulate_scroll(self, page: Page):
-        """Scroll down the page slowly to trigger lazy loaded elements."""
+    async def _simulate_scroll(self, page: Page, max_scrolls: int = 25):
+        """Scroll down to trigger lazy-loaded elements.
+
+        Bounded by ``max_scrolls`` so an infinite-scroll feed (Wattpad, Tapas)
+        cannot hang the run forever; 25 passes is plenty to load a ranking page.
+        """
         previous_height = await page.evaluate("document.body.scrollHeight")
-        
-        while True:
+
+        for _ in range(max_scrolls):
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-            await page.wait_for_timeout(2000) # Wait for load
-            
+            await page.wait_for_timeout(2000)  # Wait for load
+
             new_height = await page.evaluate("document.body.scrollHeight")
             if new_height == previous_height:
                 break
@@ -189,7 +206,10 @@ class WebComicScraper:
                     # Deep scraping 1000s of links takes hours. We'll grab a sample 'Deep' set, 
                     # but rely on the listing snapshots for the bulk stats.
                     
-                    deep_limit = 5 
+                    # A modest in-cycle sample; the comprehensive detail-page
+                    # enrichment across the *whole* catalog is done by the
+                    # hardened, concurrent `src.scrapers.detail_crawler` path.
+                    deep_limit = 15
                     print(f"[{source_name}] Deep scraping top {deep_limit} for detailed metadata...")
                     for idx, url in enumerate(list(extracted_links)[:deep_limit]):
                          await self.fetch_page_snapshot(url, "comic_detail", source_name)
