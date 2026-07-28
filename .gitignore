@@ -1,6 +1,8 @@
 # --- Scraped data & generated artifacts (large; not source; ToS-sensitive) ---
 data/
 !data/platforms_reference.md
+!data/manual/
+!data/manual/*
 logs/
 /reports/
 quarantine/

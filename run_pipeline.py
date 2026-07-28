@@ -55,6 +55,7 @@ STAGES = [
     ("daily",    ["-m", "src.reports.daily_report"],       True),
     ("weekly",   ["-m", "src.reports.weekly_report"],      True),
     ("warehouse", ["-m", "src.db.warehouse"],             True),
+    ("star",     ["-m", "src.db.star_schema"],            True),
 ]
 
 
