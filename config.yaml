@@ -73,18 +73,24 @@ scraping:
       selectors:
         title: ".tit"
 
+    # lezhin: React SPA — needs the Playwright (scraper_core) path; requests 404s.
+    # /en/ranking redirects to lezhinus.com and hydrates the ranking cards.
     lezhin:
       base_url: "https://www.lezhin.com"
-      daily_schedule_url: "https://www.lezhin.com/en/scheduled"
+      daily_schedule_url: "https://www.lezhin.com/en/ranking"
       selectors:
-        title: ".title"
+        title: ".lzCardTitle"
 
+    # toomics: login-gated — only nav chrome renders without an authenticated
+    # session, so no adapter yet. Left configured for a future logged-in crawl.
     toomics:
       base_url: "https://toomics.com"
       daily_schedule_url: "https://toomics.com/en/webtoon/schedule"
       selectors:
         title: ".title"
 
+    # pocket_comics: unreachable from this host (net::ERR_CONNECTION_TIMED_OUT)
+    # as of 2026-07-26 — likely geo/IP blocked. No data obtainable currently.
     pocket_comics:
       base_url: "https://www.pocketcomics.com"
       daily_schedule_url: "https://www.pocketcomics.com/ranking"
@@ -112,12 +118,17 @@ scraping:
       selectors:
         title: ".title"
         
+    # inkitt: React SPA — needs the Playwright path; requests is Cloudflare-blocked.
+    # /genres hydrates ~160 /stories/<id> cards (title in img[alt], rating token).
     inkitt:
       base_url: "https://www.inkitt.com"
-      daily_schedule_url: "https://www.inkitt.com/novels"
+      daily_schedule_url: "https://www.inkitt.com/genres"
       selectors:
         title: ".title"
 
+    # munpia: currently serves a block/apology page (Korean "sorry for the
+    # inconvenience") to automated clients (both requests and headless Chromium)
+    # as of 2026-07-26. No data obtainable until that changes; retry later.
     munpia:
       base_url: "https://www.munpia.com"
       daily_schedule_url: "https://www.munpia.com/page/novel/best/free/today"

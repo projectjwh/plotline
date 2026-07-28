@@ -334,9 +334,14 @@ class WattpadAdapter(AnchorListAdapter):
     metric_type = "reads"
 
     def clean_alt(self, alt):
-        parts = re.split(r"\s+by\s+", alt, maxsplit=1)
+        parts = re.split(r"\s+by\s+", alt, maxsplit=1, flags=re.IGNORECASE)
         title = parts[0].strip()
         author = parts[1].strip() if len(parts) > 1 else None
+        # Wattpad handles are a single token; if the "author" still reads like a
+        # phrase (spaces / another 'by'), the alt wasn't a clean "Title by X" —
+        # keep the title, drop the unreliable author rather than store a mismatch.
+        if author and (re.search(r"\bby\b", author, re.IGNORECASE) or len(author.split()) > 4):
+            author = None
         return (title, author)
 
     def detail_metrics(self, soup):
@@ -449,3 +454,24 @@ class TapasAdapter(AnchorListAdapter):
             "likes": [_M + r"\s+likes"],
             "episode_count": [r"(\d[\d,]*)\s+episodes"],
         })
+
+
+@register
+class InkittAdapter(AnchorListAdapter):
+    """Inkitt (novels). Each story surfaces two ``/stories/<id>`` anchors — a
+    cover anchor whose ``img[alt]`` is the clean title (plus a rating token like
+    ``4.6``) and a text anchor repeating the title. Group-by-id + ALT priority
+    picks the clean title; the ``d.d`` token becomes the rating.
+    (Requests fetches are Cloudflare-blocked; the hydrated Playwright listing
+    snapshot is what feeds this adapter.)"""
+    source = "inkitt"
+    content_type = "novel"
+    base_url = "https://www.inkitt.com"
+    href_re = re.compile(r"/stories/(\d+)")
+    metric_type = "reads"
+
+    def extract_extra(self, card_texts):
+        for t in card_texts:
+            if re.match(r"^\d\.\d$", t):          # rating like 4.6
+                return {"rating": float(t)}
+        return {}

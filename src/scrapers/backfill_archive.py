@@ -9,7 +9,7 @@ from datetime import datetime
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.yaml")
 
-with open(CONFIG_PATH, "r") as f:
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     CONFIG = yaml.safe_load(f)
 
 WAYBACK_CDX_API = "https://web.archive.org/cdx/search/cdx"

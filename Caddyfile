@@ -1,0 +1,22 @@
+# Plotline explorer — static file server (Caddy) for Render.
+# Render terminates TLS at its edge and injects $PORT, so we serve plain HTTP
+# on that port with on-the-fly compression (the 11 MB data JSON gzips to ~4 MB).
+{
+	admin off
+	auto_https off
+}
+
+:{$PORT:10000} {
+	root * /srv
+	encode zstd gzip
+	file_server
+	header /explorer_data.json Cache-Control "public, max-age=3600"
+	header *.html Cache-Control "public, max-age=300"
+
+	# --- OPTIONAL password gate (parity with the old Cloudflare deploy) --------
+	# Uncomment and set AUTH_HASH on Render to a bcrypt hash generated with:
+	#   docker run --rm caddy:2-alpine caddy hash-password --plaintext 'YOUR_PASS'
+	# basicauth {
+	# 	{$AUTH_USER:plotline} {$AUTH_HASH}
+	# }
+}

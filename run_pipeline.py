@@ -42,6 +42,7 @@ STAGES = [
     ("enrich",   ["-m", "src.scrapers.detail_crawler"],    False),
     ("parse",    ["-m", "src.pipelines.parser"],           True),
     ("gold",     ["-m", "src.pipelines.pipeline_updates"], True),
+    ("dq",       ["-m", "src.pipelines.dq_checks"],         True),
     ("earnings", ["-m", "src.models.earnings"],            True),
     ("plotscore", ["-m", "src.models.plotscore"],          True),
     ("entities", ["-m", "src.models.entity_resolution"],   True),

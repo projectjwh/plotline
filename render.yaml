@@ -1,0 +1,24 @@
+# Render Blueprint for the Plotline explorer (Docker web service).
+#
+# You do NOT need GitHub. Two no-GitHub options (see deploy/RENDER.md):
+#   1. Build the image locally, push it to a registry, and on Render choose
+#      "New Web Service" -> "Deploy an existing image".
+#   2. Connect a non-GitHub Git remote (GitLab/Bitbucket) and let Render build
+#      this Dockerfile; this Blueprint drives that path.
+services:
+  - type: web
+    name: plotline
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.web
+    dockerContext: .
+    healthCheckPath: /
+    autoDeploy: false
+    envVars:
+      - key: PORT
+        value: "10000"
+      # Optional password gate — see Caddyfile:
+      # - key: AUTH_USER
+      #   value: plotline
+      # - key: AUTH_HASH
+      #   sync: false   # set the bcrypt hash in the Render dashboard

@@ -1,0 +1,17 @@
+# Plotline explorer — static site (shell + data) served by Caddy, Render-ready.
+# Separate from the API image (./Dockerfile). No GitHub required: build locally
+# and deploy to Render as a Docker web service / "existing image".
+FROM caddy:2-alpine
+
+# Render runs containers with no-new-privileges. The official Caddy binary
+# carries file capabilities (cap_net_bind_service) so it can bind ports <1024
+# as non-root; under no_new_privs the kernel refuses to exec a file-capability
+# binary ("exec /usr/bin/caddy: operation not permitted"). We bind port 10000,
+# so strip the caps to make it a plain binary that execs cleanly on Render.
+RUN apk add --no-cache libcap && setcap -r /usr/bin/caddy && apk del libcap
+
+COPY Caddyfile /etc/caddy/Caddyfile
+# web/ holds index.html (the explorer shell) + explorer_data.json (the data).
+COPY web/ /srv/
+
+EXPOSE 10000

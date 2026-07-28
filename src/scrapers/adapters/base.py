@@ -49,6 +49,9 @@ _BLOCK_TITLES = re.compile(
     r"attention required|403 forbidden|captcha|robot check|blocked",
     re.IGNORECASE,
 )
+_TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+_SCRIPT_STYLE_RE = re.compile(r"<(script|style)\b.*?</\1>", re.IGNORECASE | re.DOTALL)
 # A rendered listing page should be substantial; anything tiny is a shell/error.
 _MIN_HTML_BYTES = 20_000
 
@@ -58,13 +61,24 @@ def detect_block(html: str, *, min_bytes: int = _MIN_HTML_BYTES) -> Optional[str
 
     This is what keeps the Webtoon "Connect Error" (4.7 KB) pages and
     un-rendered SPA shells out of Silver instead of parsing to nothing.
+
+    Block markers are matched against the ``<title>`` (where interstitials
+    announce themselves: "Just a moment…", "Attention Required", "403
+    Forbidden") plus a comment/script-stripped head slice — so a benign string
+    in a comment or analytics snippet (e.g. a "Blocked until consent" Google
+    Tag Manager comment on a perfectly good page) no longer false-triggers.
     """
     if not html or len(html) < min_bytes:
         return f"too_small ({len(html) if html else 0}b < {min_bytes})"
-    head = html[:4000]
-    m = _BLOCK_TITLES.search(head)
-    if m:
-        return f"block_marker:{m.group(0).lower()}"
+    m = _TITLE_RE.search(html[:8000])
+    title = " ".join(m.group(1).split()) if m else ""
+    hit = _BLOCK_TITLES.search(title)
+    if hit:
+        return f"block_marker:{hit.group(0).lower()}"
+    cleaned = _SCRIPT_STYLE_RE.sub(" ", _COMMENT_RE.sub(" ", html[:6000]))
+    hit = _BLOCK_TITLES.search(cleaned[:4000])
+    if hit:
+        return f"block_marker:{hit.group(0).lower()}"
     return None
 
 

@@ -1,0 +1,5 @@
+# Cloudflare Pages configuration for the Plotline explorer (link-only + password).
+# Deploy:  npx wrangler pages deploy web --project-name plotline
+name = "plotline"
+pages_build_output_dir = "web"
+compatibility_date = "2024-11-01"

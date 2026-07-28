@@ -54,9 +54,14 @@ def _universe() -> pl.DataFrame | None:
         pl.col("content_type").last(),
         pl.col("views").max(), pl.col("subscribers").max(), pl.col("likes").max(),
         pl.col("rating").max(),
+        # rank lives only on listing rows; detail-page observations carry
+        # rank=null. Drop nulls before first/last so an enrichment crawl's
+        # rank-less detail row can't null-poison latest_rank (which otherwise
+        # decorrelates rank from views entirely) — same guard as genre/author.
         pl.col("rank").min().alias("best_rank"),
-        pl.col("rank").last().alias("latest_rank"),
-        pl.col("rank").first().alias("first_rank"),
+        pl.col("rank").drop_nulls().last().alias("latest_rank"),
+        pl.col("rank").drop_nulls().first().alias("first_rank"),
+        pl.col("rank").drop_nulls().len().alias("n_rank_obs"),
         pl.len().alias("n_obs"),
     ])
 
@@ -75,8 +80,10 @@ def _raw_components(u: pl.DataFrame) -> pl.DataFrame:
           .then((pl.col("likes") / pl.col("views")).clip(0, 1))
           .when((pl.col("rating") > 0) & (pl.col("rating") <= 10)).then(pl.col("rating") / 10.0)
           .otherwise(0.0).alias("engagement_raw"),
-        # momentum: rank improvement across observations (needs history)
-        pl.when(pl.col("n_obs") > 1)
+        # momentum: rank improvement across observations (needs ≥2 *ranked*
+        # observations — n_obs counts rank-less detail rows too and would fire
+        # spuriously, yielding a 0 delta that looks like real stagnation).
+        pl.when(pl.col("n_rank_obs") > 1)
           .then((pl.col("first_rank") - pl.col("latest_rank")).cast(pl.Float64))
           .otherwise(0.0).alias("momentum_raw"),
         # quality: sane rating only (some platforms mis-scale)

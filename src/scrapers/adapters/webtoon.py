@@ -31,9 +31,46 @@ def _sel_text(node, selector: str) -> Optional[str]:
         return None
     for css in selector.split(","):
         el = node.select_one(css.strip())
-        if el and el.get_text(strip=True):
-            return el.get_text(strip=True)
+        if el:
+            # Join child text nodes with a space + collapse — nested spans in
+            # Webtoon's .subj otherwise concatenate ("Heavenly DemonWants").
+            txt = " ".join(el.get_text(" ", strip=True).split())
+            if txt:
+                return txt
     return None
+
+
+_TITLE_NO = re.compile(r"[?&]title_no=(\d+)")
+
+
+def _title_no(url: Optional[str]) -> Optional[str]:
+    """Stable Webtoon series id from a URL (…?title_no=1499)."""
+    if not url:
+        return None
+    m = _TITLE_NO.search(url)
+    return m.group(1) if m else None
+
+
+def _canonical_url(soup) -> Optional[str]:
+    link = soup.find("link", rel="canonical")
+    if link and link.get("href"):
+        return link["href"]
+    og = soup.find("meta", property="og:url")
+    return og.get("content") if og and og.get("content") else None
+
+
+def _detail_author(soup) -> Optional[str]:
+    """The title's real creator(s) from ``.author_area`` — NOT the generic
+    ``.author`` class, which also tags every series in the 'recommended'
+    sidebar (so the first match was another title's author). Returns None when
+    absent rather than falling back to the ambiguous selector."""
+    aa = soup.select_one(".author_area")
+    if not aa:
+        return None
+    txt = aa.get_text(" ", strip=True)
+    txt = re.sub(r"\bauthor\s*info\b", " ", txt, flags=re.IGNORECASE)  # strip link label
+    txt = re.sub(r"\s*,\s*", ", ", " ".join(txt.split())).strip(" ,")
+    return txt or None
 
 
 @register
@@ -77,11 +114,15 @@ class WebtoonAdapter(BaseAdapter):
                   for m in [re.search(r"#(\d+)", (li.select_one(".tx") or li).get_text())] if m]
         ep_count = max(ep_nos) if ep_nos else None
         primary, mtype = (views, "views") if views else (subscribers, "subscribers")
+        # Stable id from title_no in the canonical URL; title-slug only as a
+        # last resort (title text is not a safe key — it collides & drifts).
+        nid = _title_no(_canonical_url(soup)) or re.sub(r"\s+", "_", title).lower()
         return [ComicRecord(
-            comic_id=self.comic_id(re.sub(r"\s+", "_", title).lower()),
+            comic_id=self.comic_id(nid),
             source=self.source,
+            platform_native_id=nid,
             title=title,
-            author=_sel_text(soup, _SEL.get("author", ".author")),
+            author=_detail_author(soup),
             genre=_sel_text(soup, _SEL.get("genre", ".genre")),
             primary_metric=primary, metric_type=mtype,
             views=views, likes=0,
@@ -115,9 +156,11 @@ class WebtoonAdapter(BaseAdapter):
                     if v and v.startswith("http"):
                         cover = v
                         break
+            nid = _title_no(a["href"] if a else None) or re.sub(r"\s+", "_", title).lower()
             records.append(ComicRecord(
-                comic_id=self.comic_id(re.sub(r"\s+", "_", title).lower()),
+                comic_id=self.comic_id(nid),
                 source=self.source,
+                platform_native_id=nid,
                 title=title, genre=genre, rank=rank, url=url,
                 primary_metric=metric, metric_type="likes",
                 likes=metric, cover_url=cover,
@@ -140,7 +183,9 @@ class WebtoonAdapter(BaseAdapter):
         title = _sel_text(soup, "h1, .subj")
         if not title:
             return []
-        cid = self.comic_id(re.sub(r"\s+", "_", title).lower())
+        # Match the detail record's title_no-based id so episodes link up.
+        nid = _title_no(_canonical_url(soup)) or re.sub(r"\s+", "_", title).lower()
+        cid = self.comic_id(nid)
         eps = []
         for li in soup.select("#_listUl li, ul._episodeList li"):
             subj = li.select_one(".subj")
