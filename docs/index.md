@@ -46,6 +46,8 @@ api
 
 product/product-spec
 product/architecture
+product/decisions
+product/frontend-guide
 ```
 
 Clickable wireframes: `docs/product/wireframes.html`.

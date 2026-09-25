@@ -53,26 +53,26 @@ def _actor(v: Viewer, ip: str, g: GuestFields | None = None) -> Actor:
     return Actor(viewer=v, ip=ip, nick=g.nick if g else None, password=g.password if g else None)
 
 
-@router.get("/galleries", summary="Galleries by activity")
-def galleries(kind: str | None = None, limit: int = Query(50, le=200), ctx: AppContext = Depends(get_ctx)):
-    return ctx.community.list_galleries(kind, limit)
+@router.get("/fanboards", summary="Fanboards by activity")
+def fanboards(kind: str | None = None, limit: int = Query(50, le=200), ctx: AppContext = Depends(get_ctx)):
+    return ctx.community.list_fanboards(kind, limit)
 
 
-@router.get("/galleries/by/{kind}/{ref:path}", summary="Open a title/genre gallery (created on first use)")
-def gallery_by_ref(kind: str, ref: str, ctx: AppContext = Depends(get_ctx)):
-    return ctx.community.gallery(kind, ref)
+@router.get("/fanboards/by/{kind}/{ref:path}", summary="Open a title/genre fanboard (created on first use)")
+def fanboard_by_ref(kind: str, ref: str, ctx: AppContext = Depends(get_ctx)):
+    return ctx.community.fanboard(kind, ref)
 
 
-@router.get("/galleries/{gallery_id}/posts", summary="Post list (tab: all | concept | notice)")
-def posts(gallery_id: str, tab: str = "all", limit: int = Query(30, le=100), offset: int = Query(0, ge=0),
+@router.get("/fanboards/{fanboard_id}/posts", summary="Post list (tab: all | concept | notice)")
+def posts(fanboard_id: str, tab: str = "all", limit: int = Query(30, le=100), offset: int = Query(0, ge=0),
           ctx: AppContext = Depends(get_ctx)):
-    return ctx.community.list_posts(gallery_id, tab=tab, limit=limit, offset=offset)
+    return ctx.community.list_posts(fanboard_id, tab=tab, limit=limit, offset=offset)
 
 
-@router.post("/galleries/{gallery_id}/posts", status_code=201, summary="Write a post (account or guest)")
-def create_post(gallery_id: str, body: PostIn, v: Viewer = Depends(viewer), ip: str = Depends(client_ip),
+@router.post("/fanboards/{fanboard_id}/posts", status_code=201, summary="Write a post (account or guest)")
+def create_post(fanboard_id: str, body: PostIn, v: Viewer = Depends(viewer), ip: str = Depends(client_ip),
                 ctx: AppContext = Depends(get_ctx)):
-    return ctx.community.create_post(_actor(v, ip, body), gallery_id, body.title, body.body, body.notice)
+    return ctx.community.create_post(_actor(v, ip, body), fanboard_id, body.title, body.body, body.notice)
 
 
 @router.get("/posts/{post_id}")

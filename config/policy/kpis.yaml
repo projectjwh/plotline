@@ -5,7 +5,7 @@ audiences: [fan, author, publisher, investor]
 
 # Descriptive fields every audience sees.
 public: [comic_id, title, platform, source, genre, genre_parent, author, publisher, content_type,
-         cover, synopsis, status, tags, first_seen, listed_days_ago, gallery_id]
+         cover, synopsis, status, tags, first_seen, listed_days_ago, fanboard_id]
 
 fields:
   plotscore:        {fan: shown,   author: shown, publisher: shown, investor: shown, source: src/models/plotscore.py}

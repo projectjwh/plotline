@@ -1,26 +1,26 @@
 from tests.app.conftest import register, verified
 
 
-def _gallery(client, ref="webtoon_global:1"):
-    r = client.get(f"/galleries/by/title/{ref}")
+def _fanboard(client, ref="webtoon_global:1"):
+    r = client.get(f"/fanboards/by/title/{ref}")
     assert r.status_code == 200, r.text
     return r.json()["id"]
 
 
 def _guest_post(client, gid, title="Theory", pw="pw1234"):
-    return client.post(f"/galleries/{gid}/posts", json={"title": title, "body": "text", "nick": "ㅇㅇ", "password": pw})
+    return client.post(f"/fanboards/{gid}/posts", json={"title": title, "body": "text", "nick": "ㅇㅇ", "password": pw})
 
 
-def test_gallery_created_on_first_use_and_validated(client):
-    gid = _gallery(client)
-    assert _gallery(client) == gid
-    assert client.get("/galleries/by/title/nope:1").status_code == 404
-    assert client.get("/galleries/by/genre/Fantasy").status_code == 200
-    assert client.get("/galleries/by/free/random").status_code == 404
+def test_fanboard_created_on_first_use_and_validated(client):
+    gid = _fanboard(client)
+    assert _fanboard(client) == gid
+    assert client.get("/fanboards/by/title/nope:1").status_code == 404
+    assert client.get("/fanboards/by/genre/Fantasy").status_code == 200
+    assert client.get("/fanboards/by/free/random").status_code == 404
 
 
 def test_guest_post_edit_delete_with_password(client):
-    gid = _gallery(client)
+    gid = _fanboard(client)
     r = _guest_post(client, gid)
     assert r.status_code == 201
     p = r.json()
@@ -34,15 +34,15 @@ def test_guest_post_edit_delete_with_password(client):
 
 
 def test_guest_needs_nick_and_password(client):
-    gid = _gallery(client)
-    r = client.post(f"/galleries/{gid}/posts", json={"title": "t", "body": "b"})
+    gid = _fanboard(client)
+    r = client.post(f"/fanboards/{gid}/posts", json={"title": "t", "body": "b"})
     assert r.status_code == 422
 
 
 def test_account_post_and_comments_threading(client):
-    gid = _gallery(client)
+    gid = _fanboard(client)
     _, h = register(client, "reader1")
-    p = client.post(f"/galleries/{gid}/posts", headers=h, json={"title": "Hi", "body": "b"}).json()
+    p = client.post(f"/fanboards/{gid}/posts", headers=h, json={"title": "Hi", "body": "b"}).json()
     assert p["author"]["name"] == "reader1" and p["author"]["ip_prefix"] is None
     c1 = client.post(f"/posts/{p['id']}/comments", headers=h, json={"body": "first"}).json()
     c2 = client.post(f"/posts/{p['id']}/comments", json={"body": "reply", "parent_id": c1["id"], "nick": "g", "password": "pw1234"})
@@ -54,9 +54,9 @@ def test_account_post_and_comments_threading(client):
 
 
 def test_votes_dedupe_self_vote_and_concept_promotion(client):
-    gid = _gallery(client)
+    gid = _fanboard(client)
     _, owner = register(client, "author0")
-    p = client.post(f"/galleries/{gid}/posts", headers=owner, json={"title": "Big theory", "body": "b"}).json()
+    p = client.post(f"/fanboards/{gid}/posts", headers=owner, json={"title": "Big theory", "body": "b"}).json()
     assert client.post("/votes", headers=owner, json={"target_type": "post", "target_id": p["id"], "value": 1}).status_code == 403
     last = None
     for i in range(10):  # concept_min_up = 10 in config/policy/app.yaml
@@ -67,19 +67,19 @@ def test_votes_dedupe_self_vote_and_concept_promotion(client):
             assert last.json()["is_concept"] is False
     assert last.json() == {"up": 10, "down": 0, "is_concept": True}
     assert client.post("/votes", headers=h, json={"target_type": "post", "target_id": p["id"], "value": 1}).status_code == 409
-    concept = client.get(f"/galleries/{gid}/posts", params={"tab": "concept"}).json()["items"]
+    concept = client.get(f"/fanboards/{gid}/posts", params={"tab": "concept"}).json()["items"]
     assert [x["id"] for x in concept] == [p["id"]]
 
 
 def test_rate_limit(client):
-    gid = _gallery(client)
+    gid = _fanboard(client)
     codes = [_guest_post(client, gid, title=f"t{i}").status_code for i in range(4)]
     assert codes == [201, 201, 201, 429]  # posts_per_minute = 3
 
 
 def test_report_ban_flow(client, admin):
     _, ah = admin
-    gid = _gallery(client)
+    gid = _fanboard(client)
     p = _guest_post(client, gid).json()
     _, h = register(client, "reporter")
     assert client.post("/reports", headers=h, json={"target_type": "post", "target_id": p["id"], "reason": "spam"}).status_code == 202
@@ -97,19 +97,19 @@ def test_report_ban_flow(client, admin):
 
 def test_verified_badge_and_notices(client, admin):
     _, ah = admin
-    gid = _gallery(client)
+    gid = _fanboard(client)
     _, fan = register(client, "fan1")
-    assert client.post(f"/galleries/{gid}/posts", headers=fan, json={"title": "N", "body": "b", "notice": True}).status_code == 403
+    assert client.post(f"/fanboards/{gid}/posts", headers=fan, json={"title": "N", "body": "b", "notice": True}).status_code == 403
     _, author = verified(client, ah, "hseo", "author", "H. Seo", "author")
-    r = client.post(f"/galleries/{gid}/posts", headers=author, json={"title": "Season 3 date", "body": "b", "notice": True})
+    r = client.post(f"/fanboards/{gid}/posts", headers=author, json={"title": "Season 3 date", "body": "b", "notice": True})
     assert r.status_code == 201 and r.json()["author"]["verified_owner"] is True and r.json()["is_notice"] is True
-    other = _gallery(client, "webtoon_global:6")  # not H. Seo's title
-    r = client.post(f"/galleries/{other}/posts", headers=author, json={"title": "hi", "body": "b"})
+    other = _fanboard(client, "webtoon_global:6")  # not H. Seo's title
+    r = client.post(f"/fanboards/{other}/posts", headers=author, json={"title": "hi", "body": "b"})
     assert r.json()["author"]["verified_owner"] is False
 
 
 def test_most_discussed_in_overview(client):
-    gid = _gallery(client)
+    gid = _fanboard(client)
     _guest_post(client, gid)
     md = client.get("/market/overview").json()["most_discussed"]
     assert md[0]["comic_id"] == "webtoon_global:1" and md[0]["fan_activity_24h"] == 1

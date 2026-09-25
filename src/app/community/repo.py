@@ -8,8 +8,8 @@ from sqlalchemy.engine import Engine
 
 from src.app.core.db import metadata, new_id, now
 
-galleries = Table(
-    "galleries", metadata,
+fanboards = Table(
+    "fanboards", metadata,
     Column("id", String(32), primary_key=True),
     Column("kind", String(10), nullable=False),           # title | genre | free
     Column("ref", String(255), nullable=False),           # comic_id | genre parent | slug
@@ -30,7 +30,7 @@ _author_cols = lambda: [  # noqa: E731 — shared by posts and comments
 posts = Table(
     "posts", metadata,
     Column("id", String(32), primary_key=True),
-    Column("gallery_id", String(32), ForeignKey("galleries.id"), nullable=False, index=True),
+    Column("fanboard_id", String(32), ForeignKey("fanboards.id"), nullable=False, index=True),
     *_author_cols(),
     Column("title", String(200), nullable=False),
     Column("body", Text, nullable=False),
@@ -90,11 +90,11 @@ bans = Table(
     Column("created_at", DateTime, nullable=False),
 )
 
-gallery_mods = Table(
-    "gallery_mods", metadata,
-    Column("gallery_id", String(32), ForeignKey("galleries.id"), nullable=False),
+fanboard_mods = Table(
+    "fanboard_mods", metadata,
+    Column("fanboard_id", String(32), ForeignKey("fanboards.id"), nullable=False),
     Column("user_id", String(32), ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-    PrimaryKeyConstraint("gallery_id", "user_id"),
+    PrimaryKeyConstraint("fanboard_id", "user_id"),
 )
 
 
@@ -107,40 +107,40 @@ class CommunityRepo:
     def __init__(self, engine: Engine):
         self.e = engine
 
-    # galleries
-    def gallery(self, gallery_id: str):
+    # fanboards
+    def fanboard(self, fanboard_id: str):
         with self.e.connect() as c:
-            return _one(c, select(galleries).where(galleries.c.id == gallery_id))
+            return _one(c, select(fanboards).where(fanboards.c.id == fanboard_id))
 
-    def gallery_by_ref(self, kind: str, ref: str):
+    def fanboard_by_ref(self, kind: str, ref: str):
         with self.e.connect() as c:
-            return _one(c, select(galleries).where(galleries.c.kind == kind, galleries.c.ref == ref))
+            return _one(c, select(fanboards).where(fanboards.c.kind == kind, fanboards.c.ref == ref))
 
-    def create_gallery(self, kind: str, ref: str, name: str) -> dict:
+    def create_fanboard(self, kind: str, ref: str, name: str) -> dict:
         row = {"id": new_id(), "kind": kind, "ref": ref, "name": name, "created_at": now()}
         with self.e.begin() as c:
-            c.execute(insert(galleries).values(**row))
+            c.execute(insert(fanboards).values(**row))
         return row
 
-    def list_galleries(self, kind: str | None, limit: int) -> list[dict]:
-        q = (select(galleries, func.count(posts.c.id).label("posts"))
-             .select_from(galleries.outerjoin(posts, and_(posts.c.gallery_id == galleries.c.id, posts.c.deleted_at.is_(None))))
-             .group_by(*galleries.c).order_by(func.count(posts.c.id).desc()).limit(limit))
+    def list_fanboards(self, kind: str | None, limit: int) -> list[dict]:
+        q = (select(fanboards, func.count(posts.c.id).label("posts"))
+             .select_from(fanboards.outerjoin(posts, and_(posts.c.fanboard_id == fanboards.c.id, posts.c.deleted_at.is_(None))))
+             .group_by(*fanboards.c).order_by(func.count(posts.c.id).desc()).limit(limit))
         if kind:
-            q = q.where(galleries.c.kind == kind)
+            q = q.where(fanboards.c.kind == kind)
         with self.e.connect() as c:
             return [dict(r) for r in c.execute(q).mappings()]
 
-    def is_mod(self, gallery_id: str, user_id: str) -> bool:
+    def is_mod(self, fanboard_id: str, user_id: str) -> bool:
         with self.e.connect() as c:
-            return c.execute(select(gallery_mods).where(gallery_mods.c.gallery_id == gallery_id,
-                                                        gallery_mods.c.user_id == user_id)).first() is not None
+            return c.execute(select(fanboard_mods).where(fanboard_mods.c.fanboard_id == fanboard_id,
+                                                        fanboard_mods.c.user_id == user_id)).first() is not None
 
-    def add_mod(self, gallery_id: str, user_id: str) -> None:
+    def add_mod(self, fanboard_id: str, user_id: str) -> None:
         with self.e.begin() as c:
-            if not c.execute(select(gallery_mods).where(gallery_mods.c.gallery_id == gallery_id,
-                                                        gallery_mods.c.user_id == user_id)).first():
-                c.execute(insert(gallery_mods).values(gallery_id=gallery_id, user_id=user_id))
+            if not c.execute(select(fanboard_mods).where(fanboard_mods.c.fanboard_id == fanboard_id,
+                                                        fanboard_mods.c.user_id == user_id)).first():
+                c.execute(insert(fanboard_mods).values(fanboard_id=fanboard_id, user_id=user_id))
 
     # posts & comments
     def insert(self, table: Table, row: dict) -> dict:
@@ -161,10 +161,10 @@ class CommunityRepo:
         with self.e.begin() as c:
             c.execute(update(posts).where(posts.c.id == post_id).values(views=posts.c.views + 1))
 
-    def list_posts(self, gallery_id: str, *, concept_only: bool, notices_only: bool, limit: int, offset: int):
+    def list_posts(self, fanboard_id: str, *, concept_only: bool, notices_only: bool, limit: int, offset: int):
         cc = (select(func.count(comments.c.id)).where(comments.c.post_id == posts.c.id, comments.c.deleted_at.is_(None))
               .scalar_subquery().label("comment_count"))
-        q = (select(posts, cc).where(posts.c.gallery_id == gallery_id, posts.c.deleted_at.is_(None))
+        q = (select(posts, cc).where(posts.c.fanboard_id == fanboard_id, posts.c.deleted_at.is_(None))
              .order_by(posts.c.is_notice.desc(), posts.c.created_at.desc()).limit(limit).offset(offset))
         if concept_only:
             q = q.where(posts.c.is_concept.is_(True))
@@ -233,21 +233,21 @@ class CommunityRepo:
             return c.execute(select(bans.c.key).where(bans.c.key.in_(keys),
                                                       or_(bans.c.until.is_(None), bans.c.until > at))).first() is not None
 
-    def activity_by_gallery(self, since: datetime) -> dict[str, int]:
-        """posts + comments per gallery since ``since`` (the market's "volume")."""
+    def activity_by_fanboard(self, since: datetime) -> dict[str, int]:
+        """posts + comments per fanboard since ``since`` (the market's "volume")."""
         with self.e.connect() as c:
-            p = c.execute(select(posts.c.gallery_id, func.count()).where(posts.c.created_at >= since,
-                          posts.c.deleted_at.is_(None)).group_by(posts.c.gallery_id)).all()
-            cm = c.execute(select(posts.c.gallery_id, func.count()).select_from(comments.join(posts, comments.c.post_id == posts.c.id))
+            p = c.execute(select(posts.c.fanboard_id, func.count()).where(posts.c.created_at >= since,
+                          posts.c.deleted_at.is_(None)).group_by(posts.c.fanboard_id)).all()
+            cm = c.execute(select(posts.c.fanboard_id, func.count()).select_from(comments.join(posts, comments.c.post_id == posts.c.id))
                            .where(comments.c.created_at >= since, comments.c.deleted_at.is_(None))
-                           .group_by(posts.c.gallery_id)).all()
+                           .group_by(posts.c.fanboard_id)).all()
         out: dict[str, int] = {}
         for gid, n in list(p) + list(cm):
             out[gid] = out.get(gid, 0) + n
         return out
 
-    def galleries_by_ids(self, ids) -> dict[str, dict]:
+    def fanboards_by_ids(self, ids) -> dict[str, dict]:
         if not ids:
             return {}
         with self.e.connect() as c:
-            return {r["id"]: dict(r) for r in c.execute(select(galleries).where(galleries.c.id.in_(list(ids)))).mappings()}
+            return {r["id"]: dict(r) for r in c.execute(select(fanboards).where(fanboards.c.id.in_(list(ids)))).mappings()}

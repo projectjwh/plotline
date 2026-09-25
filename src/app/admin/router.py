@@ -42,7 +42,7 @@ class BanIn(BaseModel):
 
 
 class ModIn(BaseModel):
-    gallery_id: str
+    fanboard_id: str
     user_id: str
 
 
@@ -97,7 +97,7 @@ def ban(body: BanIn, v: Viewer = Depends(admin), ctx: AppContext = Depends(get_c
 
 @router.post("/moderators", status_code=204)
 def add_mod(body: ModIn, v: Viewer = Depends(admin), ctx: AppContext = Depends(get_ctx)):
-    ctx.community.add_moderator(v, body.gallery_id, body.user_id)
+    ctx.community.add_moderator(v, body.fanboard_id, body.user_id)
 
 
 @router.post("/events/rising", summary="Fire title.entered_rising (until the pipeline emits it)")

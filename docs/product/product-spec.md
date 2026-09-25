@@ -19,7 +19,7 @@ Today Plotline serves one audience, analysts, through a password-gated explorer 
 - **Missing:** user accounts, community, ownership verification and valuation. A code search for these found nothing. **[code]**
 
 The revamp turns the product into a two-sided platform:
-- **Fans** get a free, IMDb-style database of titles, and DCInside-style galleries for discussing them.
+- **Fans** get a free, IMDb-style database of titles, and DCInside-style fanboards for discussing them.
 - **Authors, publishers and IP investors** pay for deeper analytics after their ownership or authority is verified by manual document review.
 
 ## 2. Personas and jobs-to-be-done
@@ -35,7 +35,7 @@ The revamp turns the product into a two-sided platform:
 
 ```mermaid
 flowchart LR
-  A[Fans discover, rate,<br/>discuss, wish-list] --> B[Proprietary fan signals<br/>fan rating · wishlist votes · follow growth<br/>gallery activity · scout lead time]
+  A[Fans discover, rate,<br/>discuss, wish-list] --> B[Proprietary fan signals<br/>fan rating · wishlist votes · follow growth<br/>fanboard activity · scout lead time]
   B --> C[Premium KPIs for<br/>authors · publishers · investors]
   C --> D[Revenue]
   D --> E[Better coverage + tools]
@@ -75,7 +75,7 @@ Up/down colors follow a user-selectable convention: KR (red up, blue down, the d
 | Feature | Fan value | Signal it produces (paid value) | Wireframe |
 |---|---|---|---|
 | Title page with PlotScore and fan rating (1–10) | One trusted page per IP | Fan rating distribution per title | S3 |
-| Galleries per title, per genre and free boards: DC-style list, concept tab, anonymous posting | A place to talk without the friction of signing up | Gallery activity and discussion volume | S4–S6 |
+| Fanboards per title, per genre and free boards: DC-style list, concept tab, anonymous posting | A place to talk without the friction of signing up | Fanboard activity and discussion volume | S4–S6 |
 | Episode threads, auto-created when the scraper sees a new episode | A daily reason to return | Episode-level reaction volume | S7 |
 | Adaptation wishlist (anime / drama / film votes) | Fans feel heard | Adaptation demand signal | S8 |
 | Scout reputation: points for following or rating a title before it enters Rising | Status for good taste | Leading indicator (scout lead time) | S10 |
@@ -102,10 +102,10 @@ Concept promotion **[ext] [hyp]**:
   - exact metric time series for claimed titles
   - engagement decay across episodes (`src/models/unit_stats.py:52-60`) **[code]**
   - release cadence compared with genre peers (`src/models/episode_analytics.py:57`) **[code]**
-  - fan rating distribution, gallery activity and wishlist votes
+  - fan rating distribution, fanboard activity and wishlist votes
 - **Competitor compare**: side by side with any other title, per your answer on competitor scope. Shows PlotScore components (`src/models/plotscore.py:36`) **[code]**, like-through and the revenue band.
 - **What to make next**: genre whitespace and HHI (`src/models/kpi_layers.py`, `_genre`) **[code]**, the Blue Ocean gap (`src/models/gap_analysis.py`) **[code]** and art-style correlation (`src/models/art_style.py`) **[code]**.
-- **Fan tools**: a verified badge in their galleries, pinned notices and AMA threads.
+- **Fan tools**: a verified badge in their fanboards, pinned notices and AMA threads.
 
 ### 4.3 Publisher (paid)
 - **Scouting board** ranked by:
@@ -129,7 +129,7 @@ Concept promotion **[ext] [hyp]**:
 
 ### 4.5 Admin
 - **Claim review queue**: view the documents, approve, or reject with a note.
-- **Moderation queue**: reports, soft delete, bans by IP hash, gallery moderator assignment.
+- **Moderation queue**: reports, soft delete, bans by IP hash, fanboard moderator assignment.
 
 ## 5. Valuation model (new; design only)
 
@@ -172,7 +172,7 @@ Legend: ✔ shown · 🔒 premium only · ✘ hidden · *admin* means internal o
 | Publisher portfolio | `kpi_layers.py` (`_publisher`) | ✔ credits | ✘ | 🔒 | 🔒 | Blocked on publisher data (§4.3) |
 | Platform aggregates | `kpi_layers.py` (`_platform`) | ✔ titles, reach | 🔒 | 🔒 | 🔒 | |
 | **Fan rating (weighted), distribution** | new | ✔ | ✔ | ✔ | ✔ | Core IMDb value |
-| **Wishlist votes, gallery activity, follow growth, scout lead time** | new | ✔ totals | 🔒 trends | 🔒 | 🔒 | The flywheel signals (§3) |
+| **Wishlist votes, fanboard activity, follow growth, scout lead time** | new | ✔ totals | 🔒 trends | 🔒 | 🔒 | The flywheel signals (§3) |
 | **Genre / composite index, breadth, 120-day highs** | new, derived from `agg_genre_daily`, `fact_title_daily` | ✔ | ✔ | ✔ | ✔ | Market pulse for everyone; the home screen (§4.0) |
 | **New listings (IPO)** | `dim_title.first_seen` | ✔ | ✔ | ✔ | ✔ | Discovery; feeds scout points |
 | **Fan activity "volume"** | new (community + fan) | ✔ totals | 🔒 trend | 🔒 | 🔒 | Makes fan activity visible, which encourages more of it |
@@ -195,17 +195,17 @@ Prices are left as config placeholders, per your answer. While `PLOTLINE_BILLING
 
 | Loop step | Metric | Why |
 |---|---|---|
-| Fans show up | Weekly active fans; D7 return of gallery posters | Community health |
+| Fans show up | Weekly active fans; D7 return of fanboard posters | Community health |
 | Fans create signal | Share of titles with ≥ 20 fan ratings; wishlist votes per week | Signal density that paid KPIs depend on |
 | Signal has value | Premium dashboard views of fan-signal panels; scout lead time against later rank gain | Whether fan signals predict or matter |
 | Paid conversion | Claim submissions → approvals → paid, by persona | Funnel |
-| Creators feed fans | Verified posts per week; fan activity in galleries with a verified author vs without | Supply side of the loop |
+| Creators feed fans | Verified posts per week; fan activity in fanboards with a verified author vs without | Supply side of the loop |
 
 Thresholds (such as the 20 ratings) are starting points to tune, not benchmarks.
 
 ## 9. Phase 2 build order (proposed)
 1. `core` + `identity` + `entitlement` + `kpi` registry. Existing public endpoints start projecting through the registry.
-2. `community`: galleries, posts, comments, votes, reports, anonymous identity.
+2. `community`: fanboards, posts, comments, votes, reports, anonymous identity.
 3. `fan`: ratings, follows, lists, wishlist, credits.
 4. `verification`: claims, document storage, admin queue.
 5. `valuation` + `premium` endpoints; port adaptation readiness to Python.
@@ -214,5 +214,5 @@ Thresholds (such as the 20 ratings) are starting points to tune, not benchmarks.
 
 ## Sources
 - IMDb weighted rating and its anti-manipulation purpose: [IMDb Help: "The vote average for film X should be Y"](https://help.imdb.com/article/imdb/track-movies-tv/the-vote-average-for-film-x-should-be-y-why-are-you-displaying-another-rating/G3RC8ZNFAGWNTX4L)
-- DCInside galleries, recommendation and concept posts: [DCinside, Wikipedia](https://en.wikipedia.org/wiki/DCinside) · [DC Inside, NamuWiki](https://en.namu.wiki/w/%EB%94%94%EC%8B%9C%EC%9D%B8%EC%82%AC%EC%9D%B4%EB%93%9C) · [DCInside Best Posts board](https://en.dcinside.com/board/best)
+- DCInside fanboards, recommendation and concept posts: [DCinside, Wikipedia](https://en.wikipedia.org/wiki/DCinside) · [DC Inside, NamuWiki](https://en.namu.wiki/w/%EB%94%94%EC%8B%9C%EC%9D%B8%EC%82%AC%EC%9D%B4%EB%93%9C) · [DCInside Best Posts board](https://en.dcinside.com/board/best)
 - Everything tagged **[code]**: this repository at commit `9a08bd4`.

@@ -3,21 +3,57 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
-:root{
+
+/* =====================================================================
+   PLOTLINE LIVE — STYLESHEET
+   Change the look in layers 1–2 only. Layers 3–5 use tokens exclusively
+   (no hex values), so a new theme is a new token block. See
+   docs/product/frontend-guide.md → "Theming".
+   ===================================================================== */
+
+/* ---------- 1. THEME TOKENS (colors only) ---------- */
+:root,:root[data-pl-theme="dark"]{
   color-scheme:dark;
   --base:#0A0C0F; --panel:#11151B; --raised:#171C24; --hover:#1D232D; --line:#232A34; --line-2:#2D3541;
   --text:#E9ECF1; --text-2:#B9C0CB; --muted:#8B94A3; --faint:#5E6775;
-  --mark:#F2C94C; --mark-ink:#16130A; --mark-soft:rgba(242,201,76,.12);
+  --mark:#F2C94C; --mark-ink:#16130A; --mark-soft:rgba(242,201,76,.12); --mark-tint:rgba(242,201,76,.06);
   --up:#F04E54; --dn:#4A86EE; --up-soft:rgba(240,78,84,.14); --dn-soft:rgba(74,134,238,.14); --flat:#3A414C;
-  --ok:#3FB87F; --warn:#E3A33B;
+  --ok:#3FB87F; --ok-soft:rgba(63,184,127,.12); --warn:#E3A33B; --warn-soft:rgba(227,163,59,.12);
+  --chrome:rgba(10,12,15,.92); --overlay-in:rgba(17,21,27,.92); --overlay-out:rgba(17,21,27,.55);
+  --shadow:rgba(0,0,0,.45); --ring:rgba(255,255,255,.06); --stripe:rgba(255,255,255,.015);
+  --tile-ink:#FFFFFF; --tile-ink-2:rgba(255,255,255,.88); --tile-shadow:rgba(0,0,0,.4); --glab:rgba(10,12,15,.72);
+}
+:root[data-pl-theme="light"]{
+  color-scheme:light;
+  --base:#F5F6F8; --panel:#FFFFFF; --raised:#EEF0F3; --hover:#F1F3F6; --line:#E1E4E9; --line-2:#CDD2DA;
+  --text:#14171C; --text-2:#3A414C; --muted:#5F6773; --faint:#8A919C;
+  --mark:#B8860B; --mark-ink:#FFFFFF; --mark-soft:rgba(184,134,11,.12); --mark-tint:rgba(184,134,11,.06);
+  --up:#D6343B; --dn:#2F6FDB; --up-soft:rgba(214,52,59,.10); --dn-soft:rgba(47,111,219,.10); --flat:#C9CED6;
+  --ok:#1E8A55; --ok-soft:rgba(30,138,85,.10); --warn:#A86A00; --warn-soft:rgba(168,106,0,.10);
+  --chrome:rgba(245,246,248,.92); --overlay-in:rgba(255,255,255,.94); --overlay-out:rgba(255,255,255,.6);
+  --shadow:rgba(20,23,28,.18); --ring:rgba(20,23,28,.08); --stripe:rgba(20,23,28,.025);
+  --tile-ink:#14171C; --tile-ink-2:rgba(20,23,28,.8); --tile-shadow:rgba(255,255,255,.35); --glab:rgba(255,255,255,.8);
+}
+/* up/down convention: US = green up, red down (KR is the default above) */
+:root.us,:root.us[data-pl-theme="dark"]{--up:#2BB673; --dn:#F0506A; --up-soft:rgba(43,182,115,.14); --dn-soft:rgba(240,80,106,.14)}
+:root.us[data-pl-theme="light"]{--up:#1E9A5A; --dn:#D93A55; --up-soft:rgba(30,154,90,.10); --dn-soft:rgba(217,58,85,.10)}
+
+/* ---------- 2. SCALE TOKENS (type, space, shape, density) ---------- */
+:root{
   --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
   --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --fs-body:14px; --fs-small:12.5px; --fs-board:13px; --fs-label:10.5px;
+  --radius:12px; --radius-sm:8px; --gutter:20px; --gap:14px;
+  --row-h:30px;              /* fanboard row height (DCInside density) */
+  --maxw:1440px;
 }
-:root.us{--up:#2BB673; --dn:#F0506A; --up-soft:rgba(43,182,115,.14); --dn-soft:rgba(240,80,106,.14)}
+
+/* ---------- 3. BASE ---------- */
+
 *{box-sizing:border-box}
 html,body{background:var(--base)}
-body{color:var(--text);font:14px/1.45 var(--ui);margin:0;-webkit-font-smoothing:antialiased}
+body{color:var(--text);font:var(--fs-body)/1.45 var(--ui);margin:0;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:4px}
@@ -25,9 +61,10 @@ button{font:inherit;color:inherit}
 .mono{font-family:var(--mono)}
 .up{color:var(--up)} .dn{color:var(--dn)} .fl{color:var(--muted)}
 
-/* ---------- top chrome ---------- */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(10,12,15,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;gap:18px;padding-block:10px;padding-inline:20px;max-width:1440px;margin:0 auto}
+/* ---------- 4. COMPONENTS ---------- */
+/* top chrome */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--chrome);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:18px;padding-block:10px;padding-inline:var(--gutter);max-width:var(--maxw);margin:0 auto}
 .logo{font:800 22px/1 var(--display);letter-spacing:-.03em;display:flex;align-items:baseline;gap:6px;white-space:nowrap}
 .logo b{background:linear-gradient(transparent 70%,var(--mark) 70% 94%,transparent 94%);padding-inline:1px;color:var(--text)}
 .logo small{font:500 10px var(--mono);color:var(--muted);letter-spacing:.12em}
@@ -61,13 +98,13 @@ button{font:inherit;color:inherit}
 .tk .px{color:var(--text-2)}
 
 /* ---------- layout ---------- */
-.wrap{max-width:1440px;margin:0 auto;padding-block:20px 80px;padding-inline:20px}
-.grid{display:grid;gap:14px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-block:20px 80px;padding-inline:var(--gutter)}
+.grid{display:grid;gap:var(--gap)}
 .g12{grid-template-columns:repeat(12,minmax(0,1fr))}
 .c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
 @media (max-width:1100px){.c3,.c4{grid-column:span 6}.c5,.c7,.c8,.c9{grid-column:span 12}.c6{grid-column:span 12}}
 @media (max-width:680px){.g12>*{grid-column:span 12!important}.bar{padding-inline:16px;gap:10px;flex-wrap:wrap}.wrap{padding-inline:16px}.search{display:none}.nav{order:3;flex-basis:100%}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0;overflow:hidden}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);min-width:0;overflow:hidden}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .ph h3{margin:0;font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);display:flex;gap:8px;align-items:center}
 .ph h3 i{font-style:normal;color:var(--faint);font-weight:500}
@@ -79,7 +116,7 @@ button{font:inherit;color:inherit}
 .sub{color:var(--muted);font-size:13px;max-width:70ch;margin:6px 0 0}
 
 /* index cards */
-.idx{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.idx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .ic{background:var(--panel);padding:12px 14px 8px;display:grid;gap:2px;cursor:pointer}
 .ic:hover{background:var(--raised)}
 .ic .code{font:700 11px var(--mono);letter-spacing:.08em;color:var(--text-2);display:flex;justify-content:space-between}
@@ -103,7 +140,7 @@ tbody tr{cursor:pointer}
 tbody tr:hover td{background:var(--hover)}
 .r{text-align:right}
 .tn{display:flex;align-items:center;gap:10px;min-width:0}
-.tn .cv{width:26px;height:36px;border-radius:4px;background-size:cover;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+.tn .cv{width:26px;height:36px;border-radius:4px;background-size:cover;flex:none;box-shadow:0 0 0 1px var(--ring)}
 .tn b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .tn small{display:block;font:500 10.5px var(--mono);color:var(--muted);letter-spacing:.04em}
 .chg{font:600 12.5px var(--mono);padding:2px 6px;border-radius:5px;display:inline-block;min-width:64px;text-align:right}
@@ -115,8 +152,8 @@ tbody tr:hover td{background:var(--hover)}
 /* chips, buttons, pills */
 .pill{display:inline-flex;align-items:center;gap:5px;font:600 10.5px var(--mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--text-2);white-space:nowrap}
 .pill.mk{background:var(--mark-soft);border-color:transparent;color:var(--mark)}
-.pill.ok{background:rgba(63,184,127,.12);border-color:transparent;color:var(--ok)}
-.pill.warn{background:rgba(227,163,59,.12);border-color:transparent;color:var(--warn)}
+.pill.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.pill.warn{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
 .pill.up{background:var(--up-soft);border-color:transparent}
 .pill.dn{background:var(--dn-soft);border-color:transparent}
 .btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--mark);background:var(--mark);color:var(--mark-ink);font:700 13px var(--ui);cursor:pointer;white-space:nowrap}
@@ -135,15 +172,15 @@ tbody tr:hover td{background:var(--hover)}
 /* treemap */
 .tm{position:relative;height:460px;background:var(--base)}
 .tm .grp{position:absolute;border:1px solid var(--base);overflow:hidden}
-.tm .glab{position:absolute;left:0;top:0;right:0;height:18px;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);padding:3px 6px;background:rgba(10,12,15,.72);z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm .glab{position:absolute;left:0;top:0;right:0;height:18px;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);padding:3px 6px;background:var(--glab);z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile{position:absolute;border:1px solid var(--base);display:grid;place-content:center;text-align:center;overflow:hidden;cursor:pointer;transition:filter .15s,background-color .6s}
 .tile:hover{filter:brightness(1.25);z-index:2;outline:1px solid var(--text)}
-.tile b{font:700 12px var(--mono);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.tile span{font:500 10.5px var(--mono);color:rgba(255,255,255,.88)}
+.tile b{font:700 12px var(--mono);color:var(--tile-ink);text-shadow:0 1px 2px var(--tile-shadow)}
+.tile span{font:500 10.5px var(--mono);color:var(--tile-ink-2)}
 .tile.big b{font-size:15px}
 .legend-scale{display:flex;align-items:center;gap:6px;font:500 10.5px var(--mono);color:var(--muted)}
 .legend-scale i{display:block;width:22px;height:10px}
-.tip{position:fixed;z-index:50;pointer-events:none;background:var(--raised);border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;font-size:12px;box-shadow:0 12px 30px rgba(0,0,0,.5);min-width:180px;display:grid;gap:4px}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--raised);border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;font-size:12px;box-shadow:0 12px 30px var(--shadow);min-width:180px;display:grid;gap:4px}
 .tip b{font:700 13px var(--ui)}
 .tip .row{display:flex;justify-content:space-between;gap:14px;font:500 11.5px var(--mono);color:var(--text-2)}
 
@@ -160,7 +197,7 @@ tbody tr:hover td{background:var(--hover)}
 .ic2 small{display:block;font:500 11px var(--mono);color:var(--muted)}
 
 /* covers + hero */
-.cover{border-radius:10px;background-size:cover;background-position:center;aspect-ratio:3/4;box-shadow:0 20px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06)}
+.cover{border-radius:10px;background-size:cover;background-position:center;aspect-ratio:3/4;box-shadow:0 20px 40px var(--shadow),0 0 0 1px var(--ring)}
 .quote{display:grid;grid-template-columns:170px minmax(0,1fr);gap:22px;align-items:start}
 @media (max-width:680px){.quote{grid-template-columns:96px minmax(0,1fr);gap:14px}}
 .price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:10px}
@@ -179,11 +216,33 @@ tbody tr:hover td{background:var(--hover)}
 /* lock */
 .lock{position:relative;min-height:190px}
 .lock .blur{filter:blur(5px);opacity:.45;pointer-events:none;user-select:none}
-.lock .ov{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;gap:8px;padding:16px;background:radial-gradient(closest-side,rgba(17,21,27,.92),rgba(17,21,27,.55))}
+.lock .ov{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;gap:8px;padding:16px;background:radial-gradient(closest-side,var(--overlay-in),var(--overlay-out))}
 .lock .ov b{font:800 18px var(--display);letter-spacing:-.01em}
 .lock .ov p{margin:0;color:var(--muted);font-size:12.5px;max-width:34ch}
 
-/* galleries */
+
+/* fanboard list: one line per post (DCInside density) */
+.board{table-layout:fixed;width:100%}
+.board th{height:28px;padding:0 8px}
+.board td{height:var(--row-h);padding:0 8px;font-size:var(--fs-board);border-bottom:1px solid var(--line)}
+.board .c-no{width:64px;color:var(--faint);font:500 11px var(--mono);text-align:right}
+.board .c-w{width:190px;overflow:hidden;text-overflow:ellipsis}
+.board .c-t{width:58px;color:var(--muted);font:500 11px var(--mono);text-align:right}
+.board .c-v{width:52px;text-align:right;font:600 12px var(--mono)}
+.board .c-ttl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board .cc{color:var(--mark);font:600 11px var(--mono);margin-left:4px}
+.board .star{color:var(--mark);margin-right:4px}
+.board tr.notice td{background:var(--mark-tint);font-weight:600}
+.board tr.concept td{background:var(--mark-tint)}
+.board tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
+.board .you{font:600 9.5px var(--mono);color:var(--muted);border:1px solid var(--line-2);border-radius:3px;padding:0 3px;margin-left:4px}
+.boardhead{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line)}
+.composer{padding:12px;border-bottom:1px solid var(--line);display:grid;gap:8px;background:var(--hover)}
+.cmts .cmt{padding:8px 0;font-size:var(--fs-board)}
+.cmts .cmt .meta{font-size:11.5px}
+@media (max-width:680px){.board .c-no,.board .c-t{display:none}.board .c-w{width:110px}}
+
+/* fanboards */
 .post{display:grid;gap:10px}
 .nick{font-weight:600;color:var(--text)}
 .ip{font:500 11px var(--mono);color:var(--faint)}
@@ -201,9 +260,9 @@ tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
 .steps{display:flex;gap:6px;flex-wrap:wrap;counter-reset:s}
 .steps span{display:flex;gap:8px;align-items:center;padding:6px 12px 6px 6px;border:1px solid var(--line-2);border-radius:999px;font:600 12px var(--ui);color:var(--muted)}
 .steps span::before{counter-increment:s;content:counter(s);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--raised);font:700 11px var(--mono)}
-.steps span.done{color:var(--ok)}.steps span.done::before{content:"✓";background:rgba(63,184,127,.18)}
+.steps span.done{color:var(--ok)}.steps span.done::before{content:"✓";background:var(--ok-soft)}
 .steps span.on{color:var(--text);border-color:var(--mark)}.steps span.on::before{background:var(--mark);color:var(--mark-ink)}
-.drop{border:1.5px dashed var(--line-2);border-radius:12px;padding:26px;text-align:center;color:var(--muted);display:grid;gap:6px;background:repeating-linear-gradient(135deg,transparent 0 10px,rgba(255,255,255,.015) 10px 20px)}
+.drop{border:1.5px dashed var(--line-2);border-radius:12px;padding:26px;text-align:center;color:var(--muted);display:grid;gap:6px;background:repeating-linear-gradient(135deg,transparent 0 10px,var(--stripe) 10px 20px)}
 
 /* plan cards */
 .plan{display:grid;gap:12px;padding:18px;align-content:start}
@@ -223,7 +282,7 @@ tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
 .hist i{display:block;height:8px;border-radius:0 4px 4px 0;background:var(--mark)}
 
 /* spec drawer */
-.drawer{position:fixed;right:0;top:0;bottom:0;width:min(380px,100%);background:var(--panel);border-left:1px solid var(--line-2);z-index:40;transform:translateX(100%);visibility:hidden;transition:transform .25s,visibility .25s;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 18px;overflow:auto;display:grid;gap:14px;align-content:start;box-shadow:-20px 0 40px rgba(0,0,0,.4)}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:min(380px,100%);background:var(--panel);border-left:1px solid var(--line-2);z-index:40;transform:translateX(100%);visibility:hidden;transition:transform .25s,visibility .25s;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 18px;overflow:auto;display:grid;gap:14px;align-content:start;box-shadow:-20px 0 40px var(--shadow)}
 .drawer.open{transform:none;visibility:visible}
 .drawer h4{margin:0;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .drawer p{margin:0;color:var(--text-2);font-size:13px}
@@ -245,6 +304,7 @@ tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translate(-50%,20px);opacity:0;background:var(--raised);border:1px solid var(--mark);color:var(--text);padding:10px 16px;border-radius:10px;font-size:13px;z-index:60;transition:opacity .2s,transform .2s;pointer-events:none;max-width:calc(100% - 32px)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .field select.sel{width:100%}
+/* ---------- 5. SCREENS & MOTION ---------- */
 @media (prefers-reduced-motion:reduce){.track{animation:none!important}.dot{animation:none}.flash-up,.flash-dn{animation:none}.drawer{transition:none}}
 </style>
 
@@ -259,6 +319,7 @@ tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
         <option value="fan">Preview: Fan</option><option value="author">Preview: Author</option><option value="publisher">Preview: Publisher</option><option value="investor">Preview: Investor</option>
       </select>
       <div class="seg" role="group" aria-label="Up/down colors"><button type="button" id="cvKR" aria-pressed="true" title="Red up, blue down">KR</button><button type="button" id="cvUS" aria-pressed="false" title="Green up, red down">US</button></div>
+      <button type="button" class="iconbtn" id="themeBtn">☀ LIGHT</button>
       <button type="button" class="iconbtn" id="specBtn" aria-pressed="false">SPEC</button>
     </div>
   </div>
@@ -405,7 +466,7 @@ P.market=()=>{const T=TOPS();const adv=titles.filter(t=>t.d1>0).length,dec=title
   <div class="c4 grid">
    ${panel('Market breadth',`<div class="pb breadth"><div class="bl"><span class="up">▲ ${adv}</span><span class="fl">${unch} unch.</span><span class="dn">${dec} ▼</span></div><div class="bb"><span style="flex:${adv};background:var(--up)"></span><span style="flex:${unch||.001};background:var(--flat)"></span><span style="flex:${dec};background:var(--dn)"></span></div>
     <div class="bl"><span class="fl">New 120D highs</span><span>${nh}</span></div><div class="bl"><span class="fl">New listings (30D)</span><span>${T.ipo.length}</span></div><div class="bl"><span class="fl">Fan activity today</span><span>${fmtN(titles.reduce((a,t)=>a+t.act,0))}</span></div></div>`)}
-   ${panel(`Hot in galleries <i>concept ★</i> ${liveBadge()}`,liveHot())}
+   ${panel(`Hot in fanboards <i>concept ★</i> ${liveBadge()}`,liveHot())}
   </div>
   <div class="c4">${panel('Top gainers <i>1D</i>',moverTable(T.gain.slice(0,8),["name","px","d1"]),'<a class="pill" href="#screener">Screener →</a>')}</div>
   <div class="c4">${panel('Top losers <i>1D</i>',moverTable(T.lose.slice(0,8),["name","px","d1"]))}</div>
@@ -440,45 +501,22 @@ function titlePage(tk){const t=byTk[tk]||titles[0];const rev=[t.views*.00003*.4,
    ${panel('Where to read',`<div class="pb acts">${[t.plat,...PLATS.filter(p=>p!==t.plat).slice(t.i%4,t.i%4+1+t.i%3)].map(p=>`<span class="pill">${p} ↗</span>`).join("")}</div>`)}</div>
   <div class="c6">${panel('Valuation <i>market-cap analogue · model</i>',lock('Valuation band',`<div class="pb"><div class="band"><div class="rail"></div><div class="rng" style="left:14%;right:30%"></div><div class="mid" style="left:36%"></div></div><div class="bl"><span class="fl">Low</span><span class="fl">Mid</span><span class="fl">High</span></div><div class="bl"><span class="mono">$${fmtN(Math.round(rev[0]*12*3))}</span><span class="mono">$${fmtN(Math.round(rev[1]*12*5))}</span><span class="mono">$${fmtN(Math.round(rev[2]*12*8))}</span></div><p class="sub">Band = modeled annual revenue × base multiple × adjustment. The multiples are <b>placeholders</b> (config) and not market data.</p></div>`),'<span class="pill mk">is_model</span>')}</div>
   <div class="c6">${panel('Revenue & engagement <i>model</i>',lock('Revenue band & diagnostics',`<div class="kv" style="border-top:0"><div><span>Rev / mo</span><b>$${fmtN(Math.round(rev[0]))}–${fmtN(Math.round(rev[2]))}</b></div><div><span>Like-through</span><b>${(2+t.i%5).toFixed(1)}%</b></div><div><span>Decay ep1→now</span><b>${30+t.i%30}%</b></div><div><span>Readiness</span><b>${readiness(t)}</b></div></div><div class="pb">${spark(t.s,600,60,"var(--mark)")}</div>`))}</div>
-  ${liveGalleryPanel(t)}
+  ${liveFanboardPanel(t)}
  </div>`}
-function galleryRows(t,n=8){const rows=[["📌 Notice: season schedule","AUTHOR",null,"09.20",18204,1022,"n"],["Theory: the tower is the author's earlier novel's world","ㅇㅇ","118.235","09.23",9811,412,"c"],[`Ep ${t.eps} thread — that last panel`,"system",null,"09.23",22090,155,""],["Is the KR raw ahead by 20 eps?","ㅇㅇ","211.36","09.23",640,4,""],["Fanart: snowfall chapter","ashenjay",null,"09.22",2113,98,""],["Ranking every arc so far","lanternkeeper",null,"09.22",3320,141,"c"],["Why the pacing works","ㅇㅇ","58.140","09.21",880,22,""],["Translation differences EN vs KR","polyglot",null,"09.21",1440,37,""]].slice(0,n);
- return `<div class="tw"><table><thead><tr><th class="r">No.</th><th>Title</th><th>Writer</th><th>Date</th><th class="r">Views</th><th class="r">▲</th></tr></thead><tbody>${rows.map((r,i)=>`<tr data-go="post" class="${r[6]==='c'?'concept':''}"><td class="r mono fl">${r[6]==='n'?'—':23145-i}</td><td style="white-space:normal;min-width:220px">${r[6]==='c'?'<span class="pill mk" style="margin-right:6px">★ concept</span>':''}${r[6]==='n'?'<b>':''}${r[0]}${r[6]==='n'?'</b>':''}</td><td>${r[1]==='AUTHOR'?`<span class="nick">${t.author}</span> <span class="vb">✓ AUTHOR</span>`:`<span class="nick">${r[1]}</span>${r[2]?` <span class="ip">(${r[2]})</span>`:''}`}</td><td class="mono fl">${r[3]}</td><td class="r mono">${r[4].toLocaleString()}</td><td class="r mono">${r[5]}</td></tr>`).join("")}</tbody></table></div>`}
-
 P.listings=()=>{const l=TOPS().ipo;return `<div class="pagehead"><div><div class="eyebrow">New listings</div><h1 class="h1">IPO calendar</h1><p class="sub">Titles are "listed" on the day the scraper first sees them (dim_title.first_seen). First-week performance is measured from the listing-day PlotScore.</p></div></div>
  ${ipoBanner()}<div style="height:14px"></div><div class="grid g12">
  <div class="c8">${panel('Recently listed <i>last 30 days</i>',`<div class="tw"><table><thead><tr><th>Title</th><th>Listed</th><th>Platform</th><th class="r">Listing score</th><th class="r">Now</th><th class="r">Since listing</th><th class="r">Watchers</th></tr></thead><tbody>${l.map(t=>{const o=t.s[DAYS-t.listed];const since=(last(t)-o)/o*100;return `<tr data-go="title-${t.tk}"><td>${tname(t)}</td><td class="mono">${t.listed}d ago</td><td>${t.plat}</td><td class="r mono">${o.toFixed(1)}</td><td class="r mono">${last(t).toFixed(1)}</td><td class="r">${chip(since)}</td><td class="r mono">${fmtN(t.wish)}</td></tr>`}).join("")}</tbody></table></div>`)}</div>
  <div class="c4">${panel('Upcoming <i>announced</i>',`<div class="pb" style="display:grid;gap:12px">${[["Oct 02","Hollow Protocol","Webtoon"],["Oct 05","Velvet Sect","Tappytoon"],["Oct 09","Jade Carnival","Manta"],["Oct 14","Last Library","Royal Road"]].map(([d,n,p])=>`<div style="display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center"><span class="mono" style="font-weight:700;color:var(--mark)">${d}</span><span><b>${n}</b><br><span class="ip">${p}</span></span><button class="btn gh sm">Notify</button></div>`).join("")}<p class="sub"><span class="pill warn">New source</span> Needs scraping of the platforms' "coming soon" pages, which the pipeline does not do today.</p></div>`)}</div></div>`};
 
-P.gallery=()=>{const t=titles[0];return `<div class="pagehead"><div><div class="eyebrow">Gallery · ${t.tk}</div><h1 class="h1">${esc(t.name)} gallery</h1><div class="meta" style="margin-top:6px">2,314 posts · 18 concept · 3 moderators · <span class="vb">✓ AUTHOR ACTIVE</span></div></div><div class="acts"><button class="btn">Write post</button><a class="btn gh" href="#title-${t.tk}">Title page</a></div></div>
- ${panel('Posts',galleryRows(t),`<div class="tabs"><button aria-pressed="true">All</button><button aria-pressed="false">★ Concept</button><button aria-pressed="false">Episode threads</button><button aria-pressed="false">Notices</button></div>`)}
- <p class="sub">★ Concept = up ≥ N and up/(up+down) ≥ r (set in config). Guest writers show their first two IP octets.</p>`};
-P.post=()=>{const t=titles[0];return `<div class="grid g12"><div class="c8">${panel(`${t.tk} gallery · ★ concept`,`<div class="pb post"><h2 class="h2">Theory: the tower is the author's earlier novel's world</h2><div class="meta"><span class="nick">ㅇㅇ</span><span class="ip">(118.235)</span>· 09.23 14:02 · 9,811 views · 87 comments</div>
- <p style="margin:0;color:var(--text-2);max-width:65ch">The map in chapter 3 of the 2020 novel matches the floor plan in episode 131, down to the collapsed east stair. Also, the bell motif shows up in both the prologue and the season 2 finale.</p><div class="cover" style="aspect-ratio:16/7;background-image:url(${cover(titles[1])})"></div>
- <div class="acts" style="justify-content:center"><button class="btn">▲ 412</button><button class="btn gh">▼ 9</button><button class="btn gh">Report</button></div></div>`)}</div>
- <div class="c4">${panel('Comments <i>87</i>',`<div class="pb" style="padding-top:0"><div class="cmt"><div class="meta"><span class="nick">${t.author}</span><span class="vb">✓ AUTHOR</span>14:40</div>No comment 👀 but keep reading to ep 150.</div><div class="cmt reply"><div class="meta"><span class="nick">ㅇㅇ</span><span class="ip">(175.223)</span>14:42</div>the author replied. that's basically confirmed</div><div class="cmt"><div class="meta"><span class="nick">lanternkeeper</span>15:01 · ▲ 41</div>The bell shows up in ch 3 too.</div>
- <div style="display:grid;gap:8px;margin-top:12px"><div class="acts"><div class="input" style="flex:1">Nickname</div><div class="input" style="flex:1">Password</div></div><div class="input area">Write a comment…</div><button class="btn" style="justify-self:end">Post</button></div></div>`)}</div></div>`};
 P.episode=()=>{const t=titles[0];return `<div class="pagehead"><div><div class="eyebrow">Episode thread · auto-created 09.23 07:00</div><h1 class="h1">${t.tk} · Ep ${t.eps} “Cinders”</h1></div></div>
  <div class="grid g12"><div class="c4">${panel('Rate this episode',`<div class="pb" style="display:grid;gap:12px"><div style="font:800 40px var(--display)">4.6<span class="fl" style="font-size:16px"> / 5</span></div><div class="acts">${["😭 812","🔥 640","🤯 233","😂 98"].map(x=>`<span class="react">${x}</span>`).join("")}</div><p class="sub">Episode reactions add to the per-episode series. Platforms expose only likes per episode (fact_episode).</p></div>`)}</div>
  <div class="c8">${panel('Thread <i>318</i>',`<div class="pb" style="padding-top:0"><div class="cmt"><div class="meta"><span class="nick">ㅇㅇ</span><span class="ip">(58.140)</span>07:03</div>first. that last panel!!</div><div class="cmt"><div class="meta"><span class="nick">ashenjay</span>07:10 · ▲ 88</div><span style="background:var(--raised);padding:2px 8px;border-radius:4px;color:var(--muted)">Spoiler · tap to reveal</span></div><div class="cmt"><div class="meta"><span class="nick">polyglot</span>07:21</div>KR version uses a different word for “ash” here, which changes the meaning.</div></div>`)}</div></div>`};
-P.wishlist=()=>{const l=[...titles].sort((a,b)=>b.wish-a.wish).slice(0,10);return `<div class="pagehead"><div><div class="eyebrow">Adaptation wishlist</div><h1 class="h1">What should be adapted next?</h1><p class="sub">One vote per account, per title, per medium. Publishers and investors see this as a demand trend.</p></div><div class="tabs"><button aria-pressed="true">Anime</button><button aria-pressed="false">Drama</button><button aria-pressed="false">Film</button><button aria-pressed="false">Game</button></div></div>
- ${panel('Most wished',`<div class="tw"><table><thead><tr><th class="r">#</th><th>Title</th><th>Status</th><th class="r">Votes 7D</th><th class="r">Total</th><th></th></tr></thead><tbody>${l.map((t,i)=>`<tr data-go="title-${t.tk}"><td class="r mono fl">${i+1}</td><td>${tname(t)}</td><td><span class="pill ${t.status==='Completed'?'ok':''}">${t.status}</span></td><td class="r mono">${fmtN(Math.round(t.wish*.06))}</td><td class="r"><span style="display:inline-flex;gap:8px;align-items:center" class="mono">${fmtN(t.wish)}<i style="display:inline-block;height:6px;width:${t.wish/l[0].wish*120}px;background:var(--mark);border-radius:3px"></i></span></td><td><button class="btn sm">✦ Wish</button></td></tr>`).join("")}</tbody></table></div>`)}`};
-P.credits=()=>{const a=titles[0].author;const w=titles.filter(t=>t.author===a);return `<div class="quote" style="grid-template-columns:110px minmax(0,1fr)"><div class="cover" style="aspect-ratio:1;border-radius:50%;background-image:url(${cover(w[0])})"></div><div><div class="eyebrow">Writer · ${w.length} works · <span class="vb">✓ VERIFIED</span></div><h1 class="h1">${a}</h1><div class="acts" style="margin-top:12px"><button class="btn">＋ Follow · 22K</button><a class="btn gh" href="#gallery">Gallery posts</a></div></div></div><div style="height:16px"></div>
+P.credits=()=>{const a=titles[0].author;const w=titles.filter(t=>t.author===a);return `<div class="quote" style="grid-template-columns:110px minmax(0,1fr)"><div class="cover" style="aspect-ratio:1;border-radius:50%;background-image:url(${cover(w[0])})"></div><div><div class="eyebrow">Writer · ${w.length} works · <span class="vb">✓ VERIFIED</span></div><h1 class="h1">${a}</h1><div class="acts" style="margin-top:12px"><button class="btn">＋ Follow · 22K</button><a class="btn gh" href="#fanboard">Fanboard posts</a></div></div></div><div style="height:16px"></div>
  <div class="grid g12"><div class="c8">${panel('Works',moverTable(w,["name","plat","status","px","fan","d7"]))}</div><div class="c4">${panel('Track record <i>pro</i>',lock('Author track record',`<div class="kv" style="border-top:0"><div><span>Hit rate ≥75</span><b>${w.filter(t=>last(t)>=75).length}/${w.length}</b></div><div><span>Best score</span><b>${Math.max(...w.map(last)).toFixed(1)}</b></div><div><span>Total reach</span><b>${fmtN(w.reduce((a,t)=>a+t.views,0))}</b></div><div><span>Platforms</span><b>${new Set(w.map(t=>t.plat)).size}</b></div></div>`))}</div></div>`};
-P.profile=()=>`<div class="pagehead"><div><div class="eyebrow">Fan profile</div><h1 class="h1">lanternkeeper</h1><div class="meta" style="margin-top:6px">Joined 2026 · 312 ratings · 41 reviews · 1,204 posts</div></div>
- <div class="panel" style="padding:14px 18px;display:grid;gap:2px"><span class="eyebrow">Scout score</span><span style="font:800 36px var(--display);color:var(--mark)">1,840</span><span class="pill mk">Top 2% scout</span></div></div>
- <div class="grid g12"><div class="c8">${panel('Early calls <i>followed before the title started rising</i>',`<div class="tw"><table><thead><tr><th>Title</th><th>Called</th><th>Started rising</th><th class="r">Lead</th><th class="r">Since call</th><th class="r">Points</th></tr></thead><tbody>${titles.slice(3,8).map((t,i)=>`<tr data-go="title-${t.tk}"><td>${tname(t)}</td><td class="mono">06.0${i+1}</td><td class="mono">09.1${i}</td><td class="r mono">${108-i*17}d</td><td class="r">${chip(12+i*7.3)}</td><td class="r mono" style="color:var(--mark)">+${320-i*45}</td></tr>`).join("")}</tbody></table></div>`)}</div>
- <div class="c4">${panel('Lists',`<div class="pb" style="display:grid;gap:10px">${["Best slow-burn romance fantasy · 24","Completed & bingeable · 51","Murim for beginners · 12"].map(x=>`<div style="display:flex;justify-content:space-between"><span>${x.split(" · ")[0]}</span><span class="mono fl">${x.split(" · ")[1]}</span></div>`).join("")}</div>`)}</div></div>`;
-
 P.plans=()=>`<div class="pagehead"><div><div class="eyebrow">Plans</div><h1 class="h1">Free for fans. Pro for the people who make and buy IP.</h1><p class="sub">Pro plans unlock after your ownership or authority is verified by document review. Prices are placeholders.</p></div></div>
- <div class="grid g12">${[["Fan","Free","No verification",["Charts, indices, market map","Galleries & anonymous posting","Ratings, lists, wishlist","Scout reputation"],0],["Author","TBD","Author or title claim",["Creator dashboard","Compare any title at full depth","Genre whitespace & gaps","Verified badge & notices"],1],["Publisher","TBD","Publisher or title claim",["Scouting screener","Portfolio vs peers","Market structure (HHI)","Wishlist demand trends"],0],["IP investor","TBD","Authorized-entity documents (PE/VC, studio)",["IP dossier & valuation band","Revenue model & drivers","Fan demand signals","Watch alerts"],0]].map(p=>`<div class="c3"><section class="panel plan ${p[4]?'feat':''}"><span class="eyebrow">${p[0]}</span><span class="pr">${p[1]}${p[1]==='TBD'?'<small class="fl" style="font-size:14px"> /mo</small>':''}</span><span class="pill">${p[2]}</span><ul>${p[3].map(x=>`<li>${x}</li>`).join("")}</ul><a class="btn ${p[1]==='Free'?'gh':''}" href="${p[1]==='Free'?'#market':'#verify'}">${p[1]==='Free'?'Start browsing':'Start verification'}</a></section></div>`).join("")}</div>`;
-P.verify=()=>`<div class="pagehead"><div><div class="eyebrow">Verification</div><h1 class="h1">Verify your claim</h1></div><div class="steps"><span class="done">Persona</span><span class="done">Entity</span><span class="on">Documents</span><span>Review</span><span>Plan</span></div></div>
- <div class="grid g12"><div class="c7">${panel('Claim · Publisher',`<div class="pb" style="display:grid;gap:14px"><div class="field"><label>Matched entity</label><div class="input" style="color:var(--text)">Studio Nara · 14 titles on 3 platforms</div></div><div class="field"><label>Your role</label><div class="input" style="color:var(--text)">Head of licensing</div></div>
- <div class="drop"><b style="color:var(--text)">Drop documents here</b><span>Business registration · licensing contract · authorization letter</span><span class="ip">PDF, PNG, JPG · up to 10 MB each</span></div>
- <div class="acts" style="justify-content:space-between"><span class="ip">Only Plotline reviewers can see your documents. They are never published.</span><div class="acts"><button class="btn gh">Back</button><button class="btn">Submit for review</button></div></div></div>`)}</div>
- <div class="c5">${panel('Accepted evidence',`<div class="tw"><table><tbody>${[["Author","Platform contract, dashboard screenshot showing account ID, publisher letter"],["Publisher","Business registration, plus a licensing contract or platform partner agreement"],["IP investor","Fund or company registration, authorization letter, PE/VC mandate"]].map(r=>`<tr style="cursor:default"><td style="font-weight:600;vertical-align:top">${r[0]}</td><td style="white-space:normal;color:var(--text-2)">${r[1]}</td></tr>`).join("")}</tbody></table></div>`)}</div></div>`;
+ <div class="grid g12">${[["Fan","Free","No verification",["Charts, indices, market map","Fanboards & anonymous posting","Ratings, lists, wishlist","Scout reputation"],0],["Author","TBD","Author or title claim",["Creator dashboard","Compare any title at full depth","Genre whitespace & gaps","Verified badge & notices"],1],["Publisher","TBD","Publisher or title claim",["Scouting screener","Portfolio vs peers","Market structure (HHI)","Wishlist demand trends"],0],["IP investor","TBD","Authorized-entity documents (PE/VC, studio)",["IP dossier & valuation band","Revenue model & drivers","Fan demand signals","Watch alerts"],0]].map(p=>`<div class="c3"><section class="panel plan ${p[4]?'feat':''}"><span class="eyebrow">${p[0]}</span><span class="pr">${p[1]}${p[1]==='TBD'?'<small class="fl" style="font-size:14px"> /mo</small>':''}</span><span class="pill">${p[2]}</span><ul>${p[3].map(x=>`<li>${x}</li>`).join("")}</ul><a class="btn ${p[1]==='Free'?'gh':''}" href="${p[1]==='Free'?'#market':'#verify'}">${p[1]==='Free'?'Start browsing':'Start verification'}</a></section></div>`).join("")}</div>`;
 P.dashboard=()=>{const w=titles.filter(t=>t.author===titles[0].author);const t=w[0];return `<div class="pagehead"><div><div class="eyebrow">Creator dashboard · ${t.author}</div><h1 class="h1">Your titles</h1></div><div class="acts"><span class="pill ok">✓ Verified author</span><a class="btn gh" href="#compare">Compare</a></div></div>
- <div class="idx">${w.map(x=>`<a class="ic" href="#title-${x.tk}"><span class="code"><span>${x.tk}</span><span class="fl">#${x.rank}</span></span><span class="v">${last(x).toFixed(1)}</span><span class="d ${cls(x.d1)}">${sgn(x.d1)}</span>${spark(x.s,160,36)}</a>`).join("")}<div class="ic"><span class="code"><span>FAN ★</span></span><span class="v">${t.fan}</span><span class="d up">▲ 0.1 30D</span></div><div class="ic"><span class="code"><span>GALLERY</span></span><span class="v">${fmtN(t.act)}/d</span><span class="d up">▲ 18% 30D</span></div></div><div style="height:14px"></div>
+ <div class="idx">${w.map(x=>`<a class="ic" href="#title-${x.tk}"><span class="code"><span>${x.tk}</span><span class="fl">#${x.rank}</span></span><span class="v">${last(x).toFixed(1)}</span><span class="d ${cls(x.d1)}">${sgn(x.d1)}</span>${spark(x.s,160,36)}</a>`).join("")}<div class="ic"><span class="code"><span>FAN ★</span></span><span class="v">${t.fan}</span><span class="d up">▲ 0.1 30D</span></div><div class="ic"><span class="code"><span>FANBOARD</span></span><span class="v">${fmtN(t.act)}/d</span><span class="d up">▲ 18% 30D</span></div></div><div style="height:14px"></div>
  <div class="grid g12"><div class="c8">${panel(`${t.tk} · PlotScore vs genre index`,`<div class="pb">${lineChart(t.s,{id:"dc"})}</div>`)}</div>
  <div class="c4 grid">${panel('Engagement decay <i>likes per episode</i>',`<div class="pb">${spark([30,26,22,20,19,18,18,17,17,16,16,17],300,70,"var(--mark)")}<div class="bl" style="margin-top:8px"><span class="fl">Decay ep1→now</span><span>43% <span class="fl">(genre 55%)</span></span></div></div>`)}
  ${panel('Cadence',`<div class="pb breadth"><div class="bl"><span class="fl">You</span><span>${t.cad}/wk</span></div><div class="bl"><span class="fl">${t.gname} median</span><span>1.0/wk</span></div><div class="bl"><span class="fl">Top decile</span><span>1.4/wk</span></div></div>`)}</div>
@@ -497,28 +535,21 @@ P.portfolio=()=>{const pub=titles[0].pub;const l=titles.filter(t=>t.pub===pub);c
 P.dossier=()=>{const t=titles[0];const a=t.views*.00003*12;return `<div class="quote"><div class="cover" style="background-image:url(${cover(t)})"></div><div><div class="eyebrow">IP dossier · canonical IP · 3 platforms · novel + comic</div><h1 class="h1">${esc(t.name)}</h1><div class="price"><span class="big">${last(t).toFixed(1)}</span><span class="d ${cls(t.d30)}">${sgn(t.d30)} 1M</span></div><div class="acts" style="margin-top:12px"><button class="btn">Watch</button><button class="btn gh">Export</button></div></div></div><div style="height:16px"></div>
  ${lock('Investor IP dossier',`<div class="grid g12"><div class="c7">${panel('Valuation band <i>revenue-multiple model</i>',`<div class="pb"><div class="band"><div class="rail"></div><div class="rng" style="left:14%;right:30%"></div><div class="mid" style="left:36%"></div></div><div class="bl"><span class="mono">$${fmtN(Math.round(a*.4*3))}</span><span class="mono" style="color:var(--mark)">$${fmtN(Math.round(a*5))}</span><span class="mono">$${fmtN(Math.round(a*2.5*8))}</span></div><p class="sub">Annual revenue (model) × base multiple (placeholder) × adjustment, clamped to 0.5–2.0. No public dataset of story-IP deal multiples is assumed.</p></div>
  <div class="tw"><table><thead><tr><th>Driver</th><th>Value</th><th class="r">Effect</th></tr></thead><tbody><tr><td>Annual revenue (model)</td><td class="mono">$${fmtN(Math.round(a*.4))}–${fmtN(Math.round(a*2.5))}</td><td class="r">base</td></tr><tr><td>Momentum percentile</td><td class="mono">87</td><td class="r up">+0.19</td></tr><tr><td>Status</td><td>${t.status}</td><td class="r fl">0</td></tr><tr><td>Cross-platform reach</td><td class="mono">3 platforms</td><td class="r up">+0.11</td></tr></tbody></table></div>`,'<span class="pill mk">is_model</span>')}</div>
- <div class="c5 grid">${panel('Demand signals',`<div class="kv" style="border-top:0"><div><span>Fan rating</span><b>${t.fan}</b></div><div><span>Wishlist</span><b>${fmtN(t.wish)}</b></div><div><span>Gallery 30D</span><b class="up">▲ 18%</b></div><div><span>Scout lead</span><b>74d</b></div></div><div class="pb">${spark(t.s,400,60,"var(--mark)")}</div>`)}
+ <div class="c5 grid">${panel('Demand signals',`<div class="kv" style="border-top:0"><div><span>Fan rating</span><b>${t.fan}</b></div><div><span>Wishlist</span><b>${fmtN(t.wish)}</b></div><div><span>Fanboard 30D</span><b class="up">▲ 18%</b></div><div><span>Scout lead</span><b>74d</b></div></div><div class="pb">${spark(t.s,400,60,"var(--mark)")}</div>`)}
  ${panel('Comparable deals',`<div class="pb"><p class="sub" style="margin:0">No deal data yet. rel_contract is schema-only (star_schema.py:206) and loads data/manual/contracts.csv only if that file exists.</p></div>`)}</div></div>`)}`};
-P.claims=()=>`<div class="pagehead"><div><div class="eyebrow">Admin</div><h1 class="h1">Claim review</h1></div><div class="tabs"><button aria-pressed="true">Pending 12</button><button aria-pressed="false">Approved</button><button aria-pressed="false">Rejected</button><button aria-pressed="false">Revoked</button></div></div>
- <div class="grid g12"><div class="c7">${panel('Queue',`<div class="tw"><table><thead><tr><th>Submitted</th><th>User</th><th>Type</th><th>Entity</th><th class="r">Docs</th><th>Age</th></tr></thead><tbody>${[["09.23","j.park@","Publisher","Studio Nara",3,"1d"],["09.22","hseo@","Author","H. Seo",2,"2d"],["09.21","m.chen@","Investor","Lumen Story Partners",4,"3d"],["09.20","r.okafor@","Author","R. Okafor",1,"4d"]].map((r,i)=>`<tr${i===0?' style="background:var(--raised)"':''}><td class="mono">${r[0]}</td><td>${r[1]}</td><td><span class="pill ${r[2]==='Investor'?'mk':''}">${r[2]}</span></td><td style="font-weight:600">${r[3]}</td><td class="r mono">${r[4]}</td><td class="mono ${parseInt(r[5])>2?'':'fl'}" style="${parseInt(r[5])>2?'color:var(--warn)':''}">${r[5]}</td></tr>`).join("")}</tbody></table></div>`)}</div>
- <div class="c5">${panel('Studio Nara · publisher claim',`<div class="pb" style="display:grid;gap:12px"><div class="drop" style="padding:40px"><b style="color:var(--text)">business_registration.pdf</b><span class="ip">1 of 3 · admin-only download</span></div><div class="input area">Review note (sent to the user if rejected)</div><div class="acts"><button class="btn">Approve</button><button class="btn gh">Reject</button><button class="btn gh">Request more</button></div></div>`)}</div></div>`;
-P.moderation=()=>`<div class="pagehead"><div><div class="eyebrow">Admin</div><h1 class="h1">Moderation</h1></div></div>
- ${panel('Reports',`<div class="tw"><table><thead><tr><th>Target</th><th>Gallery</th><th>Reason</th><th class="r">Reports</th><th>Writer</th><th></th></tr></thead><tbody>${[["Post 23140 “leak link inside”","ASH","Piracy link",14,"ㅇㅇ","39.7"],["Comment on 23102","ROMFAN","Harassment",6,"ㅇㅇ","221.150"],["Post 23011 “spoilers in title”","BL","Spoiler",3,"blossom",null]].map(r=>`<tr style="cursor:default"><td style="font-weight:600">${r[0]}</td><td>${r[1]}</td><td><span class="pill ${r[3]>10?'up':''}">${r[2]}</span></td><td class="r mono">${r[3]}</td><td><span class="nick">${r[4]}</span>${r[5]?` <span class="ip">(${r[5]})</span>`:''}</td><td><div class="acts"><button class="btn sm">Remove</button><button class="btn gh sm">Ban IP hash</button></div></td></tr>`).join("")}</tbody></table></div>`)}
- <p class="sub">Bans apply to a salted hash of the IP. The raw IP is never stored.</p>`;
-
 /* ============ routing, nav, spec ============ */
 const ROUTES=[
- ["market","Market","m"],["sectors","Sectors","m"],["publishers","Publishers","m"],["listings","New listings","m"],["gallery","Galleries","c"],["wishlist","Wishlist","c"],
+ ["market","Market","m"],["sectors","Sectors","m"],["publishers","Publishers","m"],["listings","New listings","m"],["fanboards","Fanboards","c"],["wishlist","Wishlist","c"],
  ["title","Title","h"],["post","Post","h"],["episode","Episode","h"],["credits","Credits","h"],["profile","Profile","c"],
  ["plans","Plans","p"],["verify","Verify","c"],["dashboard","Dashboard","p"],["compare","Compare","p"],["screener","Screener","p"],["portfolio","Portfolio","p"],["dossier","Dossier","p"],
  ["claims","Claims","a"],["moderation","Moderation","a"]];
 const SPEC={
  market:["Market overview (home)","The daily market read: index strip, new-listings banner, a Finviz-style map, breadth, gainers and losers, and fan volume.","Fan activity shows up as market 'volume', which makes it visible and gives fans a reason to post.",[["Genre / composite index","new","agg_genre_daily"],["Breadth","new","fact_title_daily.rank"],["New listings","new","dim_title.first_seen"],["PlotScore, 1D Δ","✔","fact_score"],["Fan volume","new","community + fan"]],"market, community, fan"],
- sectors:["Sectors","A board for each genre index, like Naver's theme pages.","Genre galleries sit alongside each index.",[["Genre index","new","agg_genre_daily"],["HHI","✔ label","kpi_layers._genre"]],"market"],
- publishers:["Publisher board","Share of reach and slate performance for each publisher.","Verified publishers post notices in their titles' galleries.",[["Reach share","✔","kpi_layers._publisher"],["Slate index","new","derived"]],"market"],
- title:["Title quote page","The IMDb title page combined with a stock quote page.","Follow, Rate, Wish and Gallery each write a fan signal. The locked panels turn fans into leads.",[["PlotScore","✔","plotscore.py"],["Fan rating","new","fan"],["Valuation band","🔒","valuation (new)"],["Revenue band","🔒","earnings.py"]],"market, fan, community, kpi"],
+ sectors:["Sectors","A board for each genre index, like Naver's theme pages.","Genre fanboards sit alongside each index.",[["Genre index","new","agg_genre_daily"],["HHI","✔ label","kpi_layers._genre"]],"market"],
+ publishers:["Publisher board","Share of reach and slate performance for each publisher.","Verified publishers post notices in their titles' fanboards.",[["Reach share","✔","kpi_layers._publisher"],["Slate index","new","derived"]],"market"],
+ title:["Title quote page","The IMDb title page combined with a stock quote page.","Follow, Rate, Wish and Fanboard each write a fan signal. The locked panels turn fans into leads.",[["PlotScore","✔","plotscore.py"],["Fan rating","new","fan"],["Valuation band","🔒","valuation (new)"],["Revenue band","🔒","earnings.py"]],"market, fan, community, kpi"],
  listings:["IPO calendar","Titles listed when the scraper first sees them.","Watchers on new titles feed scout points.",[["first_seen","✔","dim_title"],["Since listing %","new","fact_score"]],"market, fan"],
- gallery:["Gallery board","DCInside-style board with a concept tab, guest posts and verified badges.","Low-friction posting. Verified authors draw fans back.",[["Gallery activity","new","community"]],"community, identity"],
+ fanboard:["Fanboard board","DCInside-style board with a concept tab, guest posts and verified badges.","Low-friction posting. Verified authors draw fans back.",[["Fanboard activity","new","community"]],"community, identity"],
  post:["Post","Post detail with votes, report and replies.","An author reply is the highest-value moment for fans.",[["Votes","new","community"]],"community"],
  episode:["Episode thread","Created automatically on episode.released.","A daily habit, producing episode-level reactions.",[["Episode reactions","new","community"]],"community, events"],
  wishlist:["Adaptation wishlist","Votes by medium.","The most direct demand signal for publishers and investors.",[["Wishlist votes","new","fan"]],"fan"],
@@ -526,13 +557,13 @@ const SPEC={
  profile:["Fan profile","Scout score and early calls.","Rewards early discovery, producing a leading indicator (hypothesis).",[["Scout lead time","new","fan.ScoutRule"]],"fan"],
  plans:["Plans","Persona plans. Verification comes before payment.","Destination of the locked panels.",[],"entitlement, billing"],
  verify:["Verification","Manual document review.","An approved claim switches on the verified badge.",[],"verification, entitlement"],
- dashboard:["Creator dashboard","Own titles at full depth, with genre benchmarks.","Gallery signals motivate authors to engage.",[["Engagement decay","🔒","unit_stats.py:52-60"],["Cadence","🔒","episode_analytics.py:57"],["HHI / whitespace","🔒","kpi_layers._genre"]],"market, fan, kpi"],
+ dashboard:["Creator dashboard","Own titles at full depth, with genre benchmarks.","Fanboard signals motivate authors to engage.",[["Engagement decay","🔒","unit_stats.py:52-60"],["Cadence","🔒","episode_analytics.py:57"],["HHI / whitespace","🔒","kpi_layers._genre"]],"market, fan, kpi"],
  compare:["Compare","Any titles at full depth.","Fan rows are data only Plotline has.",[["PlotScore components","🔒","plotscore.py:36"]],"market, fan, kpi"],
  screener:["Scouting screener","Finviz-style filters over readiness, wishlist and momentum.","Wishlist demand drives the screen.",[["Readiness","🔒","template.html:614"],["Wishlist trend","🔒","fan"]],"market, fan, kpi"],
  portfolio:["Portfolio","Publisher slate index and titles.","Publishers post notices to fans.",[["Slate rollup","🔒","kpi_layers._publisher"]],"market, verification"],
  dossier:["IP dossier","Valuation, drivers, demand and comparable deals.","Demand signals set this apart from scraped-only tools.",[["Valuation","🔒 model","valuation"],["Comparable deals","🔒 empty","star_schema.py:206"]],"valuation, market, fan"],
  claims:["Claim review","The review queue.","claim.approved switches on entitlement and the badge.",[],"verification"],
- moderation:["Moderation","Reports and bans by hashed IP.","Healthy galleries keep fans coming back.",[],"community"]};
+ moderation:["Moderation","Reports and bans by hashed IP.","Healthy fanboards keep fans coming back.",[],"community"]};
 const STATE={persona:"fan",route:"market",spec:false};
 const $=id=>document.getElementById(id);
 function navFor(){const p=STATE.persona;const show=r=>r[2]==="m"||r[2]==="c"||(r[2]==="p"&&p!=="admin")||(r[2]==="a"&&p==="admin");
@@ -567,16 +598,46 @@ setInterval(tick,2600);
 
 
 
-/* ================= LIVE LAYER: shared community data through the artifact db ================= */
+/* ================= LIVE LAYER: shared community data through the artifact db =================
+   Sections, in order:  CONFIG · THEME · DATA (boot, subscriptions) · RENDER · ACTIONS (writes)
+   · DERIVE (memoized views) · IDENTITY · HOOKS (used by market/title pages) · SCREENS (one per route)
+   · ROUTING · WIRING · START.  Add a screen with SCREENS.register(route, render, wire?).
+   Guide: docs/product/frontend-guide.md
+   ============================================================================================= */
+/* ---------- CONFIG ---------- */
 const CONCEPT = {up: 3, ratio: 0.8};      // lowered for a small review audience (product default: 10 / 0.8)
 const PRIOR = {m: 7, c: 20};              // same as config/policy/app.yaml (fan.rating_prior_*)
 const MEDIA = ["anime", "drama", "film", "game"];
 const COLLS = ["posts", "comments", "votes", "ratings", "wishes", "follows", "reports", "claims"];
 const LIVE = {db: null, user: null, uid: null, admin: false, writable: null, status: "connecting", ver: 0,
   data: Object.fromEntries(COLLS.map(c => [c, {}])), mine: {}, mod: {hidden: {}, approved: {}, rejected: {}}, seed: []};
-STATE.arg = null; STATE.tab = "all"; STATE.medium = "anime"; STATE.claimTab = "pending";
+STATE.arg = null; STATE.tab = "all"; STATE.medium = "anime"; STATE.claimTab = "pending"; STATE.compose = false;
 
-/* ---------- boot ---------- */
+/* ---------- THEME: saved choice → viewer's data-theme → OS preference ---------- */
+const THEME_KEY = "plt-theme";
+function initialTheme() {
+  try { const t = localStorage.getItem(THEME_KEY); if (t === "light" || t === "dark") return t; } catch (e) {}
+  const host = document.documentElement.getAttribute("data-theme");
+  if (host === "light" || host === "dark") return host;
+  return matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-pl-theme", t);
+  const b = document.getElementById("themeBtn");
+  if (b) { b.textContent = t === "dark" ? "☀ LIGHT" : "☾ DARK"; b.setAttribute("aria-label", `Switch to ${t === "dark" ? "light" : "dark"} theme`); }
+}
+applyTheme(initialTheme());
+function toggleTheme() {
+  const t = document.documentElement.getAttribute("data-pl-theme") === "dark" ? "light" : "dark";
+  applyTheme(t); try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+  if (document.getElementById("tm")) rerender();   // heat-map colours are computed from tokens at render
+}
+
+/* ---------- SCREENS registry: P[route] renders HTML, WIRES[route] attaches handlers ---------- */
+const WIRES = {};
+const SCREENS = { register(route, render, wire) { P[route] = render; if (wire) WIRES[route] = wire; } };
+
+/* ---------- DATA: boot + subscriptions ---------- */
 (async () => {
   const C = window.claude;
   if (!C || !C.use) { LIVE.status = "offline"; rerender(); return; }
@@ -613,7 +674,7 @@ function schedule() {
 document.addEventListener("focusout", () => setTimeout(() => { if (deferred && !typing()) { deferred = false; rerender(); } }, 0));
 function rerender() { const y = window.scrollY; renderView(); window.scrollTo(0, y); }
 
-/* ---------- writes (each viewer writes only their own document) ---------- */
+/* ---------- ACTIONS: writes (each viewer writes only their own document) ---------- */
 const queues = {};
 function mine(c) { return LIVE.mine[c] || LIVE.data[c][LIVE.uid] || {}; }
 function canWrite() { return !!(LIVE.db && LIVE.uid && LIVE.writable !== false); }
@@ -646,7 +707,7 @@ function toast(msg) {
 }
 const rid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
-/* ---------- derived views (memoized per data version) ---------- */
+/* ---------- DERIVE: memoized views (recomputed once per data version) ---------- */
 const memo = {};
 function M(key, fn) { if (memo[key] && memo[key].v === LIVE.ver) return memo[key].x; const x = fn(); memo[key] = {v: LIVE.ver, x}; return x; }
 function flat(c) { const out = []; for (const [uid, d] of Object.entries(LIVE.data[c])) (d.items || []).forEach(x => out.push({...x, uid})); if (LIVE.uid && LIVE.mine[c]) { for (let i = out.length - 1; i >= 0; i--) if (out[i].uid === LIVE.uid) out.splice(i, 1); (LIVE.mine[c].items || []).forEach(x => out.push({...x, uid: LIVE.uid})); } return out; }
@@ -673,7 +734,7 @@ const followCounts = () => M("follows", () => { const m = {}; for (const d of Ob
 const activity = () => M("activity", () => { const since = Date.now() - 864e5, m = {}, byPost = {}; allPosts().forEach(p => { byPost[p.id] = p.tk; if (p.at > since) m[p.tk] = (m[p.tk] || 0) + 1; }); allComments().forEach(c => { const tk = byPost[c.postId]; if (tk && c.at > since) m[tk] = (m[tk] || 0) + 1; }); return m; });
 const reportQueue = () => M("reports", () => { const m = {}; for (const [uid, d] of Object.entries(docsOf("reports"))) for (const [id, r] of Object.entries(d.r || {})) { if (LIVE.mod.hidden[id]) continue; const x = m[id] || (m[id] = {id, n: 0, reasons: {}}); x.n++; x.reasons[r.reason] = (x.reasons[r.reason] || 0) + 1; } return Object.values(m).sort((a, b) => b.n - a.n); });
 
-/* ---------- identity display ---------- */
+/* ---------- IDENTITY display ---------- */
 function tag(uid) { let h = 0; for (const ch of uid || "") h = (h * 31 + ch.charCodeAt(0)) >>> 0; return `${h % 223 + 1}.${(h >> 8) % 255}`; }
 function who(x, t) {
   if (x.seed) return `<span class="nick">${esc(x.nick || "ㅇㅇ")}</span> <span class="pill" style="padding:1px 6px">sample</span>`;
@@ -695,23 +756,23 @@ function liveBadge() {
   return `<span class="pill ${m[0]}">${m[1]}</span>`;
 }
 function readOnlyNote() { return canWrite() ? "" : `<p class="sub">${LIVE.status === "live" ? "You can read this demo. Posting needs Contributor access from the owner." : "Live data loads inside the Claude artifact viewer. Here you see sample data only."}</p>`; }
-function galleryName(ref) { return ref === "LOUNGE" ? "Lounge (free board)" : (byTk[ref] ? byTk[ref].name : ref); }
+function boardName(ref) { return ref === "LOUNGE" ? "Lounge (free board)" : (byTk[ref] ? byTk[ref].name : ref); }
 
-/* ---------- hooks used by the market + title pages ---------- */
+/* ---------- HOOKS used by the market + title pages ---------- */
 function liveHot() {
   const hot = allPosts().filter(isConcept).slice(0, 4);
   const list = hot.length ? hot : allPosts().slice(0, 4);
-  if (!list.length) return `<div class="pb"><p class="sub" style="margin:0">No posts yet. <a href="#gallery-LOUNGE" style="color:var(--mark)">Start the first thread</a>.</p></div>`;
-  return `<div class="pb" style="display:grid;gap:12px">${list.map(p => { const v = votesFor(p), n = allComments().filter(c => c.postId === p.id).length; return `<a href="#post-${p.id}" style="display:grid;gap:2px"><span class="eyebrow">${esc(p.tk)} gallery ${isConcept(p) ? '· <span style="color:var(--mark)">★ concept</span>' : ""}</span><span style="font-weight:600">${esc(p.title)}</span><span class="ip">▲ ${v.up} · ${n} comments · ${ago(p.at)}</span></a>`; }).join("")}</div>`;
+  if (!list.length) return `<div class="pb"><p class="sub" style="margin:0">No posts yet. <a href="#fanboard-LOUNGE" style="color:var(--mark)">Start the first thread</a>.</p></div>`;
+  return `<div class="pb" style="display:grid;gap:12px">${list.map(p => { const v = votesFor(p), n = allComments().filter(c => c.postId === p.id).length; return `<a href="#post-${p.id}" style="display:grid;gap:2px"><span class="eyebrow">${esc(p.tk)} fanboard ${isConcept(p) ? '· <span style="color:var(--mark)">★ concept</span>' : ""}</span><span style="font-weight:600">${esc(p.title)}</span><span class="ip">▲ ${v.up} · ${n} comments · ${ago(p.at)}</span></a>`; }).join("")}</div>`;
 }
 function liveDiscussed() {
   const act = activity(), rows = Object.entries(act).filter(([tk]) => byTk[tk]).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  if (!rows.length) return `<div class="pb"><p class="sub" style="margin:0">Counts posts and comments in the last 24 hours. Nothing yet. Open any title's gallery to add some.</p></div>`;
-  return `<div class="tw"><table><thead><tr><th>Title</th><th class="r">Posts + comments 24h</th><th class="r">1D</th></tr></thead><tbody>${rows.map(([tk, n]) => `<tr data-go="gallery-${tk}"><td>${tname(byTk[tk])}</td><td class="r mono">${n}</td><td class="r">${chip(byTk[tk].d1)}</td></tr>`).join("")}</tbody></table></div>`;
+  if (!rows.length) return `<div class="pb"><p class="sub" style="margin:0">Counts posts and comments in the last 24 hours. Nothing yet. Open any title's fanboard to add some.</p></div>`;
+  return `<div class="tw"><table><thead><tr><th>Title</th><th class="r">Posts + comments 24h</th><th class="r">1D</th></tr></thead><tbody>${rows.map(([tk, n]) => `<tr data-go="fanboard-${tk}"><td>${tname(byTk[tk])}</td><td class="r mono">${n}</td><td class="r">${chip(byTk[tk].d1)}</td></tr>`).join("")}</tbody></table></div>`;
 }
 function liveTitleActions(t) {
   const f = !!(mine("follows").f || {})[t.tk], fc = followCounts()[t.tk] || 0, n = activity()[t.tk] || 0;
-  return `<div class="acts" style="margin-top:14px"><button class="btn ${f ? "gh" : ""}" data-act="follow" data-tk="${t.tk}">${f ? "✓ Following" : "＋ Follow"} · ${fc}</button><button class="btn gh" data-act="goto" data-id="rate">★ Rate</button><button class="btn gh" data-act="goto" data-id="wish">✦ Wish adaptation</button><a class="btn gh" href="#gallery-${t.tk}">Gallery · ${n} today</a></div>`;
+  return `<div class="acts" style="margin-top:14px"><button class="btn ${f ? "gh" : ""}" data-act="follow" data-tk="${t.tk}">${f ? "✓ Following" : "＋ Follow"} · ${fc}</button><button class="btn gh" data-act="goto" data-id="rate">★ Rate</button><button class="btn gh" data-act="goto" data-id="wish">✦ Wish adaptation</button><a class="btn gh" href="#fanboard-${t.tk}">Fanboard · ${n} today</a></div>`;
 }
 function liveRatingPanel(t) {
   const r = ratingFor(t), my = (mine("ratings").r || {})[t.tk], w = wishCounts(), myW = mine("wishes").w || {};
@@ -726,52 +787,71 @@ function liveRatingPanel(t) {
       <div class="acts"><button class="btn sm" type="submit">${my ? "Update rating" : "Save rating"}</button>${my ? `<span class="ip">Your score: ${my.score}</span>` : ""}</div>
     </form></div>`) + panel("Adaptation wishlist", `<div class="pb acts" id="wish">${MEDIA.map(m => { const k = t.tk + "|" + m, on = !!myW[k]; return `<button class="btn sm ${on ? "" : "gh"}" data-act="wish" data-k="${k}">${on ? "✓ " : "✦ "}${m} · ${w[k] || 0}</button>`; }).join("")}</div>`);
 }
-function liveGalleryPanel(t) {
+function liveFanboardPanel(t) {
   const ps = allPosts().filter(p => p.tk === t.tk).slice(0, 5), rv = reviewsFor(t).slice(0, 3);
-  return `<div class="c7">${panel(`From the gallery ${liveBadge()}`, ps.length ? postTable(ps, t) : `<div class="pb"><p class="sub" style="margin:0">No posts yet.</p></div>`, `<a class="pill" href="#gallery-${t.tk}">Open gallery →</a>`)}</div>
+  return `<div class="c7">${panel(`From the fanboard ${liveBadge()}`, ps.length ? postTable(ps, t) : `<div class="pb"><p class="sub" style="margin:0">No posts yet.</p></div>`, `<a class="pill" href="#fanboard-${t.tk}">Open fanboard →</a>`)}</div>
    <div class="c5">${panel("Reviews", rv.length ? `<div class="pb" style="padding-top:0">${rv.map(r => `<div class="cmt"><div class="meta">${who({uid: r.uid}, t)} · <b style="color:var(--mark)">${r.score}/10</b> · ${ago(r.at)}${r.owner ? " · excluded (owner)" : ""}</div>${esc(r.review)}</div>`).join("")}</div>` : `<div class="pb"><p class="sub" style="margin:0">No written reviews yet.</p></div>`)}</div>`;
 }
 
-/* ---------- gallery ---------- */
-function postTable(ps, t) {
+/* ---------- SCREENS: fanboards (compact, one line per post) ---------- */
+function postTable(ps, t, opts = {}) {
   const cc = {}; allComments().forEach(c => cc[c.postId] = (cc[c.postId] || 0) + 1);
-  return `<div class="tw"><table><thead><tr><th>Title</th><th>Writer</th><th>When</th><th class="r">▲</th></tr></thead><tbody>${ps.map(p => { const v = votesFor(p), c = isConcept(p); return `<tr data-go="post-${p.id}" class="${c ? "concept" : ""}"><td style="white-space:normal;min-width:200px">${c ? '<span class="pill mk" style="margin-right:6px">★ concept</span>' : ""}${esc(p.title)} <span class="ip">[${cc[p.id] || 0}]</span></td><td>${who(p, t || byTk[p.tk])}</td><td class="mono fl">${ago(p.at)}</td><td class="r mono">${v.up}</td></tr>`; }).join("")}</tbody></table></div>`;
+  const total = opts.numberFrom || ps.length;
+  const rows = ps.map((p, i) => {
+    const v = votesFor(p), c = isConcept(p);
+    const no = p.notice ? "공지" : String(total - i);
+    return `<tr data-go="post-${p.id}" class="${p.notice ? "notice" : c ? "concept" : ""}">
+      <td class="c-no">${no}</td>
+      <td class="c-ttl" title="${esc(p.title)}">${c && !p.notice ? '<span class="star">★</span>' : ""}${p.notice ? "📌 " : ""}${esc(p.title)}<span class="cc">[${cc[p.id] || 0}]</span>${opts.showBoard ? ` <span class="ip">${esc(p.tk)}</span>` : ""}</td>
+      <td class="c-w">${who(p, t || byTk[p.tk])}</td>
+      <td class="c-t">${ago(p.at)}</td>
+      <td class="c-v">${v.up}</td></tr>`;
+  }).join("");
+  return `<div class="tw"><table class="board"><thead><tr><th class="c-no">No.</th><th>Title</th><th class="c-w">Writer</th><th class="c-t">Time</th><th class="c-v">▲</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function composer(kind, extra = "") {
-  const nick = `<label class="chk"><input type="checkbox" id="${kind}-anon"> Post anonymously as</label><input id="${kind}-nick" class="in" maxlength="20" value="ㅇㅇ" style="max-width:120px">`;
-  if (kind === "post") return `<form id="postform" style="display:grid;gap:8px">${extra}<input id="post-title" class="in" maxlength="120" placeholder="Title" required><textarea id="post-body" class="ta" rows="4" maxlength="4000" placeholder="Say something about it" required></textarea><div class="acts">${nick}<button class="btn sm" type="submit" style="margin-left:auto">Post</button></div></form>`;
+  const nick = `<label class="chk"><input type="checkbox" id="${kind}-anon"> Post anonymously as</label><input id="${kind}-nick" class="in" maxlength="20" value="ㅇㅇ" style="max-width:110px;height:30px">`;
+  if (kind === "post") return `<form id="postform" class="composer">${extra}<input id="post-title" class="in" maxlength="120" placeholder="Title" required><textarea id="post-body" class="ta" rows="4" maxlength="4000" placeholder="Say something about it" required></textarea><div class="acts">${nick}${LIVE.admin ? '<label class="chk"><input type="checkbox" id="post-notice"> Pin as notice</label>' : ""}<button class="btn gh sm" type="button" data-act="compose" style="margin-left:auto">Cancel</button><button class="btn sm" type="submit">Post</button></div></form>`;
   return `<form id="cform" style="display:grid;gap:8px">${extra}<textarea id="c-body" class="ta" rows="2" maxlength="2000" placeholder="Write a comment" required></textarea><div class="acts">${nick}<button class="btn sm" type="submit" style="margin-left:auto">Comment</button></div></form>`;
 }
-P.gallery = () => {
+function sortBoard(ps) { return [...ps.filter(p => p.notice), ...ps.filter(p => !p.notice)]; }
+P.fanboard = () => {
   const ref = STATE.arg;
   if (!ref) {
     const counts = {}; allPosts().forEach(p => counts[p.tk] = (counts[p.tk] || 0) + 1);
     const rows = [["LOUNGE", counts.LOUNGE || 0], ...titles.map(t => [t.tk, counts[t.tk] || 0])].sort((a, b) => b[1] - a[1]).slice(0, 24);
-    return `<div class="pagehead"><div><div class="eyebrow">Galleries ${liveBadge()}</div><h1 class="h1">Galleries</h1><p class="sub">One board per title plus a free Lounge. Posts, comments and votes here are shared with everyone who opens this demo.</p></div></div>
-    ${panel("Boards by activity", `<div class="tw"><table><thead><tr><th>Board</th><th class="r">Posts</th></tr></thead><tbody>${rows.map(([k, n]) => `<tr data-go="gallery-${k}"><td>${k === "LOUNGE" ? '<b>Lounge</b> <span class="ip">free board</span>' : tname(byTk[k])}</td><td class="r mono">${n}</td></tr>`).join("")}</tbody></table></div>`)}`;
+    return `<div class="pagehead"><div><div class="eyebrow">Fanboards ${liveBadge()}</div><h1 class="h1">Fanboards</h1><p class="sub">One fanboard per title plus the free Lounge. Posts, comments and votes are shared with everyone who opens this demo.</p></div></div>
+    <div class="grid g12"><div class="c5">${panel("Boards by activity", `<div class="tw"><table class="board"><thead><tr><th>Board</th><th class="c-v">Posts</th></tr></thead><tbody>${rows.map(([k, n]) => `<tr data-go="fanboard-${k}"><td class="c-ttl">${k === "LOUNGE" ? "<b>Lounge</b> <span class=\"ip\">free board</span>" : `${esc(byTk[k].name)} <span class="ip">${k}</span>`}</td><td class="c-v">${n}</td></tr>`).join("")}</tbody></table></div>`)}</div>
+    <div class="c7">${panel("Latest across all fanboards", allPosts().length ? postTable(allPosts().slice(0, 20), null, {showBoard: true}) : `<div class="pb"><p class="sub" style="margin:0">No posts yet.</p></div>`)}</div></div>`;
   }
-  const t = byTk[ref];
-  let ps = allPosts().filter(p => p.tk === ref); if (STATE.tab === "concept") ps = ps.filter(isConcept);
-  return `<div class="pagehead"><div><div class="eyebrow">Gallery · ${esc(ref)} ${liveBadge()}</div><h1 class="h1">${esc(galleryName(ref))}</h1><div class="meta" style="margin-top:6px">${allPosts().filter(p => p.tk === ref).length} posts · ★ concept at ▲${CONCEPT.up}+ and ≥${CONCEPT.ratio * 100}% up${t ? ` · <a href="#title-${ref}">Title page</a>` : ""}</div></div></div>
-  <div class="grid g12"><div class="c8">${panel("Posts", ps.length ? postTable(ps, t) : `<div class="pb"><p class="sub" style="margin:0">${STATE.tab === "concept" ? "No concept posts yet." : "No posts yet. Be the first."}</p></div>`, `<div class="tabs" id="gtabs"><button aria-pressed="${STATE.tab === "all"}" data-tab="all">All</button><button aria-pressed="${STATE.tab === "concept"}" data-tab="concept">★ Concept</button></div>`)}</div>
-  <div class="c4">${panel("Write a post", `<div class="pb">${readOnlyNote()}${composer("post")}</div>`)}</div></div>`;
+  const t = byTk[ref], mine_ = allPosts().filter(p => p.tk === ref);
+  let ps = STATE.tab === "concept" ? mine_.filter(isConcept) : mine_;
+  ps = sortBoard(ps);
+  return `<div class="pagehead"><div><div class="eyebrow">Fanboard · ${esc(ref)} ${liveBadge()}</div><h1 class="h1">${esc(boardName(ref))}</h1><div class="meta" style="margin-top:6px">${mine_.length} posts · ${mine_.filter(isConcept).length} concept · ★ at ▲${CONCEPT.up}+ with ≥${CONCEPT.ratio * 100}% up${t ? ` · <a href="#title-${ref}">Title page</a>` : ""}</div></div></div>
+  <section class="panel"><div class="boardhead"><div class="tabs" id="gtabs"><button aria-pressed="${STATE.tab === "all"}" data-tab="all">All</button><button aria-pressed="${STATE.tab === "concept"}" data-tab="concept">★ Concept</button></div><button class="btn sm" data-act="compose">${STATE.compose ? "Close" : "✎ Write"}</button></div>
+  ${STATE.compose ? readOnlyNote() + composer("post") : ""}
+  ${ps.length ? postTable(ps, t, {numberFrom: mine_.filter(p => !p.notice).length}) : `<div class="pb"><p class="sub" style="margin:0">${STATE.tab === "concept" ? "No concept posts yet." : "No posts yet. Be the first."}</p></div>`}</section>`;
 };
 P.post = () => {
   const p = allPosts().find(x => x.id === STATE.arg);
-  if (!p) return `<div class="pagehead"><div><h1 class="h1">Post not found</h1><p class="sub">It may have been deleted or hidden by a moderator. <a href="#gallery" style="color:var(--mark)">Back to galleries</a></p></div></div>`;
+  if (!p) return `<div class="pagehead"><div><h1 class="h1">Post not found</h1><p class="sub">It may have been deleted or hidden by a moderator. <a href="#fanboards" style="color:var(--mark)">Back to fanboards</a></p></div></div>`;
   const t = byTk[p.tk], v = votesFor(p), myV = (mine("votes").v || {})[p.id], cs = allComments().filter(c => c.postId === p.id);
   const tops = cs.filter(c => !c.parentId), kids = id => cs.filter(c => c.parentId === id);
   const cm = c => `<div class="cmt${c.parentId ? " reply" : ""}"><div class="meta">${who(c, t)} · ${ago(c.at)}${!c.parentId ? ` · <button class="lnk" data-act="reply" data-id="${c.id}">Reply</button>` : ""}${c.uid === LIVE.uid ? ` · <button class="lnk" data-act="delc" data-id="${c.id}">Delete</button>` : ""}</div>${esc(c.body)}</div>`;
   const reported = !!(mine("reports").r || {})[p.id];
-  return `<div class="grid g12"><div class="c8">${panel(`<a href="#gallery-${esc(p.tk)}">${esc(p.tk)} gallery</a> ${isConcept(p) ? "· ★ concept" : ""}`, `<div class="pb post"><h2 class="h2">${esc(p.title)}</h2><div class="meta">${who(p, t)} · ${new Date(p.at).toLocaleString()} · ${cs.length} comments</div>
-   <p style="margin:0;color:var(--text-2);max-width:65ch;white-space:pre-wrap">${esc(p.body)}</p>
-   <div class="acts" style="justify-content:center"><button class="btn ${myV === 1 ? "" : "gh"}" data-act="vote" data-id="${p.id}" data-v="1" ${p.uid && p.uid === LIVE.uid ? "disabled title=\"You can't vote on your own post\"" : ""}>▲ ${v.up}</button><button class="btn ${myV === -1 ? "" : "gh"}" data-act="vote" data-id="${p.id}" data-v="-1" ${p.uid && p.uid === LIVE.uid ? "disabled" : ""}>▼ ${v.down}</button>
-   ${p.uid === LIVE.uid ? `<button class="btn gh" data-act="delp" data-id="${p.id}">Delete</button>` : `<select id="rep-reason" class="sel" aria-label="Report reason"><option>Spam</option><option>Spoiler without warning</option><option>Harassment</option><option>Piracy link</option></select><button class="btn gh" data-act="report" data-id="${p.id}" ${reported ? "disabled" : ""}>${reported ? "Reported" : "Report"}</button>`}</div>
-   ${myV ? `<p class="ip" style="text-align:center;margin:0">You voted ${myV > 0 ? "up" : "down"}. One vote per person, as on DCInside.</p>` : ""}</div>`)}</div>
-   <div class="c4">${panel(`Comments <i>${cs.length}</i>`, `<div class="pb" style="padding-top:0">${tops.map(c => cm(c) + kids(c.id).map(cm).join("")).join("") || '<p class="sub">No comments yet.</p>'}<div style="margin-top:12px">${readOnlyNote()}${composer("c", `<div id="replyto" class="ip" hidden></div>`)}</div></div>`)}</div></div>`;
+  const own = p.uid && p.uid === LIVE.uid;
+  return `<div class="eyebrow" style="margin-bottom:8px"><a href="#fanboard-${esc(p.tk)}">← ${esc(boardName(p.tk))}</a></div>
+  <section class="panel"><div class="pb post"><h2 class="h2">${isConcept(p) ? '<span style="color:var(--mark)">★</span> ' : ""}${esc(p.title)}</h2>
+   <div class="meta">${who(p, t)} · ${new Date(p.at).toLocaleString()} · ${cs.length} comments · ▲ ${v.up} ▼ ${v.down}</div>
+   <p style="margin:0;color:var(--text-2);max-width:72ch;white-space:pre-wrap">${esc(p.body)}</p>
+   <div class="acts" style="justify-content:center"><button class="btn sm ${myV === 1 ? "" : "gh"}" data-act="vote" data-id="${p.id}" data-v="1" ${own ? "disabled title=\"You can't vote on your own post\"" : ""}>▲ ${v.up}</button><button class="btn sm ${myV === -1 ? "" : "gh"}" data-act="vote" data-id="${p.id}" data-v="-1" ${own ? "disabled" : ""}>▼ ${v.down}</button>
+   ${own ? `<button class="btn gh sm" data-act="delp" data-id="${p.id}">Delete</button>` : `<select id="rep-reason" class="sel" aria-label="Report reason"><option>Spam</option><option>Spoiler without warning</option><option>Harassment</option><option>Piracy link</option></select><button class="btn gh sm" data-act="report" data-id="${p.id}" ${reported ? "disabled" : ""}>${reported ? "Reported" : "Report"}</button>`}</div>
+   ${myV ? `<p class="ip" style="text-align:center;margin:0">You voted ${myV > 0 ? "up" : "down"}. One vote per person.</p>` : ""}</div>
+   <div class="ph"><h3>Comments <i>${cs.length}</i></h3></div>
+   <div class="pb cmts" style="padding-top:0">${tops.map(c => cm(c) + kids(c.id).map(cm).join("")).join("") || '<p class="sub">No comments yet.</p>'}<div style="margin-top:10px">${readOnlyNote()}${composer("c", `<div id="replyto" class="ip" hidden></div>`)}</div></div></section>`;
 };
 
-/* ---------- wishlist, profile, verify ---------- */
+/* ---------- SCREENS: wishlist, profile, verify ---------- */
 P.wishlist = () => {
   const w = wishCounts(), m = STATE.medium, myW = mine("wishes").w || {};
   const rows = titles.map(t => ({t, n: w[t.tk + "|" + m] || 0})).sort((a, b) => b.n - a.n || last(b.t) - last(a.t)).slice(0, 15);
@@ -788,7 +868,7 @@ P.profile = () => {
   <div class="c6">${panel("Your claims", cl.length ? claimTable(cl, false) : `<div class="pb"><p class="sub" style="margin:0">None. <a href="#verify" style="color:var(--mark)">Verify a title, author or publisher</a>.</p></div>`)}</div></div>`;
 };
 const AUTHORS = [...new Set(titles.map(t => t.author))].sort(), PUBS_L = [...new Set(titles.map(t => t.pub))].filter(p => p !== "Independent").sort();
-P.verify = () => `<div class="pagehead"><div><div class="eyebrow">Verification ${liveBadge()}</div><h1 class="h1">Verify your claim</h1><p class="sub">In the product, you attach contracts or registration documents and a reviewer checks them. In this demo you submit the claim only, and the owner of this artifact approves or rejects it in the Claims queue. An approved author or publisher claim shows a verified badge in that title's gallery, and your ratings of those titles stop counting.</p></div></div>
+P.verify = () => `<div class="pagehead"><div><div class="eyebrow">Verification ${liveBadge()}</div><h1 class="h1">Verify your claim</h1><p class="sub">In the product, you attach contracts or registration documents and a reviewer checks them. In this demo you submit the claim only, and the owner of this artifact approves or rejects it in the Claims queue. An approved author or publisher claim shows a verified badge in that title's fanboard, and your ratings of those titles stop counting.</p></div></div>
   <div class="grid g12"><div class="c7">${panel("New claim", `<form id="claimform" class="pb" style="display:grid;gap:12px">${readOnlyNote()}
    <div class="field"><label for="cl-type">I am claiming</label><select id="cl-type" class="sel"><option value="author">An author (all their titles)</option><option value="publisher">A publisher (its slate)</option><option value="title">One title</option><option value="investor_entity">An investor entity (PE/VC, studio)</option></select></div>
    <div class="field"><label for="cl-ref">Entity</label><select id="cl-ref" class="sel">${AUTHORS.map(a => `<option>${esc(a)}</option>`).join("")}</select><input id="cl-firm" class="in" placeholder="Firm name" hidden maxlength="120"></div>
@@ -800,7 +880,7 @@ function claimTable(list, admin) {
   return `<div class="tw"><table><thead><tr><th>When</th>${admin ? "<th>Who</th>" : ""}<th>Type</th><th>Entity</th><th>Status</th>${admin ? "<th></th>" : ""}</tr></thead><tbody>${list.map(c => `<tr style="cursor:default"><td class="mono fl">${ago(c.at)}</td>${admin ? `<td><span class="nick" data-uid="${esc(c.uid)}">…</span>${c.role ? `<br><span class="ip">${esc(c.role)}</span>` : ""}</td>` : ""}<td><span class="pill ${c.type === "investor_entity" ? "mk" : ""}">${c.type.replace("_entity", "")}</span></td><td style="font-weight:600;white-space:normal">${esc(c.ref)}</td><td><span class="pill ${c.status === "approved" ? "ok" : c.status === "rejected" ? "up" : "warn"}">${c.status}</span></td>${admin ? `<td>${c.status === "pending" ? `<div class="acts"><button class="btn sm" data-act="approve" data-id="${c.id}">Approve</button><button class="btn gh sm" data-act="reject" data-id="${c.id}">Reject</button></div>` : c.status === "approved" ? `<button class="btn gh sm" data-act="revoke" data-id="${c.id}">Revoke</button>` : ""}</td>` : ""}</tr>`).join("")}</tbody></table></div>`;
 }
 
-/* ---------- owner-only queues ---------- */
+/* ---------- SCREENS: owner-only queues ---------- */
 function ownerOnly() { return `<div class="pagehead"><div><h1 class="h1">Owner only</h1><p class="sub">Only the owner of this artifact (and its Editors) can review claims and moderate.</p></div></div>`; }
 P.claims = () => {
   if (!LIVE.admin) return ownerOnly();
@@ -816,14 +896,15 @@ P.moderation = () => {
   ${panel("Reports", q.length ? `<div class="tw"><table><thead><tr><th>Target</th><th>Reasons</th><th class="r">Reports</th><th>Writer</th><th></th></tr></thead><tbody>${q.map(r => { const x = byId[r.id]; return `<tr style="cursor:default"><td style="white-space:normal;font-weight:600">${x ? esc(x.title || x.body.slice(0, 80)) : '<span class="fl">(deleted)</span>'}</td><td>${Object.entries(r.reasons).map(([k, n]) => `<span class="pill">${esc(k)} ×${n}</span>`).join(" ")}</td><td class="r mono">${r.n}</td><td>${x ? who(x, byTk[x.tk]) : ""}</td><td><button class="btn sm" data-act="hide" data-id="${r.id}">Hide</button></td></tr>`; }).join("")}</tbody></table></div>` : `<div class="pb"><p class="sub" style="margin:0">No open reports.</p></div>`)}`;
 };
 
-/* ---------- routing (replaces the prototype's) ---------- */
+/* ---------- ROUTING (replaces the prototype's) ---------- */
 navFor = function () {
   const p = STATE.persona, show = r => r[2] === "m" || r[2] === "c" || r[2] === "h2" || (r[2] === "p") || (r[2] === "a" && LIVE.admin);
-  $("nav").innerHTML = ROUTES.filter(show).map(r => `<a href="#${r[0]}" class="${r[2] === "p" ? "pro" : ""}" ${STATE.route === r[0] ? 'aria-current="page"' : ""}>${r[2] === "p" && !isPro() && r[0] !== "plans" ? "🔒 " : ""}${r[1]}</a>`).join("");
+  $("nav").innerHTML = ROUTES.filter(show).map(r => `<a href="#${r[0]}" class="${r[2] === "p" ? "pro" : ""}" ${STATE.route === r[0] || (r[0] === "fanboards" && (STATE.route === "fanboard" || STATE.route === "post")) ? 'aria-current="page"' : ""}>${r[2] === "p" && !isPro() && r[0] !== "plans" ? "🔒 " : ""}${r[1]}</a>`).join("");
 };
 function renderView() {
   let h = location.hash.slice(1) || "market"; STATE.arg = null;
-  const m = h.match(/^(title|gallery|post)-(.+)$/); if (m) { h = m[1]; STATE.arg = m[2]; }
+  const m = h.match(/^(title|fanboard|post)-(.+)$/); if (m) { h = m[1]; STATE.arg = m[2]; }
+  if (h === "fanboards") h = "fanboard";
   if (!P[h] && h !== "title") h = "market";
   STATE.route = h;
   $("view").innerHTML = (h === "title" ? titlePage(STATE.arg || titles[0].tk) : P[h]()) + `<div class="foot"><span>PLOTLINE · LIVE DEMO</span><span><span class="sample">MARKET NUMBERS ARE SAMPLE DATA</span> · community data is ${LIVE.status === "live" ? "live and shared" : "not connected"}</span><span>PREVIEWING AS ${STATE.persona.toUpperCase()}</span></div>`;
@@ -833,9 +914,10 @@ route = function () {
   renderView(); window.scrollTo(0, 0);
 };
 
-/* ---------- event wiring for live controls ---------- */
+/* ---------- WIRING: event handlers for live controls ---------- */
 function wireLive() {
   const v = $("view");
+  if (WIRES[STATE.route]) WIRES[STATE.route](v);
   v.querySelectorAll("[data-act]").forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); act(b.dataset.act, b); });
   const gt = $("gtabs"); if (gt) gt.querySelectorAll("button").forEach(b => b.onclick = () => { STATE.tab = b.dataset.tab; rerender(); });
   const mt = $("mtabs"); if (mt) mt.querySelectorAll("button").forEach(b => b.onclick = () => { STATE.medium = b.dataset.m; rerender(); });
@@ -852,7 +934,7 @@ function wireLive() {
     const title = $("post-title").value.trim(), body = $("post-body").value.trim(), anon = $("post-anon").checked, nick = ($("post-nick").value.trim() || "ㅇㅇ").slice(0, 20);
     if (!title || !body) return;
     const id = rid();
-    if (await saveMine("posts", d => { d.items = [...(d.items || []), {id, tk: STATE.arg, title: title.slice(0, 120), body: body.slice(0, 4000), anon, nick: anon ? nick : null, at: Date.now()}].slice(-200); return d; })) { location.hash = "post-" + id; toast("Posted"); } };
+    if (await saveMine("posts", d => { d.items = [...(d.items || []), {id, tk: STATE.arg, title: title.slice(0, 120), body: body.slice(0, 4000), anon, nick: anon ? nick : null, notice: !!($("post-notice") && $("post-notice").checked && LIVE.admin), at: Date.now()}].slice(-200); return d; })) { STATE.compose = false; location.hash = "post-" + id; toast("Posted"); } };
   const cf = $("cform");
   if (cf) cf.onsubmit = async e => { e.preventDefault();
     const body = $("c-body").value.trim(), anon = $("c-anon").checked, nick = ($("c-nick").value.trim() || "ㅇㅇ").slice(0, 20), parentId = cf.dataset.parent || null;
@@ -874,6 +956,7 @@ function wireLive() {
 }
 async function act(a, b) {
   const id = b.dataset.id;
+  if (a === "compose") { STATE.compose = !STATE.compose; rerender(); if (STATE.compose) { const el = document.getElementById("post-title"); if (el) el.focus(); } return; }
   if (a === "goto") { const el = document.getElementById(id); if (el) el.scrollIntoView({behavior: "smooth", block: "center"}); return; }
   if (a === "follow") { const tk = b.dataset.tk; await saveMine("follows", d => { d.f = d.f || {}; if (d.f[tk]) delete d.f[tk]; else d.f[tk] = Date.now(); return d; }); }
   else if (a === "wish") { const k = b.dataset.k; await saveMine("wishes", d => { d.w = d.w || {}; if (d.w[k]) delete d.w[k]; else d.w[k] = Date.now(); return d; }); }
@@ -881,7 +964,7 @@ async function act(a, b) {
     if (cur) { toast("You already voted on this post."); return; }
     await saveMine("votes", d => { d.v = d.v || {}; d.v[id] = val; return d; }); }
   else if (a === "report") { const reason = ($("rep-reason") || {}).value || "Spam"; if (await saveMine("reports", d => { d.r = d.r || {}; d.r[id] = {reason, at: Date.now()}; return d; })) toast("Reported to the moderators"); }
-  else if (a === "delp") { if (await saveMine("posts", d => { d.items = (d.items || []).filter(p => p.id !== id); return d; })) location.hash = "gallery"; }
+  else if (a === "delp") { if (await saveMine("posts", d => { d.items = (d.items || []).filter(p => p.id !== id); return d; })) location.hash = "fanboard"; }
   else if (a === "delc") { await saveMine("comments", d => { d.items = (d.items || []).filter(c => c.id !== id); return d; }); }
   else if (a === "reply") { const cf = $("cform"); if (cf) { cf.dataset.parent = id; const r = $("replyto"); r.hidden = false; r.textContent = "Replying to a comment. Clear the box to cancel."; $("c-body").focus(); } }
   else if (a === "approve" || a === "reject" || a === "revoke") {
@@ -895,10 +978,11 @@ async function act(a, b) {
   else if (a === "hide") { if (await saveMod(m => { m.hidden[id] = Date.now(); return m; })) toast("Hidden for everyone"); }
 }
 
-/* ---------- start ---------- */
+/* ---------- START ---------- */
 $("persona").onchange = e => { STATE.persona = e.target.value; rerender(); };
 $("cvKR").onclick = () => conv(false); $("cvUS").onclick = () => conv(true);
 $("specBtn").onclick = () => toggleSpec(!STATE.spec);
+$("themeBtn").onclick = toggleTheme; applyTheme(document.documentElement.getAttribute("data-pl-theme"));
 document.addEventListener("keydown", e => { if (e.key === "Escape") toggleSpec(false); });
 window.addEventListener("hashchange", route);
 try { if (localStorage.getItem("plt-conv") === "us") document.documentElement.classList.add("us"), $("cvUS").setAttribute("aria-pressed", "true"), $("cvKR").setAttribute("aria-pressed", "false"); } catch (e) {}

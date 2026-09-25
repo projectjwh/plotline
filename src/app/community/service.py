@@ -1,4 +1,4 @@
-"""Galleries, posts, comments, votes, reports and moderation (DCInside-style)."""
+"""Fanboards, posts, comments, votes, reports and moderation (DCInside-style)."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -59,54 +59,54 @@ class CommunityService:
         if self.repo.count_recent(table, key, now() - timedelta(minutes=1)) >= per_min:
             raise RateLimited("slow down: posting limit reached, try again in a minute")
 
-    def _can_moderate(self, viewer: Viewer, gallery_id: str) -> bool:
-        return viewer.is_admin or bool(viewer.user_id and self.repo.is_mod(gallery_id, viewer.user_id))
+    def _can_moderate(self, viewer: Viewer, fanboard_id: str) -> bool:
+        return viewer.is_admin or bool(viewer.user_id and self.repo.is_mod(fanboard_id, viewer.user_id))
 
     def _owns(self, a: Actor, row: dict) -> bool:
         if row["user_id"]:
             return row["user_id"] == a.viewer.user_id
         return verify_secret(row["anon_pw_hash"], a.password)
 
-    # ---------- galleries ----------
-    def gallery(self, kind: str, ref: str) -> dict:
-        """Title and genre galleries open on first use. Free boards are created by admins."""
+    # ---------- fanboards ----------
+    def fanboard(self, kind: str, ref: str) -> dict:
+        """Title and genre fanboards open on first use. Free boards are created by admins."""
         if kind not in KINDS:
             raise Invalid(f"kind must be one of {sorted(KINDS)}")
-        g = self.repo.gallery_by_ref(kind, ref)
+        g = self.repo.fanboard_by_ref(kind, ref)
         if g:
             return g
         if kind == "title":
             t = self.title_lookup(ref)
             if not t:
                 raise NotFound(f"title '{ref}' not found")
-            return self.repo.create_gallery("title", ref, t["title"])
+            return self.repo.create_fanboard("title", ref, t["title"])
         if kind == "genre":
             if not self.genre_exists(ref):
                 raise NotFound(f"genre '{ref}' not found")
-            return self.repo.create_gallery("genre", ref, ref)
+            return self.repo.create_fanboard("genre", ref, ref)
         raise NotFound(f"board '{ref}' not found")
 
     def create_free_board(self, viewer: Viewer, slug: str, name: str) -> dict:
         if not viewer.is_admin:
             raise Forbidden("admins only")
-        if self.repo.gallery_by_ref("free", slug):
+        if self.repo.fanboard_by_ref("free", slug):
             raise Conflict("board exists")
-        return self.repo.create_gallery("free", slug, name)
+        return self.repo.create_fanboard("free", slug, name)
 
-    def list_galleries(self, kind: str | None = None, limit: int = 50) -> list[dict]:
-        return self.repo.list_galleries(kind, limit)
+    def list_fanboards(self, kind: str | None = None, limit: int = 50) -> list[dict]:
+        return self.repo.list_fanboards(kind, limit)
 
-    def _gallery(self, gallery_id: str) -> dict:
-        g = self.repo.gallery(gallery_id)
+    def _fanboard(self, fanboard_id: str) -> dict:
+        g = self.repo.fanboard(fanboard_id)
         if not g:
-            raise NotFound("gallery not found")
+            raise NotFound("fanboard not found")
         return g
 
     # ---------- presentation ----------
-    def _present(self, row: dict, gallery: dict, *, body: bool = True) -> dict:
+    def _present(self, row: dict, fanboard: dict, *, body: bool = True) -> dict:
         verified = False
-        if row["user_id"] and gallery["kind"] == "title":
-            t = self.title_lookup(gallery["ref"])
+        if row["user_id"] and fanboard["kind"] == "title":
+            t = self.title_lookup(fanboard["ref"])
             verified = bool(t) and self.badge(self._viewer_for(row["user_id"]), t)
         out = {k: row[k] for k in ("id", "up", "down", "created_at") if k in row}
         out["created_at"] = row["created_at"].isoformat() if row.get("created_at") else None
@@ -126,16 +126,16 @@ class CommunityService:
         return row
 
     # ---------- posts ----------
-    def list_posts(self, gallery_id: str, *, tab: str = "all", limit: int = 30, offset: int = 0) -> dict:
-        g = self._gallery(gallery_id)
+    def list_posts(self, fanboard_id: str, *, tab: str = "all", limit: int = 30, offset: int = 0) -> dict:
+        g = self._fanboard(fanboard_id)
         if tab not in {"all", "concept", "notice"}:
             raise Invalid("tab must be all, concept or notice")
-        rows = self.repo.list_posts(gallery_id, concept_only=tab == "concept", notices_only=tab == "notice",
+        rows = self.repo.list_posts(fanboard_id, concept_only=tab == "concept", notices_only=tab == "notice",
                                     limit=min(limit, 100), offset=offset)
-        return {"gallery": g, "items": [self._present(self._with_handle(r), g, body=False) for r in rows]}
+        return {"fanboard": g, "items": [self._present(self._with_handle(r), g, body=False) for r in rows]}
 
-    def create_post(self, a: Actor, gallery_id: str, title: str, body: str, notice: bool = False) -> dict:
-        g = self._gallery(gallery_id)
+    def create_post(self, a: Actor, fanboard_id: str, title: str, body: str, notice: bool = False) -> dict:
+        g = self._fanboard(fanboard_id)
         title, body = title.strip(), body.strip()
         if not title or len(title) > self.cfg.get("max_title_len", 120):
             raise Invalid("title is required (max 120 chars)")
@@ -145,9 +145,9 @@ class CommunityService:
         self._rate(posts, fields["voter_key"], self.cfg.get("posts_per_minute", 3))
         if notice:
             t = self.title_lookup(g["ref"]) if g["kind"] == "title" else None
-            if not (self._can_moderate(a.viewer, gallery_id) or (t and self.badge(a.viewer, t))):
+            if not (self._can_moderate(a.viewer, fanboard_id) or (t and self.badge(a.viewer, t))):
                 raise Forbidden("only moderators and verified owners can post notices")
-        row = self.repo.insert(posts, {"gallery_id": gallery_id, **fields, "title": title, "body": body,
+        row = self.repo.insert(posts, {"fanboard_id": fanboard_id, **fields, "title": title, "body": body,
                                        "up": 0, "down": 0, "views": 0, "is_concept": False, "is_notice": notice})
         return self._present(self._with_handle(row), g)
 
@@ -158,9 +158,9 @@ class CommunityService:
         if count_view:
             self.repo.incr_views(post_id)
             p["views"] += 1
-        g = self._gallery(p["gallery_id"])
+        g = self._fanboard(p["fanboard_id"])
         cms = [self._present(self._with_handle(c), g) for c in self.repo.list_comments(post_id)]
-        return {**self._present(self._with_handle(p), g), "gallery": {"id": g["id"], "kind": g["kind"],
+        return {**self._present(self._with_handle(p), g), "fanboard": {"id": g["id"], "kind": g["kind"],
                 "ref": g["ref"], "name": g["name"]}, "comments": cms}
 
     def edit_post(self, a: Actor, post_id: str, title: str | None, body: str | None) -> dict:
@@ -182,7 +182,7 @@ class CommunityService:
         row = self.repo.get(table, target_id)
         if not row or row["deleted_at"]:
             raise NotFound(f"{target_type} not found")
-        gid = row["gallery_id"] if target_type == "post" else self.repo.get(posts, row["post_id"])["gallery_id"]
+        gid = row["fanboard_id"] if target_type == "post" else self.repo.get(posts, row["post_id"])["fanboard_id"]
         if not (self._owns(a, row) or self._can_moderate(a.viewer, gid)):
             raise Forbidden("not yours, and you are not a moderator")
         self.repo.patch(table, target_id, deleted_at=now())
@@ -203,7 +203,7 @@ class CommunityService:
         self._rate(comments, fields["voter_key"], self.cfg.get("comments_per_minute", 10))
         row = self.repo.insert(comments, {"post_id": post_id, "parent_id": parent_id, **fields, "body": body,
                                           "up": 0, "down": 0})
-        return self._present(self._with_handle(row), self._gallery(p["gallery_id"]))
+        return self._present(self._with_handle(row), self._fanboard(p["fanboard_id"]))
 
     # ---------- votes ----------
     def vote(self, a: Actor, target_type: str, target_id: str, value: int) -> dict:
@@ -264,14 +264,14 @@ class CommunityService:
             raise Invalid("voter_key must start with u: or ip:")
         self.repo.ban(voter_key, now() + timedelta(days=days) if days else None, reason, viewer.user_id)
 
-    def add_moderator(self, viewer: Viewer, gallery_id: str, user_id: str) -> None:
+    def add_moderator(self, viewer: Viewer, fanboard_id: str, user_id: str) -> None:
         if not viewer.is_admin:
             raise Forbidden("admins only")
-        self._gallery(gallery_id)
-        self.repo.add_mod(gallery_id, user_id)
+        self._fanboard(fanboard_id)
+        self.repo.add_mod(fanboard_id, user_id)
 
     # ---------- signals for other modules ----------
     def activity_by_title(self, hours: int = 24) -> dict[str, int]:
-        act = self.repo.activity_by_gallery(now() - timedelta(hours=hours))
-        gs = self.repo.galleries_by_ids(act.keys())
+        act = self.repo.activity_by_fanboard(now() - timedelta(hours=hours))
+        gs = self.repo.fanboards_by_ids(act.keys())
         return {gs[g]["ref"]: n for g, n in act.items() if g in gs and gs[g]["kind"] == "title"}

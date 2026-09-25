@@ -84,10 +84,12 @@ All scraping targets, CSS selectors, delays, storage paths, and processing param
 
 ## Product revamp (in progress)
 
-Plotline is being repositioned as **IMDb + DCInside for story IP**: free fans (galleries, ratings, wishlist), and paid authors, publishers and IP investors (verified by manual document review).
+Plotline is being repositioned as **IMDb + DCInside for story IP**: free fans (fanboards, ratings, wishlist), and paid authors, publishers and IP investors (verified by manual document review).
 - Product spec, persona × KPI matrix and flywheel: `docs/product/product-spec.md`
 - Modular Phase 2 architecture: `docs/product/architecture.md` (module = service + repo + router; replaceable behaviour via registered Protocol implementations; policy in config)
 - Wireframes (19 screens): `docs/product/wireframes.html`
+- Decision log (append an entry for every decision): `docs/product/decisions.md`
+- Frontend demo structure, theming and extension points: `docs/product/frontend-guide.md`; use the `add-screen` skill for new screens
 - Adding or changing a KPI: use the `add-kpi` skill (`.claude/skills/add-kpi/SKILL.md`); never gate KPIs inside route handlers.
 
 ### App backend (Phase 2a, `src/app/`)

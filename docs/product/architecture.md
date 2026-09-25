@@ -151,10 +151,10 @@ erDiagram
   users ||--o{ follows : makes
   users ||--o{ lists : curates
   lists ||--o{ list_items : contains
-  galleries ||--o{ posts : holds
+  fanboards ||--o{ posts : holds
   posts ||--o{ comments : has
   posts ||--o{ votes : receives
-  galleries ||--o{ gallery_mods : moderated_by
+  fanboards ||--o{ fanboard_mods : moderated_by
   users ||--o{ wishlist_votes : casts
   users ||--o{ scout_events : earns
   reports }o--|| posts : targets
@@ -182,14 +182,14 @@ erDiagram
     text status
     text stripe_ref
   }
-  galleries {
+  fanboards {
     uuid id
     text kind
     text ref
   }
   posts {
     uuid id
-    uuid gallery_id
+    uuid fanboard_id
     uuid user_id
     text anon_nick
     text anon_pw_hash
@@ -262,7 +262,7 @@ Tests: `pytest` (43 tests in `tests/app`, using a fixture warehouse with the rea
 | entitlement | policy `config/policy/entitlements.yaml` | (used by all; admins grant plans while billing is off) |
 | kpi | policy `config/policy/kpis.yaml` | `GET /kpis/catalog` |
 | market | `Warehouse` adapter | `/market/overview`, `/market/indices[/{code}]`, `/market/movers`, `/market/breadth`, `/market/listings`, `/market/treemap`, `/titles`, `/titles/{id}`, `/search`, `/genres`, `/publishers`, `/credits/{author,publisher}/{name}` |
-| community | `PromotionRule` (`threshold`) | `/galleries`, `/galleries/by/{kind}/{ref}`, `/galleries/{id}/posts`, `/posts/{id}` (GET, PATCH, `/delete`, `/comments`), `/comments/{id}/delete`, `/votes`, `/reports`, `/boards` |
+| community | `PromotionRule` (`threshold`) | `/fanboards`, `/fanboards/by/{kind}/{ref}`, `/fanboards/{id}/posts`, `/posts/{id}` (GET, PATCH, `/delete`, `/comments`), `/comments/{id}/delete`, `/votes`, `/reports`, `/boards` |
 | fan | `RatingAggregator` (`bayesian`), `ScoutRule` (`lead_time`) | `/ratings/{id}`, `/reviews/{id}`, `/follows`, `/me/follows`, `/lists…`, `/wishlist[/{id}]`, `/users/{handle}`, `/scouts` |
 | verification | `DocStorage` (`local_fs`) | `POST /claims` (multipart), `GET /claims/mine` |
 | valuation | `ValuationModel` (`revenue_multiple`) | `/premium/valuation/{id}` |
@@ -280,4 +280,4 @@ Operational notes:
   - login and registration throttling
   - a pipeline hook that emits `episode.released` / `title.entered_rising`
   - an R2/S3 `DocStorage`
-  - batch badge resolution in gallery listings (currently one entitlement lookup per author per page)
+  - batch badge resolution in fanboard listings (currently one entitlement lookup per author per page)
