@@ -9,6 +9,7 @@ The stylesheet has five layers, in order:
 | Layer | Contains | Change it when |
 |---|---|---|
 | 1. Theme tokens | Colors only, under `:root[data-pl-theme="dark"]` and `:root[data-pl-theme="light"]`; up/down overrides under `:root.us…` | You restyle, add a theme, or retune a color |
+| 0. Fonts | `@font-face` for NanumSquare Neo (embedded woff2, with NAVER's copyright notice) | You change the typeface |
 | 2. Scale tokens | Fonts, sizes (`--fs-*`), radius, gutter, gap, `--row-h` (fanboard density), `--maxw` | You change type, spacing or density |
 | 3. Base | Element defaults | Rarely |
 | 4. Components | `.panel .btn .pill .chg .tabs .board …`, built from tokens only | You add a component |
@@ -22,6 +23,7 @@ Rules:
   2. Add `"hc"` to `applyTheme`/`toggleTheme`.
   3. Run any new up/down pair through the dataviz palette validator on that theme's surface.
 - **Density:** fanboard row height is `--row-h` (30px). A "comfortable" mode is one token override: `:root[data-density="comfy"]{--row-h:40px}`.
+- **Typeface:** `--display` and `--ui` use NanumSquare Neo; `--mono` (JetBrains Mono, from Google Fonts) is for numbers, because NanumSquare Neo has no tabular digits (D-028).
 - **Cover art** is generated on a canvas and deliberately doesn't follow the theme, because it stands in for real cover images.
 
 ## 2. Script sections

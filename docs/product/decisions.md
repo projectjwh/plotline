@@ -132,6 +132,14 @@ Architecture and product decisions for the Plotline revamp, newest last. **Appen
 - New screens are added with `SCREENS.register(route, render, wire)`.
 - Accepted. [owner: "incrementally updated"]
 
+**D-028 · Typeface: NAVER's NanumSquare Neo for UI and headings; JetBrains Mono kept for numbers and tickers.** Accepted. [owner]
+- You asked for "the font stock.naver.com uses". That site couldn't be reached from the build environment (proxy 403), and no public source names its font. You chose NanumSquare Neo, NAVER's current brand font (NAVER × Sandoll, 2022), with the understanding that it can be swapped.
+- The files are the official, unmodified woff2 webfonts (400/700/800), embedded as data URIs, since the artifact CSP only allows Google Fonts and NanumSquare Neo isn't there. The copyright notice is kept in the stylesheet.
+  - Sources: [github.com/moonspam/NanumSquareNeo](https://github.com/moonspam/NanumSquareNeo) · [Sandoll: NanumSquare Neo](https://www.sandoll.co.kr/NanumsquareNEO) · [noonnu: free for commercial use](https://noonnu.cc/en/font_page/1053)
+- Numbers stay monospaced. The font's GSUB features are `frac, liga, vert, vrt2`, with no `tnum`, and its digit widths differ (458–716 units). Using it for numbers would misalign table columns.
+- Cost: about 1.5 MB added to each page. A production build would subset or self-host the fonts (O-17).
+- To swap fonts: change `--display` / `--ui` in scale-token layer 2 and the `0. FONTS` block.
+
 ---
 
 ## Outstanding decisions
@@ -158,4 +166,5 @@ Architecture and product decisions for the Plotline revamp, newest last. **Appen
 | O-13 | When to switch on Stripe (billing flag) | Revenue timing |
 | O-14 | Automated moderation (spam or toxicity filters) at launch? | Moderator load |
 | O-15 | Real-data gaps: publisher extraction is empty (`dim_publisher`), and the pipeline doesn't emit `episode.released` or `title.entered_rising` | Portfolio, episode threads and scout points depend on them |
+| O-17 | Confirm the font stock.naver.com actually uses (DevTools → Computed → font-family), and choose the production font delivery: subset vs self-hosted | Brand match; page weight |
 | O-16 | Data retention for claim documents, and deletion on request | Privacy and compliance |
