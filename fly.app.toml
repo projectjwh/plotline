@@ -1,0 +1,44 @@
+# Fly.io config for the app backend (src/app, Dockerfile.app). Separate from fly.toml,
+# which still serves the legacy read API (plotline-api) until it is retired.
+# Deploy:   fly deploy -c fly.app.toml
+# Secrets (set once with `fly secrets set -a plotline-app ...`; never commit them):
+#   DATABASE_URL               Neon Postgres connection string (app state)
+#   PLOTLINE_JWT_SECRET        >= 32 random chars
+#   PLOTLINE_IP_SALT           random; hashes guest IPs
+#   PLOTLINE_WAREHOUSE_URL     https URL of the published plotline.duckdb
+#   PLOTLINE_CORS_ORIGINS      https://<your frontend origin>
+#   PLOTLINE_APP_BASE_URL      same frontend origin (used in email links)
+#   PLOTLINE_EMAIL_SENDER=resend, RESEND_API_KEY, PLOTLINE_EMAIL_FROM
+#   PLOTLINE_BLOB_STORE=r2, R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_APP_BUCKET (private bucket)
+# Key names below follow the repo's existing fly.toml; [deploy] release_command is from Fly's
+# config reference as I know it — confirm against https://fly.io/docs/reference/configuration/.
+app = "plotline-app"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Dockerfile.app"
+
+[deploy]
+  release_command = "alembic upgrade head"   # schema migrations run once per deploy, before new machines start
+
+[env]
+  PLOTLINE_ENV = "prod"
+  PORT = "8000"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"   # scale to zero when idle
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "40s"        # first boot downloads the warehouse
+    interval = "30s"
+    method = "GET"
+    path = "/ready"
+    timeout = "4s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"              # not measured yet: check memory use after the first deploy and resize

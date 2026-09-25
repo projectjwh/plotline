@@ -24,12 +24,13 @@ slowapi>=0.1.9              # per-IP rate limiting (gracefully skipped if absent
 sqlalchemy>=2.0            # app-state DB (SQLite dev, Postgres prod)
 argon2-cffi>=23.1          # password + guest-password hashing
 pyjwt>=2.8                 # bearer tokens
-python-multipart>=0.0.9    # claim document uploads
+python-multipart>=0.0.9    # claim document and image uploads
+alembic>=1.13              # app-state migrations (migrations/, alembic.ini)
 
 # Deployment (SaaS) — used only when the matching env vars are set; imported lazily.
 psycopg[binary]>=3.1.0     # Neon Postgres: app state (api_keys, plans) — needs DATABASE_URL
 stripe>=8.0.0              # billing webhook / checkout — needs STRIPE_* keys
-boto3>=1.34.0              # publish warehouse artifact to Cloudflare R2 (S3 API)
+boto3>=1.34.0              # R2 (S3 API): warehouse artifact, app uploads
 
 # Computer Vision & ML
 Pillow>=10.0.0             # cover-art thumbnails + painting-style analysis

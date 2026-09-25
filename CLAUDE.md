@@ -99,8 +99,13 @@ pip install -r requirements-dev.txt
 pytest                                                    # tests/app, fixture warehouse, no network
 uvicorn --factory src.app.main:create_app --reload        # needs data/plotline.duckdb (python -m src.db.warehouse)
 python -m src.app.cli make-admin you@example.com          # admin is never granted at sign-up
+python -m src.app.cli purge-claim-docs                    # D-040 retention (daily in GitHub Actions)
+alembic upgrade head                                      # app-state schema (prod); autogenerate after changing a repo.py table
+PLOTLINE_TEST_PG_URL=postgresql://... pytest              # same suite on Postgres
 ```
 
 - Modules own their tables (`repo.py`). Wiring happens only in `src/app/context.py`. Behaviour is swapped through registries named in `config/policy/app.yaml`.
 - Every title payload goes through `ctx.kpi.project(...)`. Visibility lives in `config/policy/kpis.yaml`, and undeclared fields are hidden.
 - The analytics DuckDB is read-only for the app (`src/app/market/warehouse.py`).
+- Schema changes need an Alembic revision (`migrations/`); `tests/app/test_migrations.py` fails on drift.
+- Deploy: `Dockerfile.app` + `fly.app.toml` (slim deps in `requirements-app.txt`); see `DEPLOYMENT.md` → "App backend".

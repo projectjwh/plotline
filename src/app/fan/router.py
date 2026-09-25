@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
 from src.app.context import AppContext
-from src.app.deps import get_ctx, signed_in, viewer
+from src.app.deps import get_ctx, signed_in, verified, viewer
 from src.app.entitlement.service import Viewer
 
 router = APIRouter(tags=["fan"])
@@ -35,7 +35,7 @@ class WishIn(BaseModel):
 
 
 @router.put("/ratings/{comic_id:path}", summary="Rate a title 1–10 (optional review)")
-def rate(comic_id: str, body: RatingIn, v: Viewer = Depends(signed_in), ctx: AppContext = Depends(get_ctx)):
+def rate(comic_id: str, body: RatingIn, v: Viewer = Depends(verified), ctx: AppContext = Depends(get_ctx)):
     return ctx.fan.rate(v, comic_id, body.score, body.review)
 
 
@@ -65,7 +65,7 @@ def my_follows(v: Viewer = Depends(signed_in), ctx: AppContext = Depends(get_ctx
 
 
 @router.post("/lists", status_code=201)
-def create_list(body: ListIn, v: Viewer = Depends(signed_in), ctx: AppContext = Depends(get_ctx)):
+def create_list(body: ListIn, v: Viewer = Depends(verified), ctx: AppContext = Depends(get_ctx)):
     return ctx.fan.create_list(v, body.name, body.public)
 
 
@@ -75,17 +75,17 @@ def get_list(list_id: str, v: Viewer = Depends(viewer), ctx: AppContext = Depend
 
 
 @router.post("/lists/{list_id}/items", status_code=201)
-def add_item(list_id: str, body: ListItemIn, v: Viewer = Depends(signed_in), ctx: AppContext = Depends(get_ctx)):
+def add_item(list_id: str, body: ListItemIn, v: Viewer = Depends(verified), ctx: AppContext = Depends(get_ctx)):
     return ctx.fan.add_to_list(v, list_id, body.title_key, body.note)
 
 
 @router.post("/lists/{list_id}/items/remove", status_code=204)
-def remove_item(list_id: str, body: ListItemIn, v: Viewer = Depends(signed_in), ctx: AppContext = Depends(get_ctx)):
+def remove_item(list_id: str, body: ListItemIn, v: Viewer = Depends(verified), ctx: AppContext = Depends(get_ctx)):
     ctx.fan.remove_from_list(v, list_id, body.title_key)
 
 
 @router.post("/wishlist/{comic_id:path}", summary="Wish for an adaptation (anime, drama, film, game)")
-def wish(comic_id: str, body: WishIn, v: Viewer = Depends(signed_in), ctx: AppContext = Depends(get_ctx)):
+def wish(comic_id: str, body: WishIn, v: Viewer = Depends(verified), ctx: AppContext = Depends(get_ctx)):
     return ctx.fan.wish(v, comic_id, body.medium)
 
 

@@ -65,3 +65,27 @@ class LocalFSStorage:
         p = self._path(key)
         if os.path.exists(p):
             os.remove(p)
+
+
+@doc_storages.register("blob")
+class BlobDocStorage:
+    """Claim documents in any BlobStore (``local`` or ``r2``) under the ``claims/`` prefix."""
+
+    def __init__(self, store, **_):
+        self.store = store
+
+    def put(self, data: bytes) -> tuple[str, str]:
+        mime, ext = sniff(data)
+        key = f"{secrets.token_hex(16)}.{ext}"
+        self.store.put(f"claims/{key}", data, mime)
+        return key, mime
+
+    def get(self, key: str) -> tuple[bytes, str]:
+        if not _KEY.match(key):
+            raise NotFound("document not found")
+        data = self.store.get(f"claims/{key}")
+        return data, sniff(data)[0]
+
+    def delete(self, key: str) -> None:
+        if _KEY.match(key):
+            self.store.delete(f"claims/{key}")

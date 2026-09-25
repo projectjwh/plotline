@@ -251,33 +251,71 @@ Here `title_key` and `entity_ref` are the warehouse keys (`dim_title.title_key`,
 
 The event bus is in-process for the MVP, behind an interface, so a queue can replace it later without changing any module.
 
-## 8. Implementation status (Phase 2a: backend core)
+## 8. Implementation status (Phase 2a core + Phase 2b deployable backend)
 
 Implemented in `src/app/`. Run it with `uvicorn --factory src.app.main:create_app --reload`, then open `/docs` for the full OpenAPI.
-Tests: `pytest` (43 tests in `tests/app`, using a fixture warehouse with the real column names).
+Tests: `pytest` runs 85 tests in `tests/app`, using a fixture warehouse with the real column names. Set `PLOTLINE_TEST_PG_URL` to run the same suite on Postgres.
+
+```mermaid
+flowchart LR
+  subgraph Vercel
+    FE[Next.js frontend]
+  end
+  subgraph Fly["Fly.io · plotline-app (Dockerfile.app)"]
+    MW["request id → body cap → write limits → CORS"] --> API[FastAPI modules]
+    API -->|read-only| WH[(plotline.duckdb<br/>downloaded on boot)]
+  end
+  FE -->|HTTPS + Bearer JWT| MW
+  API --> PG[(Neon Postgres<br/>app state · Alembic)]
+  API --> R2[(R2 private bucket<br/>claims/ · media/)]
+  API --> RS[Resend<br/>verify · reset mail]
+  API -.guarded fetch.-> WEB[linked sites<br/>OpenGraph]
+  GHA[GitHub Actions] -->|daily| PURGE[purge-claim-docs]
+  GHA -->|refresh| WHP[warehouse artifact] --> WH
+  PURGE --> PG & R2
+```
 
 | Module | Replaceable seam (registry name in `config/policy/app.yaml`) | Endpoints |
 |---|---|---|
-| identity | `AuthProvider` (`builtin_jwt`) | `POST /auth/register`, `POST /auth/login`, `GET /me` |
+| identity | `AuthProvider` (`builtin_jwt`), `EmailSender` (`console` \| `resend`) | `POST /auth/register`, `/auth/login`, `/auth/verify/request`, `/auth/verify/confirm`, `/auth/password/forgot`, `/auth/password/reset`, `GET/PATCH /me` |
 | entitlement | policy `config/policy/entitlements.yaml` | (used by all; admins grant plans while billing is off) |
 | kpi | policy `config/policy/kpis.yaml` | `GET /kpis/catalog` |
 | market | `Warehouse` adapter | `/market/overview`, `/market/indices[/{code}]`, `/market/movers`, `/market/breadth`, `/market/listings`, `/market/treemap`, `/titles`, `/titles/{id}`, `/search`, `/genres`, `/publishers`, `/credits/{author,publisher}/{name}` |
-| community | `PromotionRule` (`threshold`) | `/fanboards`, `/fanboards/by/{kind}/{ref}`, `/fanboards/{id}/posts`, `/posts/{id}` (GET, PATCH, `/delete`, `/comments`), `/comments/{id}/delete`, `/votes`, `/reports`, `/boards` |
+| community | `PromotionRule` (`threshold`) | `/fanboards`, `/fanboards/by/{kind}/{ref}`, `/fanboards/{id}/posts` (`?lang=`), `/posts/{id}` (GET, PATCH, `/delete`, `/comments`), `/comments/{id}/delete`, `/votes`, `/reports`, `/boards` |
 | fan | `RatingAggregator` (`bayesian`), `ScoutRule` (`lead_time`) | `/ratings/{id}`, `/reviews/{id}`, `/follows`, `/me/follows`, `/lists…`, `/wishlist[/{id}]`, `/users/{handle}`, `/scouts` |
-| verification | `DocStorage` (`local_fs`) | `POST /claims` (multipart), `GET /claims/mine` |
+| feed | sources in `feed.sources` (`posts`, `rank_moves`, `new_titles`, `episodes`) | `GET /feed` (`cursor`, `limit`, `lang`, `kinds`) |
+| media | `BlobStore` (`local` \| `r2`) | `POST /media`, `GET /media/{id}` |
+| embeds | `Fetcher` (`urllib`) | (link previews inside `GET /posts/{id}`) |
+| verification | `DocStorage` (`blob` \| `local_fs`) | `POST /claims` (multipart), `GET /claims/mine`, `POST /claims/{id}/withdraw` |
 | valuation | `ValuationModel` (`revenue_multiple`) | `/premium/valuation/{id}` |
 | premium | policy `entitlements.yaml` | `/premium/titles/{id}`, `/premium/compare`, `/premium/screener`, `/premium/portfolio` |
-| admin | — | `/admin/claims…`, `/admin/grants`, `/admin/reports…`, `/admin/bans`, `/admin/moderators`, `/admin/events/rising` |
+| admin | — | `/admin/claims…`, `/admin/grants`, `/admin/reports…`, `/admin/bans`, `/admin/moderators`, `/admin/events/rising`, `/admin/media/{id}/remove` |
+| ops | — | `/health` (process up), `/ready` (app DB and warehouse readable; 503 otherwise) |
+
+New app-state tables in Phase 2b:
+- `auth_attempts`
+- `media`
+- `embeds`
+- `users.email_verified_at`, `users.token_version`, `users.locale`
+- `posts.lang`, `posts.media`, `posts.links`, `comments.lang`
+- `claims.docs_purged_at`
+
+All of them are in Alembic revision `0001`.
 
 Operational notes:
-- Admin rights are granted only through `python -m src.app.cli make-admin <email>`, never at sign-up, because emails are not verified.
-- Production requires `PLOTLINE_JWT_SECRET` (at least 32 characters) and `PLOTLINE_IP_SALT`. `DATABASE_URL` switches the app DB to Postgres (install `psycopg`).
-- Valuation multiples are `null` until the product owner sets them. Until then the API returns the revenue band plus `valuation: null` and a reason.
-- Not implemented yet (next iterations):
+- **Admin rights** are granted only through `python -m src.app.cli make-admin <email>` (D-015).
+- **Production** (`PLOTLINE_ENV=prod`) refuses the dev defaults:
+  - JWT secret under 32 characters or the default IP salt
+  - the `console` email sender
+  - the `local` blob store
+
+  It also skips `create_all`, because the schema comes from `alembic upgrade head`.
+- **Valuation multiples** are `null` until the product owner sets them (O-10).
+- **Security decisions** of this phase: D-032 (tokens, throttle, timing), D-035 (image decoding limits), D-036 (link-fetch guards), D-042 (client IP, body caps).
+- **Not implemented yet:**
   - the Next.js frontend
-  - a Stripe webhook to replace admin grants
-  - email verification and password reset
-  - login and registration throttling
-  - a pipeline hook that emits `episode.released` / `title.entered_rising`
-  - an R2/S3 `DocStorage`
+  - Stripe (D-039)
+  - pipeline events and publisher extraction (Phase 2c, O-15, O-23)
+  - upcoming listings (O-24)
+  - an egress proxy for link previews (O-19)
   - batch badge resolution in fanboard listings (currently one entitlement lookup per author per page)

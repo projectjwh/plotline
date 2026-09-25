@@ -70,6 +70,46 @@ python -m src.reports.build_explorer --out reports/leesearch_explorer.html
    runs daily (and on demand with an `enrich` count) → new data goes live with **no redeploy**.
    For a guaranteed heavy crawl, run locally and let `publish_warehouse.py` push the artifact.
 
+## App backend (`src/app`, Phase 2b)
+
+The accounts, fanboards, feed, media and claims API is a separate Fly app (`plotline-app`). It reads the same published warehouse, keeps its state in Neon, and keeps uploads in a **private** R2 bucket. Decisions: D-031 to D-042 in `docs/product/decisions.md`.
+
+**Accounts you create** (not done from this repo):
+- a Neon project
+- a private R2 bucket plus an API token scoped to it
+- a Resend account with a verified sending domain
+- the Fly app
+
+**Secrets** (`fly secrets set -a plotline-app KEY=value …`; the full list is in `fly.app.toml`):
+
+| Secret | Value |
+|---|---|
+| `DATABASE_URL` | Neon connection string |
+| `PLOTLINE_JWT_SECRET` | ≥ 32 random characters (`python -c "import secrets;print(secrets.token_urlsafe(48))"`) |
+| `PLOTLINE_IP_SALT` | random; hashes guest IPs |
+| `PLOTLINE_WAREHOUSE_URL` | https URL of the published `plotline.duckdb` |
+| `PLOTLINE_CORS_ORIGINS`, `PLOTLINE_APP_BASE_URL` | the frontend origin |
+| `PLOTLINE_EMAIL_SENDER=resend`, `RESEND_API_KEY`, `PLOTLINE_EMAIL_FROM` | email |
+| `PLOTLINE_BLOB_STORE=r2`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_APP_BUCKET` | uploads |
+| `PLOTLINE_CLIENT_IP_HEADER` (optional) | a proxy header holding the client IP. Unset = rightmost `X-Forwarded-For` entry (D-042, O-18) |
+
+**First deploy:**
+```bash
+fly apps create plotline-app
+fly secrets set -a plotline-app DATABASE_URL=... PLOTLINE_JWT_SECRET=... # etc.
+fly deploy -c fly.app.toml          # release command: alembic upgrade head
+# grant yourself admin after signing up and confirming your email
+fly ssh console -a plotline-app -C "python -m src.app.cli make-admin you@example.com"
+```
+
+**Migrations:** edit a table in a module's `repo.py`, then run `alembic revision --autogenerate -m "..."` and review the file. `pytest` fails if the models and migrations drift. The next deploy applies the revision.
+
+**Daily jobs:** `.github/workflows/claim-docs-purge.yml` deletes claim documents 90 days after the decision (D-040). It needs the same secrets as repository secrets, and skips itself while `DATABASE_URL` is unset.
+
+**Not verified from this sandbox:**
+- `docker build` (no Docker daemon here). Instead, the image's file set and `requirements-app.txt` were installed into a clean venv and smoke-tested with uvicorn.
+- Fly's `release_command` key and client-IP header (fly.io was unreachable) — O-18.
+
 ## Turning on billing (after the gates below)
 
 ```bash

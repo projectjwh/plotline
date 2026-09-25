@@ -41,11 +41,18 @@ def make_engine(url: str) -> Engine:
     return create_engine(url, pool_pre_ping=True, future=True)
 
 
-def create_all(engine: Engine) -> None:
-    # import every repo so its tables register on `metadata`
+def load_tables() -> None:
+    """Import every module that declares tables so they register on ``metadata``."""
     from src.app.community import repo as _c  # noqa: F401
     from src.app.entitlement import repo as _e  # noqa: F401
     from src.app.fan import repo as _f  # noqa: F401
     from src.app.identity import repo as _i  # noqa: F401
     from src.app.verification import repo as _v  # noqa: F401
+    from src.app.media import service as _m  # noqa: F401
+    from src.app.embeds import service as _em  # noqa: F401
+
+
+def create_all(engine: Engine) -> None:
+    """Tests and SQLite dev only. Production schema changes go through Alembic (migrations/)."""
+    load_tables()
     metadata.create_all(engine)

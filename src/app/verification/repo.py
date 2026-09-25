@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 
 from sqlalchemy import Column, DateTime, ForeignKey, String, Table, Text, insert, select, update
 from sqlalchemy.engine import Engine
@@ -15,12 +16,13 @@ claims = Table(
     Column("entity_ref", String(255), nullable=False),    # comic_id | author name | publisher name | firm name
     Column("entity_name", String(255), nullable=False),
     Column("role", String(120)),
-    Column("status", String(10), nullable=False),         # pending | approved | rejected | revoked
+    Column("status", String(10), nullable=False),         # pending | approved | rejected | revoked | withdrawn
     Column("doc_keys", Text, nullable=False),             # JSON list of storage keys
     Column("reviewer_id", String(32)),
     Column("review_note", String(1000)),
     Column("created_at", DateTime, nullable=False),
     Column("reviewed_at", DateTime),
+    Column("docs_purged_at", DateTime),                   # D-040: documents deleted, decision kept
 )
 
 
@@ -67,3 +69,20 @@ class ClaimRepo:
         with self.e.begin() as c:
             c.execute(update(claims).where(claims.c.id == claim_id)
                       .values(status=status, reviewer_id=reviewer_id, review_note=note, reviewed_at=now()))
+
+    def withdraw(self, claim_id: str) -> bool:
+        """pending → withdrawn in one conditional update; False if the claim was decided meanwhile."""
+        with self.e.begin() as c:
+            return c.execute(update(claims).where(claims.c.id == claim_id, claims.c.status == "pending")
+                             .values(status="withdrawn", reviewed_at=now())).rowcount == 1
+
+    def due_for_purge(self, decided_before: datetime) -> list[dict]:
+        """Decided claims whose documents are still stored and whose decision is older than the cutoff."""
+        with self.e.connect() as c:
+            return [_decode(r) for r in c.execute(select(claims).where(
+                claims.c.status != "pending", claims.c.reviewed_at.is_not(None),
+                claims.c.reviewed_at < decided_before, claims.c.docs_purged_at.is_(None))).mappings()]
+
+    def mark_purged(self, claim_id: str) -> None:
+        with self.e.begin() as c:
+            c.execute(update(claims).where(claims.c.id == claim_id).values(doc_keys="[]", docs_purged_at=now()))

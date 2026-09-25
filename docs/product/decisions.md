@@ -18,7 +18,8 @@ Architecture and product decisions for the Plotline revamp, newest last. **Appen
 | D-001 … D-011 | 2026-09-24/25 | Product and personas |
 | D-012 … D-019 | 2026-09-25 | Backend architecture |
 | D-020 … D-027 | 2026-09-25 | Frontend and design |
-| O-01 … O-16 | open | Outstanding decisions |
+| D-031 … D-043 | 2026-09-25 | Phase 2b: deployable backend |
+| O-01 … O-24 | open / resolved | Outstanding decisions |
 
 ---
 
@@ -164,15 +165,109 @@ Architecture and product decisions for the Plotline revamp, newest last. **Appen
 
 ---
 
+## Phase 2b: deployable backend
+
+Survey answers from the backend discussion, plus decisions made while building. Evidence: 85 tests pass on SQLite and on a local Postgres 16. A uvicorn smoke test ran against the image's file set: sign-up → verify → image post → feed.
+
+**D-031 · Hosting: keep the documented stack.** Accepted. [owner] Resolves O-11.
+- API: Fly.io, as a new app `plotline-app` (`fly.app.toml`, `Dockerfile.app`). The legacy `plotline-api` (`fly.toml`) stays until it is retired.
+- App state: Neon Postgres. Analytics: the DuckDB warehouse, downloaded on boot from `PLOTLINE_WAREHOUSE_URL`.
+- Uploads (claim documents, images): a **private** R2 bucket (`R2_APP_BUCKET`), separate from the public warehouse bucket.
+- Frontend on Vercel; scheduled jobs on GitHub Actions.
+- Behind a `BlobStore` registry (`local` | `r2`). Production refuses `local`.
+
+**D-032 · Accounts: Resend email, verification gate, reset, throttling.** Accepted. [owner: Resend] Resolves O-12.
+- Email goes through an `EmailSender` registry (`resend` | `console`). Production refuses `console`.
+- **What needs a confirmed email:** rating, wishes, lists, claims, image uploads, and posting under an account. Guests can still post text.
+- **Tokens:** each has one purpose (`access` | `verify` | `reset`) and carries the user's `token_version`. A password reset bumps the version, which signs out every session and makes the reset link single-use.
+- **Throttling:** DB-backed (`auth_attempts`), per email and per IP hash, 5 failures per 15 minutes. It is in the DB because machines scale to zero.
+- **Timing:** login checks a dummy hash for unknown emails, so the response time doesn't reveal which accounts exist. [code review finding]
+- **Known trade-offs:**
+  - Anyone who knows a user's email can lock that account out for 15 minutes by failing 5 times.
+  - Sign-up still answers "email already registered".
+  - Both are left as is; see O-22.
+
+**D-033 · Personal feed, computed when it is read.** Accepted. [owner: feed] Resolves O-01 (the backend side; the screen is still to design).
+- `GET /feed` merges four sources, newest first:
+  - posts in the fanboards of followed titles
+  - rank moves of followed titles, with the `rising` flag
+  - new listings by followed authors and publishers
+  - new episodes (`fact_episode.upload_date`)
+- Paging uses an opaque cursor over (at, id). Sources are switched on in `app.yaml` (`feed.sources`).
+- **No feed table (fan-out on read).** Results stay correct after unfollows and deletions, at the cost of per-request work. A stored fan-out can replace it behind the same endpoint.
+- **Windows:** posts count back from now. Market events count back from the warehouse's latest crawl date, so a late data refresh does not empty the feed.
+- **Title payloads** go through the KPI projector.
+
+**D-034 · English and Korean.** Accepted. [owner] Resolves O-02.
+- `posts.lang` and `comments.lang` are `en` | `ko`. They default to the account's `users.locale`, and lists accept `?lang=`.
+- The API returns stable error `code`s; the frontend owns the EN/KR text.
+- Title names exist in one language only in the warehouse: O-20.
+
+**D-035 · Images in posts.** Accepted. [owner] Resolves O-04 (images; spoiler blocks remain a frontend item).
+- **Upload:** `POST /media` accepts JPEG, PNG, WebP or GIF, checked by magic bytes, at most 5 MB.
+- **Re-encoding:** every image is re-encoded with Pillow, which drops EXIF and GPS, and capped at 2048 px on the long edge. Random keys are stored in the private bucket.
+- **Decoding limits:** at most 40M pixels per frame, 200 frames, and 200M pixels in total. These are checked from the header, before decoding, because Pillow only raises at twice its own limit. [code review finding]
+- **Posts:** up to 10 images, and only your own. There is a per-user hourly limit.
+- **Moderation:** `POST /admin/media/{id}/remove` removes an image everywhere.
+- **Serving:** `nosniff` and `Content-Security-Policy: default-src 'none'`.
+
+**D-036 · Link previews, with guards against server-side request forgery.** Accepted. [owner: link embeds]
+- **Fetch rules:**
+  - http and https only, default ports only, no credentials in the URL
+  - every resolved address must be globally routable
+  - redirects are followed by hand, at most 3, and every hop is re-checked
+  - 3 s timeout, 512 KB, `text/html` only
+- Fetching runs after the response (a background task). Results are cached in `embeds`.
+- **Deny list:** `community.embed_deny_domains` suppresses previews. The operator edits it; it is not automated filtering.
+- **Residual risk:** DNS can change between the check and the connection (DNS rebinding). See O-19.
+
+**D-037 · Guests post text and links; images need an account.** Accepted. [proposal, accepted in the Phase 2b plan] Resolves O-03.
+- Manual moderation combined with anonymous image uploads is the riskiest combination.
+- One line (`community.guest_images: true`) reverses this.
+
+**D-038 · Moderation is manual only at launch.** Accepted. [owner] Resolves O-14.
+- It uses reports, the moderator queue, bans (account or IP hash) and image removal. There are no automated spam or toxicity filters.
+
+**D-039 · Billing waits for the first verified customers.** Accepted. [owner] Resolves O-13.
+- Until then, admins grant plans.
+- Prices (O-09) and base multiples (O-10) stay placeholders.
+
+**D-040 · Claim documents are deleted 90 days after the decision.** Accepted. [owner] Resolves O-16.
+- `python -m src.app.cli purge-claim-docs` runs daily (`.github/workflows/claim-docs-purge.yml`). It empties `doc_keys` and sets `docs_purged_at`, and keeps the decision record.
+- The window is `verification.retention_days_after_decision`.
+- `POST /claims/{id}/withdraw` withdraws a pending claim and deletes its documents immediately. It is a conditional update, so it cannot race an approval.
+- Pending claims are never purged.
+
+**D-041 · Schema changes go through Alembic.** Accepted. [proposal, accepted in the Phase 2b plan]
+- `migrations/` holds revision 0001, which equals the current models.
+- Production runs `alembic upgrade head` as Fly's release command. `create_all` runs only outside production.
+- A test and CI fail if the models change without a migration (`alembic check`).
+- CI (`app-tests.yml`) runs the suite on SQLite and on Postgres 16.
+
+**D-042 · HTTP operations.** Accepted. [proposal; the IP rule is a code review finding]
+- **Logs:** JSON in production. Every request gets an `X-Request-ID` (echoed when it is well-formed). The access log records the path only, never the query string.
+- **Body caps:** 12 MB by default. `/claims` gets its own cap, derived from the verification policy (files × size + 1 MB).
+- **Write limits:** per-IP limits on writes, set in `http.rate_limits`. They are kept in memory, so they are per machine and reset on restart; the DB-backed limits (login, posts per minute, images per hour) are the durable ones.
+- **Client IP:** behind a proxy, only the **rightmost** `X-Forwarded-For` entry is trusted, or a header named in `PLOTLINE_CLIENT_IP_HEADER`.
+  - The previous code took the leftmost entry, which the client controls, so IP bans and limits could be evaded.
+  - uvicorn runs with `--no-proxy-headers` so it doesn't rewrite the peer address.
+
+**D-043 · Phase 2c scope: data.** Accepted. [owner]
+- Pipeline events (`episode.released`, `title.entered_rising`), publisher extraction (`dim_publisher`) and upcoming listings. See O-15.
+
+---
+
 ## Outstanding decisions
+
+Resolved items keep their row, with the decision that resolved them.
 
 ### Frontend
 | ID | Question | Why it matters | My suggestion |
 |---|---|---|---|
-| O-01 | Is the market overview the fans' home page, or does fans' home start with their feed (followed titles, new episodes, concept posts) with the market one click away? | Fans' first impression and retention | A feed-first home for signed-in fans, the market page for everyone else |
-| O-02 | Launch languages: KR, EN or both? This includes board culture terms (개념글, ㅇㅇ). | Copy, SEO and moderation staffing | EN + KR, since both reference communities are Korean |
-| O-03 | In production, may people post anonymously without an account (true DCInside guests)? | Spam and moderation load vs. friction | Yes on fanboards, with rate limits and an IP-hash ban list; ratings and wishes need an account |
-| O-04 | Media in posts: images, spoiler blocks, embeds? | Storage cost, moderation, copyright (piracy links) | Spoiler blocks at launch; images once moderation tooling exists |
+| O-01 | **Resolved → D-033.** Is the market overview the fans' home page, or does fans' home start with their feed (followed titles, new episodes, concept posts) with the market one click away? | Fans' first impression and retention | A feed-first home for signed-in fans, the market page for everyone else |
+| O-02 | **Resolved → D-034.** Launch languages: KR, EN or both? This includes board culture terms (개념글, ㅇㅇ). | Copy, SEO and moderation staffing | EN + KR, since both reference communities are Korean |
+| O-03 | **Resolved → D-037.** In production, may people post anonymously without an account (true DCInside guests)? | Spam and moderation load vs. friction | Yes on fanboards, with rate limits and an IP-hash ban list; ratings and wishes need an account |
+| O-04 | **Resolved → D-035.** Media in posts: images, spoiler blocks, embeds? | Storage cost, moderation, copyright (piracy links) | Spoiler blocks at launch; images once moderation tooling exists |
 | O-05 | Are premium panels shown to fans as locked teasers? | Conversion vs. clutter | Keep the teasers (current design) |
 | O-06 | Mobile: responsive web only, or apps later? | Scope and push notifications for episode threads | Responsive web and PWA first |
 | O-07 | Brand: keep "Plotline"? Keep the ticker-style title codes (e.g. TOLE)? | Identity; codes need a uniqueness rule | Keep both; generate codes deterministically |
@@ -183,10 +278,17 @@ Architecture and product decisions for the Plotline revamp, newest last. **Appen
 |---|---|---|
 | O-09 | Plan prices for Author, Publisher and Investor | Billing and landing page |
 | O-10 | Valuation base multiples (low, mid, high) and adjustment weights | The valuation stays null until set (D-009) |
-| O-11 | Hosting: the repo has Fly, Render, Vercel and Cloudflare configs. Pick one API host and a Postgres provider. | Cost and ops |
-| O-12 | A transactional email provider, for account verification and password reset | Needed before public sign-up |
-| O-13 | When to switch on Stripe (billing flag) | Revenue timing |
-| O-14 | Automated moderation (spam or toxicity filters) at launch? | Moderator load |
+| O-11 | **Resolved → D-031.** Hosting: the repo has Fly, Render, Vercel and Cloudflare configs. Pick one API host and a Postgres provider. | Cost and ops |
+| O-12 | **Resolved → D-032.** A transactional email provider, for account verification and password reset | Needed before public sign-up |
+| O-13 | **Resolved → D-039.** When to switch on Stripe (billing flag) | Revenue timing |
+| O-14 | **Resolved → D-038.** Automated moderation (spam or toxicity filters) at launch? | Moderator load |
 | O-15 | Real-data gaps: publisher extraction is empty (`dim_publisher`), and the pipeline doesn't emit `episode.released` or `title.entered_rising` | Portfolio, episode threads and scout points depend on them |
 | O-17 | Confirm the font stock.naver.com actually uses (DevTools → Computed → font-family), and choose the production font delivery: subset vs self-hosted | Brand match; page weight |
-| O-16 | Data retention for claim documents, and deletion on request | Privacy and compliance |
+| O-16 | **Resolved → D-040.** Data retention for claim documents, and deletion on request | Privacy and compliance |
+| O-18 | Confirm Fly's client-IP header (`Fly-Client-IP`?) and the `[deploy] release_command` key against Fly's docs. fly.io was blocked from this sandbox, so they could not be checked here. | Correct IP bans and limits; migrations on deploy |
+| O-19 | Route link-preview fetches through an egress proxy that allows only public ranges (closes the DNS-rebinding gap in D-036) | Server-side request forgery |
+| O-20 | Bilingual title names (`title_ko` / `title_en`) need source data; the warehouse has one name per title | KR/EN search and display |
+| O-21 | Machine size for `plotline-app` (512 MB is a starting point, not measured) | Cost vs. out-of-memory restarts |
+| O-22 | Account-enumeration and lockout trade-offs in D-032: accept, or add CAPTCHA / email-only sign-up responses | Abuse vs. friction |
+| O-23 | Phase 2c: pipeline events (`episode.released`, `title.entered_rising`) | Episode threads, scout points, real-time feed items |
+| O-24 | Phase 2c: upcoming listings (announced titles) | The "IPO" banner |

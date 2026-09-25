@@ -33,6 +33,13 @@ class Settings:
     ip_hash_salt: str = "dev-ip-salt"
     cors_origins: list[str] = field(default_factory=lambda: ["http://localhost:3000"])
     trust_proxy: bool = False
+    app_base_url: str = "http://localhost:3000"      # frontend origin used in email links
+    resend_api_key: str | None = None
+    email_from: str = "Plotline <no-reply@plotline.app>"
+    max_body_mb: int = 12
+    warehouse_url: str | None = None                 # published plotline.duckdb, downloaded on boot if missing
+    client_ip_header: str | None = None              # e.g. Fly-Client-IP; otherwise rightmost X-Forwarded-For
+    rate_limits: bool = True                         # the test fixture turns the in-memory limiter off
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -48,6 +55,12 @@ class Settings:
         s.ip_hash_salt = e("PLOTLINE_IP_SALT", s.ip_hash_salt)
         s.cors_origins = _csv(e("PLOTLINE_CORS_ORIGINS")) or s.cors_origins
         s.trust_proxy = e("PLOTLINE_TRUST_PROXY", "false").lower() == "true"
+        s.app_base_url = e("PLOTLINE_APP_BASE_URL", s.app_base_url)
+        s.resend_api_key = e("RESEND_API_KEY")
+        s.email_from = e("PLOTLINE_EMAIL_FROM", s.email_from)
+        s.max_body_mb = int(e("PLOTLINE_MAX_BODY_MB", s.max_body_mb))
+        s.warehouse_url = e("PLOTLINE_WAREHOUSE_URL") or None
+        s.client_ip_header = e("PLOTLINE_CLIENT_IP_HEADER") or None
         s.validate()
         return s
 

@@ -34,11 +34,14 @@ posts = Table(
     *_author_cols(),
     Column("title", String(200), nullable=False),
     Column("body", Text, nullable=False),
+    Column("lang", String(2), nullable=False, default="en"),      # en | ko (D-034)
     Column("up", Integer, nullable=False, default=0),
     Column("down", Integer, nullable=False, default=0),
     Column("views", Integer, nullable=False, default=0),
     Column("is_concept", Boolean, nullable=False, default=False),
     Column("is_notice", Boolean, nullable=False, default=False),
+    Column("media", Text),        # JSON list of attached images (D-035)
+    Column("links", Text),        # JSON list of URLs found in the body (D-036)
     Column("created_at", DateTime, nullable=False, index=True),
     Column("edited_at", DateTime),
     Column("deleted_at", DateTime),
@@ -51,6 +54,7 @@ comments = Table(
     Column("parent_id", String(32), ForeignKey("comments.id")),
     *_author_cols(),
     Column("body", Text, nullable=False),
+    Column("lang", String(2), nullable=False, default="en"),      # en | ko (D-034)
     Column("up", Integer, nullable=False, default=0),
     Column("down", Integer, nullable=False, default=0),
     Column("created_at", DateTime, nullable=False, index=True),
@@ -161,7 +165,8 @@ class CommunityRepo:
         with self.e.begin() as c:
             c.execute(update(posts).where(posts.c.id == post_id).values(views=posts.c.views + 1))
 
-    def list_posts(self, fanboard_id: str, *, concept_only: bool, notices_only: bool, limit: int, offset: int):
+    def list_posts(self, fanboard_id: str, *, concept_only: bool, notices_only: bool, limit: int, offset: int,
+                   lang: str | None = None):
         cc = (select(func.count(comments.c.id)).where(comments.c.post_id == posts.c.id, comments.c.deleted_at.is_(None))
               .scalar_subquery().label("comment_count"))
         q = (select(posts, cc).where(posts.c.fanboard_id == fanboard_id, posts.c.deleted_at.is_(None))
@@ -170,6 +175,23 @@ class CommunityRepo:
             q = q.where(posts.c.is_concept.is_(True))
         if notices_only:
             q = q.where(posts.c.is_notice.is_(True))
+        if lang:
+            q = q.where(posts.c.lang == lang)
+        with self.e.connect() as c:
+            return [dict(r) for r in c.execute(q).mappings()]
+
+    def posts_in_title_boards(self, title_keys: list[str], since: datetime, lang: str | None, limit: int) -> list[dict]:
+        """Recent live posts in the fanboards of the given titles, newest first (for the feed)."""
+        if not title_keys:
+            return []
+        cc = (select(func.count(comments.c.id)).where(comments.c.post_id == posts.c.id, comments.c.deleted_at.is_(None))
+              .scalar_subquery().label("comment_count"))
+        q = (select(posts, cc).select_from(posts.join(fanboards, posts.c.fanboard_id == fanboards.c.id))
+             .where(fanboards.c.kind == "title", fanboards.c.ref.in_(title_keys), posts.c.deleted_at.is_(None),
+                    posts.c.created_at >= since)
+             .order_by(posts.c.created_at.desc()).limit(limit))
+        if lang:
+            q = q.where(posts.c.lang == lang)
         with self.e.connect() as c:
             return [dict(r) for r in c.execute(q).mappings()]
 

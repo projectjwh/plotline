@@ -100,6 +100,11 @@ def add_mod(body: ModIn, v: Viewer = Depends(admin), ctx: AppContext = Depends(g
     ctx.community.add_moderator(v, body.fanboard_id, body.user_id)
 
 
+@router.post("/media/{media_id}/remove", status_code=204, summary="Remove an image for everyone")
+def remove_media(media_id: str, v: Viewer = Depends(admin), ctx: AppContext = Depends(get_ctx)):
+    ctx.media.remove(media_id)
+
+
 @router.post("/events/rising", summary="Fire title.entered_rising (until the pipeline emits it)")
 def rising(body: RisingIn, v: Viewer = Depends(admin), ctx: AppContext = Depends(get_ctx)):
     ctx.market.title(body.title_key)

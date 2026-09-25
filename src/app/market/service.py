@@ -230,3 +230,83 @@ class MarketService:
                 "titles": u.height, "indices": idx, "breadth": self.breadth(),
                 "gainers": self.movers("gainers", limit), "losers": self.movers("losers", limit),
                 "rank_up": self.movers("rank_up", limit), "listings": self.listings()[:limit]}
+
+    # ---------- feed events (D-033) ----------
+    def as_of(self) -> date | None:
+        """Latest crawl date in the warehouse."""
+        d = self.daily()
+        return d["date"].max() if d.height else None
+
+    FEED_TITLE_COLS = ["comic_id", "title", "genre_parent", "author", "publisher", "platform", "cover",
+                       "latest_rank", "rank_change", "rising", "views_change_pct", "first_seen"]
+
+    def _title_brief(self, r: dict) -> dict:
+        return {k: _jsonable(r.get(k)) for k in self.FEED_TITLE_COLS}
+
+    def rank_moves(self, comic_ids: set[str]) -> list[dict]:
+        """Latest day-over-day rank change for each followed title that moved."""
+        if not comic_ids:
+            return []
+        u = self.universe().filter(pl.col("comic_id").is_in(list(comic_ids)) & pl.col("rank_change").is_not_null()
+                                   & (pl.col("rank_change") != 0))
+        return [{"at": _day(r["last_date"]), "title": self._title_brief(r)} for r in u.iter_rows(named=True)]
+
+    def new_titles_by(self, authors: set[str], publishers: set[str], days: int) -> list[dict]:
+        """Titles first listed within ``days`` whose author or publisher is followed (case-insensitive)."""
+        a, p = {x.lower() for x in authors}, {x.lower() for x in publishers}
+        out = []
+        for r in self.listings(days):
+            via = [{"type": col, "ref": r[col]} for col, followed in (("author", a), ("publisher", p))
+                   if r.get(col) and r[col].lower() in followed]
+            if via:
+                out.append({"at": _day(r["first_seen"]), "via": via, "title": self._title_brief(r)})
+        return out
+
+    def episodes(self, comic_ids: set[str], since: date) -> list[dict]:
+        """Episodes of followed titles released on or after ``since``.
+
+        Uses ``fact_episode.upload_date`` when the warehouse build has it (the silver
+        episodes table does; the star-schema variant does not). Otherwise returns [].
+        """
+        if not comic_ids or "fact_episode" not in self.wh.tables():
+            return []
+        cols = self.wh.columns("fact_episode")
+        idc = "comic_id" if "comic_id" in cols else "title_key" if "title_key" in cols else None
+        if not idc or "upload_date" not in cols or "episode_no" not in cols:
+            return []
+        extra = ", episode_title" if "episode_title" in cols else ", NULL AS episode_title"
+        ids = sorted(comic_ids)
+        df = self.wh.frame(f"SELECT {idc} AS comic_id, episode_no, CAST(upload_date AS VARCHAR) AS upload_date{extra} "
+                           f"FROM fact_episode WHERE {idc} IN ({', '.join('?' * len(ids))})", ids)
+        titles = {r["comic_id"]: r for r in self.universe().filter(pl.col("comic_id").is_in(ids)).iter_rows(named=True)}
+        out = []
+        for r in df.iter_rows(named=True):
+            d = parse_upload_date(r["upload_date"])
+            if d and d >= since and r["comic_id"] in titles:
+                out.append({"at": _day(d), "episode_no": r["episode_no"], "episode_title": r["episode_title"],
+                            "title": self._title_brief(titles[r["comic_id"]])})
+        return out
+
+
+def _day(d) -> str | None:
+    if d is None:
+        return None
+    if isinstance(d, str):          # rows() already serialised it
+        d = date.fromisoformat(d[:10])
+    if isinstance(d, datetime):
+        return d.replace(tzinfo=None).isoformat(timespec="seconds")
+    return datetime(d.year, d.month, d.day).isoformat(timespec="seconds")
+
+
+def parse_upload_date(s) -> date | None:
+    """Platform date strings seen in silver episodes (same formats as src/models/episode_analytics._parse_date)."""
+    if s is None:
+        return None
+    if isinstance(s, date):
+        return s if not isinstance(s, datetime) else s.date()
+    for fmt in ("%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%b. %d, %Y"):
+        try:
+            return datetime.strptime(str(s).strip(), fmt).date()
+        except ValueError:
+            continue
+    return None

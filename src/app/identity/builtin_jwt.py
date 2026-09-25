@@ -39,13 +39,20 @@ class BuiltinJWTProvider:
     def verify_password(self, hashed: str, password: str) -> bool:
         return verify_secret(hashed, password)
 
-    def issue_token(self, user_id: str) -> str:
+    def issue_token(self, user_id: str, *, version: int = 0, purpose: str = "access",
+                    ttl_minutes: int | None = None) -> str:
+        """Sign a token for one purpose (access, verify, reset). ``version`` is the user's
+        token_version at issue time: bumping it (password reset) invalidates older tokens."""
         now = datetime.now(timezone.utc)
-        return jwt.encode({"sub": user_id, "iat": now, "exp": now + timedelta(minutes=self.ttl)},
+        exp = now + timedelta(minutes=ttl_minutes or self.ttl)
+        return jwt.encode({"sub": user_id, "ver": version, "pur": purpose, "iat": now, "exp": exp},
                           self.secret, algorithm=self.ALG)
 
-    def decode_token(self, token: str) -> str:
+    def decode_token(self, token: str, purpose: str = "access") -> dict:
         try:
-            return jwt.decode(token, self.secret, algorithms=[self.ALG])["sub"]
+            claims = jwt.decode(token, self.secret, algorithms=[self.ALG])
         except jwt.PyJWTError as e:
             raise Unauthorized(f"invalid token: {e.__class__.__name__}") from None
+        if claims.get("pur") != purpose:
+            raise Unauthorized("token is not valid for this action")
+        return claims

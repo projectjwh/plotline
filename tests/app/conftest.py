@@ -1,6 +1,7 @@
 """Fixtures: a tiny analytics warehouse with the real column names, plus a fresh app DB per test."""
 from __future__ import annotations
 
+import os
 from datetime import date, datetime, timedelta
 
 import duckdb
@@ -8,6 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.app.core.config import ROOT, Settings
+from src.app.core.db import load_tables, make_engine, metadata
 from src.app.main import create_app
 
 ADMIN = "admin@plotline.test"
@@ -65,16 +67,36 @@ def build_warehouse(path: str) -> None:
     con.execute("""CREATE TABLE fact_title_daily (comic_id VARCHAR, source VARCHAR, title VARCHAR, scraped_at TIMESTAMP,
         date DATE, rank INTEGER, views BIGINT, likes BIGINT, subscribers BIGINT, comments BIGINT)""")
     con.executemany("INSERT INTO fact_title_daily VALUES (?,?,?,?,?,?,?,?,?,?)", _daily_rows())
+    # silver-episodes layout (src/db/warehouse.py): platform date strings, one malformed
+    con.execute("""CREATE TABLE fact_episode (comic_id VARCHAR, episode_no INTEGER, episode_title VARCHAR,
+        upload_date VARCHAR, likes BIGINT)""")
+    con.executemany("INSERT INTO fact_episode VALUES (?,?,?,?,?)", [
+        ("tapas_io:3", 41, "Ep. 41 - The Ninth Flame", "Sep 23, 2026", 900),
+        ("tapas_io:3", 40, "Ep. 40", "Aug 1, 2026", 800),           # older than the feed window
+        ("tapas_io:3", 39, "Ep. 39", "not a date", 700),             # unparseable: skipped
+        ("webtoon_global:6", 12, "Ep. 12", "2026-09-22", 500)])      # not followed in the tests
     con.close()
+
+
+def _app_db_url(tmp_path) -> str:
+    """SQLite per test by default. Set PLOTLINE_TEST_PG_URL to run the suite on Postgres (schema reset per test)."""
+    pg = os.environ.get("PLOTLINE_TEST_PG_URL")
+    if not pg:
+        return f"sqlite:///{tmp_path / 'app.db'}"
+    load_tables()
+    eng = make_engine(pg)
+    metadata.drop_all(eng)
+    eng.dispose()
+    return pg
 
 
 @pytest.fixture
 def settings(tmp_path) -> Settings:
     wh = tmp_path / "plotline.duckdb"
     build_warehouse(str(wh))
-    return Settings(env="test", app_db_url=f"sqlite:///{tmp_path / 'app.db'}", warehouse_path=str(wh),
+    return Settings(env="test", app_db_url=_app_db_url(tmp_path), warehouse_path=str(wh),
                     doc_storage_dir=str(tmp_path / "docs"), policy_dir=str(ROOT / "config" / "policy"),
-                    jwt_secret="test-secret-" + "x" * 32, ip_hash_salt="test-salt")
+                    jwt_secret="test-secret-" + "x" * 32, ip_hash_salt="test-salt", rate_limits=False)
 
 
 @pytest.fixture
@@ -87,12 +109,26 @@ def client(app):
     return TestClient(app)
 
 
-def register(client, handle: str, email: str | None = None) -> tuple[dict, dict]:
+def register(client, handle: str, email: str | None = None, verify: bool = True) -> tuple[dict, dict]:
     r = client.post("/auth/register", json={"email": email or f"{handle}@x.test", "password": "correct-horse-1",
                                             "handle": handle})
     assert r.status_code == 201, r.text
     body = r.json()
+    if verify:
+        confirm_email(client, email or f"{handle}@x.test")
     return body["user"], {"Authorization": f"Bearer {body['token']}"}
+
+
+def last_token(client, email: str, kind: str = "verify") -> str:
+    """Read the newest emailed link for ``email`` from the console sender and return its token."""
+    mails = [m for m in client.app.state.ctx.mailer.outbox if m["to"] == email and f"/{kind}?token=" in m["text"]]
+    assert mails, f"no {kind} email for {email}"
+    return mails[-1]["text"].split("token=")[1].split()[0]
+
+
+def confirm_email(client, email: str) -> None:
+    r = client.post("/auth/verify/confirm", json={"token": last_token(client, email)})
+    assert r.status_code == 200, r.text
 
 
 def make_admin(client, email: str = ADMIN) -> tuple[dict, dict]:

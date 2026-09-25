@@ -1,6 +1,7 @@
 """Fanboards, posts, comments, votes, reports and moderation (DCInside-style)."""
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Callable
@@ -8,12 +9,20 @@ from typing import Callable
 from src.app.community import anon
 from src.app.community.repo import CommunityRepo, comments, posts
 from src.app.community.rules import PromotionRule
+from src.app.embeds.service import extract_urls
 from src.app.core.errors import Conflict, Forbidden, Invalid, NotFound, RateLimited
 from src.app.core.db import now
 from src.app.entitlement.service import Viewer
 from src.app.identity.builtin_jwt import hash_secret, verify_secret
 
 KINDS = {"title", "genre", "free"}
+
+
+def _no_media(owner: str, ids: list[str]) -> list[dict]:
+    if ids:
+        raise Invalid("images are not enabled")
+    return []
+LANGS = {"en", "ko"}
 
 
 @dataclass
@@ -29,10 +38,14 @@ class CommunityService:
     def __init__(self, repo: CommunityRepo, rule: PromotionRule, cfg: dict, salt: str, *,
                  title_lookup: Callable[[str], dict | None], genre_exists: Callable[[str], bool],
                  badge: Callable[[Viewer, dict], bool], viewer_for: Callable[[str], Viewer],
-                 handle_for: Callable[[str], str | None]):
+                 handle_for: Callable[[str], str | None],
+                 attach_media: Callable[[str, list[str]], list[dict]] | None = None,
+                 link_previews: Callable[[list[str]], list[dict]] | None = None):
         self.repo, self.rule, self.cfg, self.salt = repo, rule, cfg, salt
         self.title_lookup, self.genre_exists, self.badge = title_lookup, genre_exists, badge
         self._viewer_for, self._handle_for = viewer_for, handle_for  # resolvers owned by identity/entitlement
+        self._attach_media = attach_media or _no_media
+        self._link_previews = link_previews or (lambda urls: [{"url": u} for u in urls])
 
     # ---------- identity helpers ----------
     def _keys(self, a: Actor) -> tuple[str, str]:
@@ -54,6 +67,13 @@ class CommunityService:
         if not (1 <= len(nick) <= 20) or not a.password or len(a.password) < 4:
             raise Invalid("guests need a nickname (1–20 chars) and a password (≥ 4 chars)")
         return {**base, "user_id": None, "anon_nick": nick, "anon_pw_hash": hash_secret(a.password)}
+
+    @staticmethod
+    def _lang(a: Actor, lang: str | None) -> str:
+        lang = lang or (a.viewer.user or {}).get("locale") or "en"
+        if lang not in LANGS:
+            raise Invalid("lang must be en or ko")
+        return lang
 
     def _rate(self, table, key: str, per_min: int) -> None:
         if self.repo.count_recent(table, key, now() - timedelta(minutes=1)) >= per_min:
@@ -112,9 +132,14 @@ class CommunityService:
         out["created_at"] = row["created_at"].isoformat() if row.get("created_at") else None
         out["author"] = {"guest": not row["user_id"], "name": row.get("handle") or row["anon_nick"],
                          "ip_prefix": row["ip_prefix"] if not row["user_id"] else None, "verified_owner": verified}
-        for k in ("title", "views", "is_concept", "is_notice", "comment_count", "parent_id", "post_id"):
+        for k in ("title", "views", "is_concept", "is_notice", "comment_count", "parent_id", "post_id", "lang"):
             if k in row:
                 out[k] = row[k]
+        if "media" in row:
+            out["media"] = json.loads(row["media"] or "[]") if not row.get("deleted_at") else []
+        if body and "links" in row:
+            links = json.loads(row["links"] or "[]") if not row.get("deleted_at") else []
+            out["embeds"] = self._link_previews(links)
         if body:
             out["body"] = row["body"] if not row.get("deleted_at") else None
         out["deleted"] = bool(row.get("deleted_at"))
@@ -126,15 +151,18 @@ class CommunityService:
         return row
 
     # ---------- posts ----------
-    def list_posts(self, fanboard_id: str, *, tab: str = "all", limit: int = 30, offset: int = 0) -> dict:
+    def list_posts(self, fanboard_id: str, *, tab: str = "all", limit: int = 30, offset: int = 0,
+                   lang: str | None = None) -> dict:
         g = self._fanboard(fanboard_id)
         if tab not in {"all", "concept", "notice"}:
             raise Invalid("tab must be all, concept or notice")
         rows = self.repo.list_posts(fanboard_id, concept_only=tab == "concept", notices_only=tab == "notice",
-                                    limit=min(limit, 100), offset=offset)
+                                    limit=min(limit, 100), offset=offset,
+                                    lang=lang if lang in LANGS else None)
         return {"fanboard": g, "items": [self._present(self._with_handle(r), g, body=False) for r in rows]}
 
-    def create_post(self, a: Actor, fanboard_id: str, title: str, body: str, notice: bool = False) -> dict:
+    def create_post(self, a: Actor, fanboard_id: str, title: str, body: str, notice: bool = False,
+                    lang: str | None = None, media_ids: list[str] | None = None) -> dict:
         g = self._fanboard(fanboard_id)
         title, body = title.strip(), body.strip()
         if not title or len(title) > self.cfg.get("max_title_len", 120):
@@ -147,9 +175,23 @@ class CommunityService:
             t = self.title_lookup(g["ref"]) if g["kind"] == "title" else None
             if not (self._can_moderate(a.viewer, fanboard_id) or (t and self.badge(a.viewer, t))):
                 raise Forbidden("only moderators and verified owners can post notices")
+        attached = self._attach_media(fields["voter_key"], media_ids or [])
+        links = extract_urls(body, self.cfg.get("max_links_per_post", 3))
         row = self.repo.insert(posts, {"fanboard_id": fanboard_id, **fields, "title": title, "body": body,
-                                       "up": 0, "down": 0, "views": 0, "is_concept": False, "is_notice": notice})
+                                       "up": 0, "down": 0, "views": 0, "is_concept": False, "is_notice": notice,
+                                       "lang": self._lang(a, lang), "media": json.dumps(attached),
+                                       "links": json.dumps(links)})
         return self._present(self._with_handle(row), g)
+
+    def feed_posts(self, title_keys: list[str], since, lang: str | None, limit: int) -> list[dict]:
+        rows = self.repo.posts_in_title_boards(title_keys, since, lang if lang in LANGS else None, limit)
+        boards = self.repo.fanboards_by_ids({r["fanboard_id"] for r in rows})
+        out = []
+        for r in rows:
+            g = boards[r["fanboard_id"]]
+            out.append({**self._present(self._with_handle(r), g, body=False),
+                        "fanboard": {"id": g["id"], "ref": g["ref"], "name": g["name"]}})
+        return out
 
     def get_post(self, post_id: str, *, count_view: bool = True) -> dict:
         p = self.repo.get(posts, post_id)
@@ -188,7 +230,7 @@ class CommunityService:
         self.repo.patch(table, target_id, deleted_at=now())
 
     # ---------- comments ----------
-    def comment(self, a: Actor, post_id: str, body: str, parent_id: str | None = None) -> dict:
+    def comment(self, a: Actor, post_id: str, body: str, parent_id: str | None = None, lang: str | None = None) -> dict:
         p = self.repo.get(posts, post_id)
         if not p or p["deleted_at"]:
             raise NotFound("post not found")
@@ -202,7 +244,7 @@ class CommunityService:
         fields = self._author_fields(a)
         self._rate(comments, fields["voter_key"], self.cfg.get("comments_per_minute", 10))
         row = self.repo.insert(comments, {"post_id": post_id, "parent_id": parent_id, **fields, "body": body,
-                                          "up": 0, "down": 0})
+                                          "up": 0, "down": 0, "lang": self._lang(a, lang)})
         return self._present(self._with_handle(row), self._fanboard(p["fanboard_id"]))
 
     # ---------- votes ----------

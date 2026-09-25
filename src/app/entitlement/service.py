@@ -27,6 +27,10 @@ class Viewer:
         return self.user["id"] if self.user else None
 
     @property
+    def verified(self) -> bool:
+        return bool(self.user and self.user.get("email_verified_at"))
+
+    @property
     def is_premium(self) -> bool:
         return bool(self.personas) or self.is_admin
 

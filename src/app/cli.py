@@ -2,6 +2,7 @@
 
     python -m src.app.cli make-admin someone@example.com
     python -m src.app.cli revoke-admin someone@example.com
+    python -m src.app.cli purge-claim-docs       # daily: delete claim documents 90 days after the decision
 
 Admin rights are never granted at sign-up (emails are not verified), only here.
 """
@@ -14,6 +15,10 @@ from src.app.core.config import Settings
 
 
 def main(argv: list[str]) -> int:
+    if argv == ["purge-claim-docs"]:
+        n = AppContext(Settings.from_env()).verification.purge_documents()
+        print(f"purged documents of {n} decided claim(s)")
+        return 0
     if len(argv) != 2 or argv[0] not in ("make-admin", "revoke-admin"):
         print(__doc__)
         return 2

@@ -4,13 +4,46 @@ could replace it later.
 """
 from __future__ import annotations
 
+import logging
 import os
+import tempfile
 import threading
+import urllib.request
 
 import duckdb
 import polars as pl
 
 from src.app.core.errors import Unavailable
+
+log = logging.getLogger("plotline.app")
+
+
+def ensure_warehouse(path: str, url: str | None) -> bool:
+    """Make the warehouse file exist before the app reads it (ported from src/api/warehouse_loader.py).
+
+    A local file (baked image, volume, dev build) wins. Otherwise the published artifact is
+    downloaded from ``url`` to a temporary file and swapped in atomically. Returns whether a
+    file is present afterwards; a failed download is logged and ``/ready`` reports it.
+    """
+    if os.path.exists(path) and os.path.getsize(path) > 0:
+        return True
+    if not url:
+        log.warning("warehouse: no file at %s and PLOTLINE_WAREHOUSE_URL is unset", path)
+        return False
+    if not url.startswith("https://"):
+        raise RuntimeError("PLOTLINE_WAREHOUSE_URL must be https")
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    tmp = tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(path) or ".", suffix=".part").name
+    try:
+        urllib.request.urlretrieve(url, tmp)  # noqa: S310 — operator-set https URL
+        os.replace(tmp, path)
+        log.info("warehouse: downloaded %.1f MB", os.path.getsize(path) / 1e6)
+        return True
+    except Exception:
+        log.exception("warehouse: download failed")
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        return False
 
 
 class Warehouse:
@@ -35,6 +68,12 @@ class Warehouse:
                 self._con = duckdb.connect(self.path, read_only=True)
                 self._mtime = v
             return self._con.cursor()
+
+    def ready(self) -> bool:
+        try:
+            return "fact_title" in self.tables()
+        except Exception:
+            return False
 
     def tables(self) -> set[str]:
         return {r[0] for r in self._cursor().execute(

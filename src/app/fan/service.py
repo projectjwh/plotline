@@ -76,6 +76,10 @@ class FanService:
     def following(self, v: Viewer) -> list[dict]:
         return [_iso(r) for r in self.repo.user_follows(_need_user(v))]
 
+    def follows_of(self, user_id: str) -> list[dict]:
+        """Raw follow rows for another module (the feed)."""
+        return self.repo.user_follows(user_id)
+
     def follower_count(self, target_type: str, ref: str) -> int:
         return self.repo.follower_count(target_type, ref)
 

@@ -1,8 +1,19 @@
 # Tunable product behaviour. Every value here is a policy choice, not a fact.
 # Values marked TBD must be set by the product owner before they take effect.
 
+http:
+  # per-IP limits on writes, in memory per machine (D-031). The DB-backed limits below are the durable ones.
+  rate_limits:
+    write: 60/minute                # any POST/PUT/PATCH/DELETE
+    /auth/: 20/minute
+    /media: 30/minute
+
 identity:
   provider: builtin_jwt
+  email_sender: console            # console (dev/tests) | resend (prod; needs RESEND_API_KEY)
+  verify_ttl_minutes: 1440
+  reset_ttl_minutes: 30
+  throttle: {max_failures: 5, window_minutes: 15}   # per email and per IP hash
 
 market:
   base_index: 1000
@@ -25,6 +36,19 @@ community:
   comments_per_minute: 10
   max_title_len: 120
   max_body_len: 20000
+  # images (D-035): accounts only by default because moderation is manual (D-038)
+  guest_images: false
+  max_image_mb: 5
+  max_image_edge: 2048
+  max_images_per_post: 10
+  images_per_hour: 30
+  # link previews (D-036): the deny list only suppresses previews; it is operator-edited, not automated
+  max_links_per_post: 3
+  embed_fetcher: urllib
+  embed_deny_domains: []
+
+storage:
+  blobs: local                      # local (dev/tests) | r2 (prod; env PLOTLINE_BLOB_STORE overrides)
 
 fan:
   rating_aggregator: bayesian
@@ -35,8 +59,15 @@ fan:
   scout_max_points: 500
   wishlist_media: [anime, drama, film, game]
 
+feed:                               # D-033: computed on read from what the user follows
+  sources: [posts, rank_moves, new_titles, episodes]
+  window_days: 14
+  max_page: 50
+  posts_limit: 200                  # newest posts considered per request
+
 verification:
-  storage: local_fs
+  storage: blob                     # claim documents go through the blob store above
+  retention_days_after_decision: 90 # D-040: documents deleted 90 days after approve/reject
   max_file_mb: 10
   max_files: 5
   claim_types: [author, publisher, title, investor_entity]

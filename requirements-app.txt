@@ -1,0 +1,18 @@
+# Runtime for the app backend container (Dockerfile.app). Only what src/app imports:
+# no scraping, ML or notebook packages. Keep in step with requirements.txt.
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.0
+python-multipart>=0.0.9      # uploads (claims, media)
+sqlalchemy>=2.0
+alembic>=1.13                # migrations (fly release command)
+psycopg[binary]>=3.1         # Neon Postgres
+argon2-cffi>=23.1
+pyjwt>=2.8
+pyyaml>=6.0
+duckdb>=0.9                  # read-only analytics warehouse
+polars>=0.20
+pyarrow>=14.0                # DuckDB -> Polars
+slowapi>=0.1.9               # brings `limits` (write rate limits)
+boto3>=1.34                  # Cloudflare R2 (S3 API)
+Pillow>=10.0                 # image re-encode (strips EXIF)

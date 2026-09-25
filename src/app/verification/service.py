@@ -1,9 +1,10 @@
 """Ownership and authority claims, reviewed by hand (spec §2 and §7)."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable
 
+from src.app.core.db import now
 from src.app.core.errors import Conflict, Forbidden, Invalid, NotFound, Unauthorized
 from src.app.core.events import CLAIM_APPROVED, CLAIM_REVOKED, EventBus
 from src.app.entitlement.service import Viewer
@@ -68,6 +69,33 @@ class VerificationService:
         if not v.user_id:
             raise Unauthorized("sign in")
         return [_public(c) for c in self.repo.for_user(v.user_id)]
+
+    def withdraw(self, v: Viewer, claim_id: str) -> dict:
+        """The user withdraws a pending claim; its documents are deleted now (D-040)."""
+        c = self.repo.get(claim_id)
+        if not c or c["user_id"] != v.user_id:
+            raise NotFound("claim not found")
+        if c["status"] != "pending" or not self.repo.withdraw(claim_id):
+            raise Conflict("only a pending claim can be withdrawn")
+        self._delete_docs(c)
+        return _public(self.repo.get(claim_id))
+
+    # ---------- retention (D-040) ----------
+    def _delete_docs(self, c: dict) -> None:
+        for k in c["doc_keys"]:
+            self.storage.delete(k)   # deleting a missing key is a no-op, so a retried purge is safe
+        self.repo.mark_purged(c["id"])
+
+    def purge_documents(self, at: datetime | None = None) -> int:
+        """Delete the documents of claims decided more than ``retention_days_after_decision`` ago.
+
+        The claim row (who, what, decision, reviewer, note, dates) is kept as the record.
+        """
+        days = self.cfg.get("retention_days_after_decision", 90)
+        due = self.repo.due_for_purge((at or now()) - timedelta(days=days))
+        for c in due:
+            self._delete_docs(c)
+        return len(due)
 
     # ---------- admin ----------
     def _admin(self, v: Viewer) -> None:

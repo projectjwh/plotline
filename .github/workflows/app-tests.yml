@@ -1,0 +1,55 @@
+name: app-tests
+
+# The app backend (src/app): tests on SQLite and on Postgres, migration drift, and the
+# demo's colour-contrast check. Installs the slim runtime (requirements-app.txt), not the
+# scraping/ML stack.
+on:
+  push:
+    paths: ["src/app/**", "src/models/earnings.py", "src/models/genre_map.py", "tests/app/**", "config/policy/**",
+            "migrations/**", "alembic.ini", "requirements-app.txt", "pytest.ini", "docs/product/demo.html",
+            "docs/product/tools/**", ".github/workflows/app-tests.yml"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: plot
+          POSTGRES_PASSWORD: plot
+          POSTGRES_DB: plotline_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U plot" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements-app.txt "pytest>=8.0" "httpx>=0.27"
+
+      - name: Tests (SQLite)
+        run: pytest -q
+
+      - name: Tests (Postgres)
+        env:
+          PLOTLINE_TEST_PG_URL: postgresql://plot:plot@localhost:5432/plotline_test
+        run: pytest -q
+
+      - name: Migrations apply cleanly on Postgres and match the models
+        env:
+          PLOTLINE_APP_DB_URL: postgresql://plot:plot@localhost:5432/plotline_test
+        run: |
+          psql "$PLOTLINE_APP_DB_URL" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+          alembic upgrade head
+          alembic check
+
+      - name: Demo colour contrast (WCAG)
+        run: python docs/product/tools/contrast_check.py
