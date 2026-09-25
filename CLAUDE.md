@@ -81,3 +81,26 @@ All scraping targets, CSS selectors, delays, storage paths, and processing param
 - Scraper output follows `data/bronze/{source_name}/{YYYY-MM-DD}/` directory structure.
 - Report filenames include timestamps or dates for idempotency.
 - Deduplication is always done by `(comic_id, date)` pair, keeping the latest snapshot.
+
+## Product revamp (in progress)
+
+Plotline is being repositioned as **IMDb + DCInside for story IP**: free fans (fanboards, ratings, wishlist), and paid authors, publishers and IP investors (verified by manual document review).
+- Product spec, persona × KPI matrix and flywheel: `docs/product/product-spec.md`
+- Modular Phase 2 architecture: `docs/product/architecture.md` (module = service + repo + router; replaceable behaviour via registered Protocol implementations; policy in config)
+- Wireframes (19 screens): `docs/product/wireframes.html`
+- Decision log (append an entry for every decision): `docs/product/decisions.md`
+- Frontend demo structure, theming and extension points: `docs/product/frontend-guide.md`; use the `add-screen` skill for new screens
+- Adding or changing a KPI: use the `add-kpi` skill (`.claude/skills/add-kpi/SKILL.md`); never gate KPIs inside route handlers.
+
+### App backend (Phase 2a, `src/app/`)
+
+```bash
+pip install -r requirements-dev.txt
+pytest                                                    # tests/app, fixture warehouse, no network
+uvicorn --factory src.app.main:create_app --reload        # needs data/plotline.duckdb (python -m src.db.warehouse)
+python -m src.app.cli make-admin you@example.com          # admin is never granted at sign-up
+```
+
+- Modules own their tables (`repo.py`). Wiring happens only in `src/app/context.py`. Behaviour is swapped through registries named in `config/policy/app.yaml`.
+- Every title payload goes through `ctx.kpi.project(...)`. Visibility lives in `config/policy/kpis.yaml`, and undeclared fields are hidden.
+- The analytics DuckDB is read-only for the app (`src/app/market/warehouse.py`).

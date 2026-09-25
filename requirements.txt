@@ -20,6 +20,12 @@ fastapi>=0.110.0
 uvicorn[standard]>=0.27.0
 slowapi>=0.1.9              # per-IP rate limiting (gracefully skipped if absent)
 
+# App backend (src/app): accounts, community, entitlements
+sqlalchemy>=2.0            # app-state DB (SQLite dev, Postgres prod)
+argon2-cffi>=23.1          # password + guest-password hashing
+pyjwt>=2.8                 # bearer tokens
+python-multipart>=0.0.9    # claim document uploads
+
 # Deployment (SaaS) — used only when the matching env vars are set; imported lazily.
 psycopg[binary]>=3.1.0     # Neon Postgres: app state (api_keys, plans) — needs DATABASE_URL
 stripe>=8.0.0              # billing webhook / checkout — needs STRIPE_* keys

@@ -1,0 +1,4 @@
+# Test/dev tooling for the Phase 2 app backend (src/app)
+-r requirements.txt
+pytest>=8.0
+httpx>=0.27

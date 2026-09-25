@@ -1,0 +1,54 @@
+# Tunable product behaviour. Every value here is a policy choice, not a fact.
+# Values marked TBD must be set by the product owner before they take effect.
+
+identity:
+  provider: builtin_jwt
+
+market:
+  base_index: 1000
+  listing_window_days: 30
+  rising_min_rank_change: 3        # a rank gain of at least this many places sets the "rising" flag
+  index_min_constituents: 3        # genres with fewer titles get no index
+
+readiness:                          # port of template.html:614-625
+  weights: {reach: 0.30, eng: 0.15, mom: 0.12, complete: 0.18, depth: 0.10, prior: 0.15}
+  default_prior: 0.6
+  genre_priors: {Fantasy: 0.92, Action: 0.88, Romance: 0.82, Drama: 0.78, Adventure: 0.8, Sci-fi: 0.72,
+                 Science fiction: 0.72, Thriller: 0.72, Historical: 0.66, Supernatural: 0.74, Mystery: 0.66,
+                 Horror: 0.62, Comedy: 0.6, Slice of life: 0.55, Sports: 0.52, LitRPG: 0.6, Isekai: 0.85}
+
+community:
+  promotion_rule: threshold
+  concept_min_up: 10                # starting point to tune; DCInside's own criteria are not public
+  concept_min_ratio: 0.8
+  posts_per_minute: 3               # per account or per guest IP hash
+  comments_per_minute: 10
+  max_title_len: 120
+  max_body_len: 20000
+
+fan:
+  rating_aggregator: bayesian
+  rating_prior_mean: 7.0            # starting point to tune
+  rating_prior_weight: 20           # votes of prior weight (spec §8 uses 20 as the density threshold)
+  scout_rule: lead_time
+  scout_points_per_day: 3
+  scout_max_points: 500
+  wishlist_media: [anime, drama, film, game]
+
+verification:
+  storage: local_fs
+  max_file_mb: 10
+  max_files: 5
+  claim_types: [author, publisher, title, investor_entity]
+
+valuation:
+  model: revenue_multiple
+  # Base multiples on modeled ANNUAL revenue. TBD: no public dataset of story-IP deal
+  # multiples was found, so none are asserted. While null, the API returns the
+  # revenue band and valuation: null.
+  base_multiple: {low: null, mid: null, high: null}
+  adjustment:
+    momentum_weight: 0.4            # × (momentum_pct − 0.5)
+    completed_bonus: 0.1
+    platform_weight: 0.1            # × ln(platform_count)
+    clamp: [0.5, 2.0]
