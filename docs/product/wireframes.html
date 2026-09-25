@@ -1,0 +1,499 @@
+<title>Plotline Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F5F7; --surface:#FFFFFF; --sunk:#E9ECF0; --ink:#1C2129; --muted:#646C78; --line:#C8CDD5; --line-2:#DDE1E7;
+  --link:#2D5B86; --link-bg:#E3ECF5; --prem:#9A5F12; --prem-bg:#F6EBDC; --ok:#2F6B45; --ok-bg:#E1EFE6; --bad:#9B3131; --bad-bg:#F5E2E2;
+  --hatch:repeating-linear-gradient(135deg,#D9DDE3 0 1px,transparent 1px 7px);
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --bg:#14171C; --surface:#1C2027; --sunk:#232830; --ink:#E3E6EA; --muted:#98A0AB; --line:#39414C; --line-2:#2C323B;
+  --link:#86AED6; --link-bg:#1F2F40; --prem:#DDA35A; --prem-bg:#3A2C18; --ok:#7DC096; --ok-bg:#1B3024; --bad:#E08C8C; --bad-bg:#3A1F1F;
+  --hatch:repeating-linear-gradient(135deg,#2E343D 0 1px,transparent 1px 7px);}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --bg:#14171C; --surface:#1C2027; --sunk:#232830; --ink:#E3E6EA; --muted:#98A0AB; --line:#39414C; --line-2:#2C323B;
+  --link:#86AED6; --link-bg:#1F2F40; --prem:#DDA35A; --prem-bg:#3A2C18; --ok:#7DC096; --ok-bg:#1B3024; --bad:#E08C8C; --bad-bg:#3A1F1F;
+  --hatch:repeating-linear-gradient(135deg,#2E343D 0 1px,transparent 1px 7px);}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);margin:0}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+/* rail */
+.rail{border-right:1px solid var(--line);padding:20px 16px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto;background:var(--surface)}
+.brand{font:800 20px/1 var(--display);letter-spacing:-.01em}
+.brand small{display:block;font:500 11px/1.4 var(--mono);color:var(--muted);letter-spacing:.04em;margin-top:6px;text-transform:uppercase}
+.grp{margin-top:18px}
+.grp h3{font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px}
+.grp a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:4px;font-size:13px}
+.grp a span{font:500 11px var(--mono);color:var(--muted);min-width:24px}
+.grp a:hover{background:var(--sunk)}
+.grp a[aria-current="true"]{background:var(--link-bg);color:var(--link)}
+.grp a[aria-current="true"] span{color:var(--link)}
+.legend{margin-top:20px;font-size:12px;color:var(--muted);display:grid;gap:6px}
+/* main */
+main{padding-block:24px 64px;padding-inline:28px;min-width:0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:16px}
+.eyebrow{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 28px/1.1 var(--display);margin:4px 0 0;letter-spacing:-.015em;text-wrap:balance}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.seg button{font:500 12px var(--sans);border:0;background:transparent;color:var(--ink);padding:6px 10px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+/* frame */
+.frame{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-inline:auto;width:100%;transition:max-width .2s}
+.frame.phone{max-width:390px}
+.bar{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font:800 15px var(--display)}
+.search{flex:1;min-width:120px;height:28px;border:1px solid var(--line);border-radius:4px;background:var(--sunk);font-size:12px;color:var(--muted);display:flex;align-items:center;padding:0 8px}
+.nav{display:flex;gap:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.frame.phone .nav{display:none}
+.body{padding:16px;display:grid;gap:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>*{flex:1 1 200px;min-width:0}
+.row.tiles>*{flex:1 1 120px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.frame.phone .row>*{flex-basis:100%}
+.box{border:1px solid var(--line);border-radius:6px;padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
+.box h4{margin:0;font:700 13px var(--display);letter-spacing:.01em;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.box h4 small{font:400 11px var(--mono);color:var(--muted)}
+.ph{background:var(--hatch),var(--sunk);border:1px dashed var(--line);border-radius:4px;display:grid;place-items:center;color:var(--muted);font:500 11px var(--mono);text-align:center;padding:6px}
+.cover{aspect-ratio:3/4;max-width:100%}
+.line{height:8px;border-radius:2px;background:var(--line-2)}
+.w60{width:60%}.w80{width:80%}.w40{width:40%}
+.num{font:700 22px var(--display);font-variant-numeric:tabular-nums}
+.lbl{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.chip{display:inline-flex;gap:4px;align-items:center;font:500 11px var(--mono);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.chip.ok{border-color:transparent;background:var(--ok-bg);color:var(--ok)}
+.chip.bad{border-color:transparent;background:var(--bad-bg);color:var(--bad)}
+.chip.prem{border-color:transparent;background:var(--prem-bg);color:var(--prem)}
+.chip.link{border-color:transparent;background:var(--link-bg);color:var(--link)}
+.btn{font:600 12px var(--sans);border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:4px;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.prem{background:var(--prem);border-color:var(--prem);color:var(--surface)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}
+th{font:500 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;border-bottom:1px solid var(--line);padding:6px}
+td{border-bottom:1px solid var(--line-2);padding:6px;white-space:nowrap}
+td.t{white-space:normal;min-width:160px}
+td.r,th.r{text-align:right}
+tr.concept td{background:var(--link-bg)}
+.ip{color:var(--muted);font:400 11px var(--mono)}
+.badge{font:600 10px var(--mono);color:var(--ok);background:var(--ok-bg);border-radius:3px;padding:0 4px}
+.lock{position:relative;border:1px dashed var(--prem);border-radius:6px;padding:12px;overflow:hidden;min-height:120px}
+.lock .blur{filter:blur(3px);opacity:.55;display:grid;gap:8px;pointer-events:none}
+.lock .over{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;padding:12px;background:color-mix(in srgb,var(--surface) 55%,transparent)}
+.lock .over b{font:700 13px var(--display);color:var(--prem)}
+.lock .over p{margin:0;font-size:12px;color:var(--muted);max-width:32ch}
+.bars{display:grid;gap:4px}
+.bars div{display:grid;grid-template-columns:22px 1fr 36px;gap:6px;align-items:center;font:400 11px var(--mono);color:var(--muted)}
+.bars i{display:block;height:8px;background:var(--ink);opacity:.6;border-radius:2px}
+.band{position:relative;height:28px;border-radius:4px;background:var(--sunk);margin-top:6px}
+.band .rng{position:absolute;top:6px;bottom:6px;background:var(--prem-bg);border:1px solid var(--prem);border-radius:3px}
+.band .mid{position:absolute;top:2px;bottom:2px;width:2px;background:var(--prem)}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{font:500 11px var(--mono);padding:4px 8px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
+.steps span.on{border-color:var(--ink);color:var(--ink);font-weight:600}
+.steps span.done{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.field{display:grid;gap:4px}
+.field label{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.input{height:30px;border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:0 8px;display:flex;align-items:center;font-size:12px;color:var(--muted)}
+.input.area{height:80px;align-items:flex-start;padding-top:6px}
+.cmt{border-left:2px solid var(--line);padding-left:10px;display:grid;gap:2px;font-size:12.5px}
+.cmt.reply{margin-left:18px}
+.meta{font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.spark{width:100%;height:44px;display:block}
+.spark path.l{fill:none;stroke:var(--ink);stroke-width:1.5}
+.spark path.a{fill:var(--sunk)}
+.spark path.p{fill:none;stroke:var(--prem);stroke-width:1.5;stroke-dasharray:3 3}
+/* annotations */
+.notes{display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:10px}
+.note h5{margin:0;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.note p{margin:0;font-size:13px}
+.note ul{margin:0;padding-left:16px;display:grid;gap:4px;font-size:13px}
+.kpi{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;border-bottom:1px solid var(--line-2);padding-bottom:4px}
+.kpi code{font:400 11px var(--mono);color:var(--muted)}
+.mods{display:flex;gap:4px;flex-wrap:wrap}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
+.sample{font:500 11px var(--mono);color:var(--prem)}
+@media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}.notes{position:static}}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .grp-list{display:none}
+  main{padding-inline:16px}
+}
+.mobile-pick{display:none;margin-top:12px}
+.mobile-pick select{width:100%;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:13px var(--sans)}
+@media (max-width:760px){.mobile-pick{display:block}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">Plotline<small>Wireframes · Phase 1 · low fidelity</small></div>
+    <div class="mobile-pick"><label class="lbl" for="pick">Screen</label><select id="pick"></select></div>
+    <div class="grp-list" id="rail"></div>
+    <div class="legend">
+      <div><span class="chip">✔</span> shown to fans</div>
+      <div><span class="chip prem">🔒</span> premium (verified + paid)</div>
+      <div><span class="chip link">new</span> fan signal created on Plotline</div>
+      <div class="sample">All titles, names and numbers are sample data.</div>
+    </div>
+  </aside>
+  <main>
+    <div class="head">
+      <div><div class="eyebrow" id="eyebrow"></div><h1 id="title"></h1></div>
+      <div class="ctrls">
+        <div class="seg" role="group" aria-label="Frame width">
+          <button type="button" id="wDesk" aria-pressed="true">Desktop</button>
+          <button type="button" id="wPhone" aria-pressed="false">Phone</button>
+        </div>
+      </div>
+    </div>
+    <div class="layout">
+      <div><div class="frame" id="frame"></div>
+        <div class="pager"><button type="button" class="btn ghost" id="prev">← Previous</button><button type="button" class="btn ghost" id="next">Next →</button></div>
+      </div>
+      <div class="notes" id="notes"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bar=(active)=>`<div class="bar"><span class="logo">Plotline</span><div class="search">Search titles, authors, galleries…</div>
+<nav class="nav"><span${active==='home'?' style="color:var(--ink);font-weight:600"':''}>Home</span><span>Charts</span><span>Galleries</span><span>Wishlist</span><span>For creators & business</span></nav>
+<span class="chip">Sign in</span></div>`;
+const barPro=(who)=>`<div class="bar"><span class="logo">Plotline <span class="chip prem">${who}</span></span><div class="search">Search any title, author, publisher…</div>
+<nav class="nav"><span>Dashboard</span><span>Compare</span><span>Scouting</span><span>Market</span><span>Alerts</span></nav><span class="chip ok">✓ Verified</span></div>`;
+const barAdmin=`<div class="bar"><span class="logo">Plotline <span class="chip bad">Admin</span></span><nav class="nav"><span>Claims</span><span>Moderation</span><span>Galleries</span><span>Config</span></nav></div>`;
+const lines=(n)=>Array.from({length:n},(_,i)=>`<div class="line ${['w80','w60','','w40'][i%4]}"></div>`).join('');
+function spark(pts,cls='l',h=44){const w=200,mx=Math.max(...pts),mn=Math.min(...pts),sx=w/(pts.length-1),y=v=>h-4-((v-mn)/((mx-mn)||1))*(h-8);
+  const d=pts.map((v,i)=>`${i?'L':'M'}${(i*sx).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">${cls==='l'?`<path class="a" d="${d}L${w},${h}L0,${h}Z"/>`:''}<path class="${cls}" d="${d}"/></svg>`;}
+const hist=(v)=>`<div class="bars">${v.map((x,i)=>`<div><span>${10-i}</span><i style="width:${x}%"></i><span>${x}%</span></div>`).join('')}</div>`;
+const lock=(title,body,cta='Verify to unlock')=>`<div class="lock"><div class="blur">${body}</div><div class="over"><b>🔒 ${title}</b><p>Available to verified authors, publishers and IP investors.</p><span class="btn prem">${cta}</span></div></div>`;
+const kp=(n,l,extra='')=>`<div class="box"><span class="lbl">${l}</span><span class="num">${n}</span>${extra}</div>`;
+
+const S=[
+/* ---------------- FAN ---------------- */
+{g:'Fan · free',id:'home',t:'Home feed',
+ f:()=>`${bar('home')}<div class="body">
+ <div class="row"><div class="box"><h4>New episodes from what you follow <small>today</small></h4>
+  ${['Tower of Ash · Ep 142 · 318 comments','The Salt Archivist · Ch 57 · 94 comments','Nine Lanterns · Ep 23 · 41 comments'].map(x=>`<div class="meta" style="justify-content:space-between"><span style="color:var(--ink)">${x}</span><span class="chip">Episode thread →</span></div>`).join('')}</div>
+ <div class="box"><h4>Rising this week <small>rank Δ 7d</small></h4>
+  ${[['Nine Lanterns','▲ 41'],['Glass Orchard','▲ 33'],['Red Ledger','▲ 27']].map(([a,b])=>`<div class="meta" style="justify-content:space-between"><span style="color:var(--ink)">${a}</span><span class="chip ok">${b}</span></div>`).join('')}
+  <div class="meta"><span class="chip link">new</span> Followed early? You earn scout points.</div></div></div>
+ <div class="box"><h4>Concept posts across galleries <small>promoted by fan upvotes</small></h4>
+  <div class="tw"><table><tr><th>Gallery</th><th>Post</th><th>By</th><th class="r">Up</th></tr>
+  <tr><td>Tower of Ash</td><td class="t">Theory: the ash tower is the author's earlier novel's world</td><td>ㅇㅇ <span class="ip">(118.235)</span></td><td class="r">412</td></tr>
+  <tr><td>Romance Fantasy</td><td class="t">Every regression-villainess title ranked by pacing</td><td>lanternkeeper</td><td class="r">288</td></tr>
+  <tr><td>Glass Orchard</td><td class="t">Author notice: hiatus ends 3 Oct <span class="badge">✓ AUTHOR</span></td><td>M. Arden</td><td class="r">203</td></tr></table></div></div>
+ <div class="row"><div class="box"><h4>Adaptation wishlist <small>this week</small></h4>${lines(3)}<span class="btn ghost">Vote →</span></div>
+ <div class="box"><h4>Top fan-rated <small>weighted, ≥ 20 votes</small></h4>${lines(3)}</div></div></div>`,
+ n:{purpose:'Daily return surface. It combines what the fan follows (new episodes), what is moving (Rising), and what the community endorses (concept posts).',
+  loop:'Episode threads and concept posts make up the daily habit. The Rising list tells fans what scout points are for.',
+  kpis:[['PlotScore / rank Δ','✔','plotscore.py, fact_score'],['Rising badge','✔','trends_engine.py'],['Concept posts','new','community'],['Fan rating (weighted)','new','fan']],
+  mods:['market','community','fan']}},
+
+{g:'Fan · free',id:'charts',t:'Charts',
+ f:()=>`${bar()}<div class="body">
+ <div class="row"><div class="seg"><button aria-pressed="true">Trending</button><button>Rising</button><button>Fan-rated</button><button>Most wished</button></div>
+ <div class="seg"><button aria-pressed="true">All</button><button>Comics</button><button>Novels</button></div></div>
+ <div class="tw"><table><tr><th>#</th><th>Title</th><th>Platform</th><th class="r">PlotScore</th><th class="r">Fan ★</th><th class="r">Views</th><th>Cadence</th><th>7d</th></tr>
+ ${[['1','Tower of Ash','Webtoon','94','8.7','1.2B','1 / wk','—'],['2','The Salt Archivist','Royal Road','91','9.1','48M','3 / wk','▲2'],['3','Nine Lanterns','Tapas','88','8.2','120M','1 / wk','▲41'],['4','Red Ledger','Webnovel','86','7.9','310M','7 / wk','▲27'],['5','Glass Orchard','Tappytoon','84','8.9','64M','hiatus','▼3']].map(r=>`<tr><td>${r[0]}</td><td class="t">${r[1]}</td><td>${r[2]}</td><td class="r"><b>${r[3]}</b></td><td class="r">${r[4]}</td><td class="r">${r[5]}</td><td>${r[6]}</td><td>${r[7].startsWith('▲')?`<span class="chip ok">${r[7]}</span>`:r[7].startsWith('▼')?`<span class="chip bad">${r[7]}</span>`:r[7]}</td></tr>`).join('')}
+ </table></div>
+ <div class="meta">Views are rounded for fans. Exact series and revenue are premium.</div></div>`,
+ n:{purpose:'IMDb-style charts. The four tabs map to four signal types: market (Trending), momentum (Rising), community quality (Fan-rated) and demand (Most wished).',
+  loop:'"Most wished" makes the wishlist visible, and that visibility drives more votes.',
+  kpis:[['PlotScore','✔','plotscore.py'],['Views (rounded)','✔','fact_title_daily'],['Cadence','✔','episode_analytics.py:57'],['Wishlist votes','new','fan'],['Revenue','🔒 hidden','earnings.py']],
+  mods:['market','fan','kpi']}},
+
+{g:'Fan · free',id:'title',t:'Title page',
+ f:()=>`${bar()}<div class="body">
+ <div class="row"><div class="ph cover" style="flex:0 1 150px">cover</div>
+ <div style="flex:3 1 260px;display:grid;gap:8px;align-content:start">
+  <div class="eyebrow">Web comic · Fantasy › Dark fantasy · Ongoing</div>
+  <div style="font:800 24px/1.1 var(--display)">Tower of Ash</div>
+  <div class="meta">by <a href="#credits">H. Seo</a> (story) · <a href="#credits">K. Lim</a> (art) · Publisher: <a href="#credits">Studio Nara</a></div>
+  <div class="row tiles" style="gap:8px">
+   ${kp('94','PlotScore','<span class="meta">rank #1 · <span class="chip ok">Rising</span></span>')}
+   ${kp('8.7','Fan rating','<span class="meta">12,480 votes · <a href="#title">rate</a></span>')}
+   ${kp('9.4','Platform rating','<span class="meta">Webtoon</span>')}</div>
+  <div class="meta"><span class="chip">Where to read:</span><span class="chip">Webtoon EN</span><span class="chip">Naver KR</span><span class="chip">Ridi (novel)</span><span class="chip">3 platforms</span></div>
+  <div class="acts"><span class="btn">+ Follow</span><span class="btn ghost">Add to list</span><span class="btn ghost">Wish adaptation</span></div>
+ </div></div>
+ <div class="row"><div class="box"><h4>Rounded stats</h4><div class="meta">1.2B views · 4.1M subscribers · 1 ep / wk · 142 episodes · style: Dark & moody</div></div>
+ <div class="box"><h4>Fan rating distribution</h4>${hist([38,24,14,9,6,4,2,1,1,1])}</div></div>
+ <div class="row"><div class="box"><h4>Gallery <small>2,314 posts · 18 concept</small></h4>
+  <div class="meta" style="color:var(--ink)">Theory: the ash tower is the author's earlier novel's world</div><div class="meta" style="color:var(--ink)">Ep 142 thread: that last panel <span class="chip">318</span></div><a href="#gallery">Open gallery →</a></div>
+ <div class="box"><h4>Reviews <small>top by helpful</small></h4>${lines(4)}</div></div>
+ <div class="row">
+  ${lock('Performance & value',`<div class="row">${kp('$41k–$256k','Modeled revenue / mo')}${kp('$—','Valuation band')}</div>${spark([3,4,4,6,7,9,12,14,13,16,19,22])}`)}
+  ${lock('Competitor benchmarks',`<table><tr><th>Component</th><th>Pct</th></tr><tr><td>Reach</td><td>99</td></tr><tr><td>Momentum</td><td>87</td></tr><tr><td>Engagement</td><td>91</td></tr></table>`)}
+ </div></div>`,
+ n:{purpose:'The canonical page for one IP. The fan layer comes first. Premium panels appear locked below it and serve as the acquisition funnel for paid personas.',
+  loop:'Rate, Follow, Wish adaptation and Gallery each write a fan signal. The locked panels turn fan traffic into paid leads.',
+  kpis:[['PlotScore, rank','✔','plotscore.py'],['Fan rating + distribution','new','fan · weighted'],['Views / subs','✔ rounded','fact_title_daily'],['Cross-platform count','✔','entity_resolution.py'],['Art-style group','✔ facet','art_style.py'],['Revenue band','🔒','earnings.py'],['Valuation band','🔒','valuation (new)'],['PlotScore components','🔒','plotscore.py:36']],
+  mods:['market','fan','community','kpi','entitlement']}},
+
+{g:'Fan · free',id:'gallery',t:'Title gallery',
+ f:()=>`${bar()}<div class="body">
+ <div class="row" style="align-items:center"><div><div class="eyebrow">Gallery</div><div style="font:800 20px var(--display)">Tower of Ash</div></div>
+ <div class="acts" style="flex:0 0 auto"><span class="btn">Write</span></div></div>
+ <div class="row"><div class="seg"><button aria-pressed="true">All</button><button>Concept ★</button><button>Episode threads</button><button>Notices</button></div></div>
+ <div class="tw"><table><tr><th>No.</th><th>Title</th><th>Writer</th><th>Date</th><th class="r">Views</th><th class="r">Up</th></tr>
+ <tr><td>—</td><td class="t"><b>📌 Notice: season 3 schedule</b> <span class="badge">✓ AUTHOR</span></td><td>H. Seo</td><td>09.20</td><td class="r">18,204</td><td class="r">1,022</td></tr>
+ <tr class="concept"><td>23145</td><td class="t">★ Theory: the ash tower is the author's earlier novel's world [87]</td><td>ㅇㅇ <span class="ip">(118.235)</span></td><td>09.23</td><td class="r">9,811</td><td class="r">412</td></tr>
+ <tr><td>23144</td><td class="t">Ep 142 thread — that last panel [318]</td><td>system</td><td>09.23</td><td class="r">22,090</td><td class="r">155</td></tr>
+ <tr><td>23143</td><td class="t">Is the KR raw ahead by 20 eps? [12]</td><td>ㅇㅇ <span class="ip">(211.36)</span></td><td>09.23</td><td class="r">640</td><td class="r">4</td></tr>
+ <tr><td>23142</td><td class="t">Fanart: Ren in the snow [31]</td><td>ashenjay</td><td>09.22</td><td class="r">2,113</td><td class="r">98</td></tr></table></div>
+ <div class="meta">Post count in [brackets] = comments. ★ rows reached the concept threshold: up ≥ N and up/(up+down) ≥ r, both set in config.</div></div>`,
+ n:{purpose:'A DCInside-style board, one per title, one per genre, plus free boards. It shows dense post rows, guest posts marked with an IP prefix, a concept tab, and verified-author notices.',
+  loop:'Posting without an account keeps friction low. Concept promotion gives fans status. A verified author posting here draws fans back.',
+  kpis:[['Gallery activity (posts/day)','new','community → 🔒 trend for B2B'],['Concept ratio','new','community']],
+  mods:['community','identity','entitlement (badge)']}},
+
+{g:'Fan · free',id:'post',t:'Post and comments',
+ f:()=>`${bar()}<div class="body">
+ <div class="box"><div class="eyebrow">Tower of Ash gallery · Concept ★</div>
+  <div style="font:700 18px var(--display)">Theory: the ash tower is the author's earlier novel's world</div>
+  <div class="meta">ㅇㅇ <span class="ip">(118.235)</span> · 09.23 14:02 · views 9,811 · comments 87</div>
+  ${lines(6)}<div class="ph" style="height:120px">image</div>
+  <div class="acts" style="justify-content:center"><span class="btn">▲ Up 412</span><span class="btn ghost">▼ Down 9</span><span class="btn ghost">Report</span></div>
+  <div class="meta" style="justify-content:flex-end"><span>Edit</span><span>Delete</span><span>(guest password required)</span></div></div>
+ <div class="box"><h4>Comments <small>87</small></h4>
+  <div class="cmt"><div class="meta"><b style="color:var(--ink)">H. Seo</b> <span class="badge">✓ AUTHOR</span> 14:40</div>No comment 👀 but keep reading ep 150.</div>
+  <div class="cmt reply"><div class="meta"><b style="color:var(--ink)">ㅇㅇ</b><span class="ip">(175.223)</span> 14:42</div>the author replied, it's confirmed lol</div>
+  <div class="cmt"><div class="meta"><b style="color:var(--ink)">lanternkeeper</b> 15:01</div>The map in ch 3 of the novel matches.</div>
+  <div class="row"><div class="input">Nickname</div><div class="input">Password</div></div><div class="input area">Write a comment…</div><span class="btn" style="justify-self:end">Post</span></div></div>`,
+ n:{purpose:'Post detail with votes, a report action, and one level of reply threading. Guests edit or delete using the password they set when posting.',
+  loop:'A verified author replying is the highest-value moment for fans. Votes feed the PromotionRule.',
+  kpis:[['Up/down votes','new','community.votes'],['Reports','admin','community.moderation']],
+  mods:['community','identity']}},
+
+{g:'Fan · free',id:'write',t:'Write a post',
+ f:()=>`${bar()}<div class="body">
+ <div class="box"><h4>Write in: Tower of Ash gallery</h4>
+  <div class="seg"><button aria-pressed="true">Guest</button><button>Signed in (lanternkeeper)</button></div>
+  <div class="row"><div class="field"><label>Nickname</label><div class="input">ㅇㅇ</div></div><div class="field"><label>Password (to edit later)</label><div class="input">••••</div></div></div>
+  <div class="field"><label>Title</label><div class="input">Is the KR raw ahead by 20 eps?</div></div>
+  <div class="field"><label>Body</label><div class="input area">Text, images, spoiler blocks…</div></div>
+  <div class="row"><span class="chip">Spoiler tag</span><span class="chip">Episode: 142</span><span class="chip">Image ≤ 10</span></div>
+  <div class="meta">Your IP prefix (e.g. 118.235) is shown with guest posts. Guests are rate-limited.</div>
+  <span class="btn" style="justify-self:end">Post</span></div></div>`,
+ n:{purpose:'Low-friction posting, which is the core DCInside mechanic. Signed-in posts accumulate reputation. Guest posts do not.',
+  loop:'Guest posting lowers the barrier to a first contribution. Signing in converts through reputation and lists.',
+  kpis:[],
+  mods:['community (AnonIdentity policy)','core ratelimit']}},
+
+{g:'Fan · free',id:'episode',t:'Episode thread',
+ f:()=>`${bar()}<div class="body">
+ <div class="box"><div class="eyebrow">Auto-created · Episode released 09.23 07:00</div>
+  <div style="font:700 18px var(--display)">Tower of Ash · Ep 142 “Cinders” thread</div>
+  <div class="row"><div class="box"><span class="lbl">Rate this episode</span><div class="row" style="gap:4px">${[1,2,3,4,5].map(i=>`<span class="chip">${'★'.repeat(i)}</span>`).join('')}</div></div>
+  <div class="box"><span class="lbl">Reactions</span><div class="row" style="gap:4px"><span class="chip">😭 812</span><span class="chip">🔥 640</span><span class="chip">🤯 233</span></div></div></div>
+  <div class="cmt"><div class="meta"><b style="color:var(--ink)">ㅇㅇ</b><span class="ip">(58.140)</span> 07:03</div>first. that last panel!!</div>
+  <div class="cmt"><div class="meta"><b style="color:var(--ink)">ashenjay</b> 07:10 · ▲ 88</div>Spoiler: [hidden — tap to reveal]</div></div></div>`,
+ n:{purpose:'One thread per episode, created automatically when the scraper detects a release (event: episode.released).',
+  loop:'This is the daily habit. Episode-level reactions become a per-episode engagement series. Platforms expose only likes per episode (star_schema.py fact_episode).',
+  kpis:[['Episode reactions / rating','new','community → 🔒 series for authors'],['Episode likes','✔','fact_episode']],
+  mods:['community','core events','pipeline hook']}},
+
+{g:'Fan · free',id:'wishlist',t:'Adaptation wishlist',
+ f:()=>`${bar()}<div class="body">
+ <div class="row"><div class="seg"><button aria-pressed="true">Anime</button><button>Live-action drama</button><button>Film</button><button>Game</button></div></div>
+ <div class="tw"><table><tr><th>#</th><th>Title</th><th>Status</th><th class="r">Votes (7d)</th><th class="r">Total</th><th></th></tr>
+ ${[['1','The Salt Archivist','Completed','3,204','41,880'],['2','Tower of Ash','Ongoing','2,911','66,020'],['3','Glass Orchard','Hiatus','1,876','19,400'],['4','Red Ledger','Ongoing','1,102','8,730']].map(r=>`<tr><td>${r[0]}</td><td class="t">${r[1]}</td><td>${r[2]}</td><td class="r">${r[3]}</td><td class="r">${r[4]}</td><td><span class="btn ghost">Wish</span></td></tr>`).join('')}</table></div>
+ <div class="meta">One vote per account per title per medium. Guests can view but not vote.</div></div>`,
+ n:{purpose:'Fans say which IP they want adapted, and into which medium.',
+  loop:'This is the most direct fan-to-business signal. Publishers and investors see it as a demand trend on the scouting board and in the dossier.',
+  kpis:[['Wishlist votes by medium','new','fan → 🔒 trend']],
+  mods:['fan']}},
+
+{g:'Fan · free',id:'credits',t:'Author credits page',
+ f:()=>`${bar()}<div class="body">
+ <div class="row"><div class="ph" style="flex:0 1 96px;aspect-ratio:1">photo</div>
+  <div style="flex:3 1 240px;display:grid;gap:6px;align-content:start"><div style="font:800 22px var(--display)">H. Seo <span class="badge">✓ VERIFIED</span></div>
+  <div class="meta">Writer · 4 works · 3 platforms · 22k followers</div><div class="acts"><span class="btn">+ Follow</span><span class="btn ghost">Gallery posts</span></div></div></div>
+ <div class="box"><h4>Works</h4><div class="tw"><table><tr><th>Title</th><th>Role</th><th>Format</th><th>Years</th><th class="r">PlotScore</th><th class="r">Fan ★</th></tr>
+ <tr><td class="t">Tower of Ash</td><td>Story</td><td>Comic</td><td>2023–</td><td class="r">94</td><td class="r">8.7</td></tr>
+ <tr><td class="t">Tower of Ash (novel)</td><td>Author</td><td>Novel</td><td>2020–2022</td><td class="r">81</td><td class="r">8.4</td></tr>
+ <tr><td class="t">Paper Moth</td><td>Author</td><td>Novel</td><td>2018–2019</td><td class="r">52</td><td class="r">7.1</td></tr></table></div></div>
+ ${lock('Author track record',`<div class="row">${kp('3 / 4','Hit rate (PlotScore ≥ 75)')}${kp('$—','Modeled revenue across works')}</div>`)}</div>`,
+ n:{purpose:'IMDb-style credits for a creator, gathering their works across platforms and formats (novel → comic).',
+  loop:'Following creators produces follow-growth signals. The locked track record is investor value.',
+  kpis:[['Works, roles','✔','bridge_title_author'],['Follow growth','new','fan'],['Track record metrics','🔒','kpi_layers.py _author']],
+  mods:['market','fan','kpi']}},
+
+{g:'Fan · free',id:'profile',t:'Fan profile',
+ f:()=>`${bar()}<div class="body">
+ <div class="row"><div style="display:grid;gap:4px"><div style="font:800 20px var(--display)">lanternkeeper</div><div class="meta">Joined 2026 · 312 ratings · 41 reviews · 1,204 gallery posts</div></div>
+ <div class="box" style="flex:0 1 220px"><span class="lbl">Scout score</span><span class="num">1,840</span><div class="meta"><span class="chip link">Top 2% scout</span></div></div></div>
+ <div class="box"><h4>Early calls <small>followed before it entered Rising</small></h4>
+ <div class="tw"><table><tr><th>Title</th><th>Followed</th><th>Entered Rising</th><th class="r">Lead</th><th class="r">Points</th></tr>
+ <tr><td class="t">Nine Lanterns</td><td>06.02</td><td>09.18</td><td class="r">108 d</td><td class="r">+320</td></tr>
+ <tr><td class="t">Red Ledger</td><td>07.30</td><td>09.10</td><td class="r">42 d</td><td class="r">+140</td></tr></table></div></div>
+ <div class="row"><div class="box"><h4>Lists</h4><div class="meta" style="color:var(--ink)">Best slow-burn romance fantasy (24)</div><div class="meta" style="color:var(--ink)">Completed & bingeable (51)</div></div>
+ <div class="box"><h4>Following</h4>${lines(3)}</div></div></div>`,
+ n:{purpose:'Fan identity: taste proven by scout lead time, plus lists and reviews.',
+  loop:'Scout points reward early discovery. Aggregated across fans, scout lead time can become a leading indicator for investors. That is a hypothesis to validate.',
+  kpis:[['Scout lead time','new','fan.ScoutRule → 🔒 aggregate'],['List co-occurrence','new','fan']],
+  mods:['fan','core events']}},
+
+/* ---------------- PAID ---------------- */
+{g:'Paid personas',id:'pricing',t:'Plans and persona selection',
+ f:()=>`${bar()}<div class="body">
+ <div class="row">
+  ${[['Fan','Free','No verification','Ratings, lists, galleries, wishlist, charts'],['Author','TBD / mo','Author or title claim','Creator dashboard, compare any title, what-to-write-next, fan tools'],['Publisher','TBD / mo','Publisher or title claim','Scouting board, portfolio, market structure'],['IP investor','TBD / mo','Authorized-entity claim (PE/VC, studio, company)','IP dossier, valuation band, alerts']].map((p,i)=>`<div class="box"><span class="lbl">${p[0]}</span><span class="num">${p[1]}</span><div class="meta">Requires: ${p[2]}</div><div style="font-size:12px">${p[3]}</div><span class="btn${i?' prem':''}">${i?'Start verification':'Join free'}</span></div>`).join('')}
+ </div><div class="meta">Prices are placeholders (config). While billing is off, paid plans join a waitlist after approval.</div></div>`,
+ n:{purpose:'Persona selection and plan comparison. Verification comes before payment.',
+  loop:'The paid plans are the destination of the locked panels on fan pages.',
+  kpis:[],mods:['entitlement','billing']}},
+
+{g:'Paid personas',id:'verify',t:'Verification wizard',
+ f:()=>`${bar()}<div class="body">
+ <div class="steps"><span class="done">1 Persona</span><span class="done">2 Entity</span><span class="on">3 Documents</span><span>4 Review</span><span>5 Plan</span></div>
+ <div class="box"><h4>Claim: Publisher · Studio Nara</h4>
+  <div class="field"><label>Matched entity</label><div class="input">Studio Nara — 14 titles on 3 platforms (dim_publisher)</div></div>
+  <div class="field"><label>Your role</label><div class="input">Head of licensing</div></div>
+  <div class="ph" style="height:110px">Drop files: business registration, contract excerpt, authorization letter<br>PDF / PNG / JPG · ≤ 10 MB each</div>
+  <div class="meta">Documents are visible only to Plotline reviewers and are never published.</div>
+  <div class="acts" style="justify-content:flex-end"><span class="btn ghost">Back</span><span class="btn">Submit for review</span></div></div>
+ <div class="box"><h4>Evidence we accept</h4><div class="tw"><table><tr><th>Persona</th><th>Examples</th></tr>
+ <tr><td>Author</td><td class="t">Platform contract, author dashboard screenshot with account ID, publisher letter</td></tr>
+ <tr><td>Publisher</td><td class="t">Business registration + licensing contract or platform partner agreement</td></tr>
+ <tr><td>IP investor</td><td class="t">Fund / company registration, authorization letter, PE/VC mandate</td></tr></table></div></div></div>`,
+ n:{purpose:'Manual document review, as you chose. Status is tracked through pending → approved or rejected (with a note) → revoked.',
+  loop:'An approved author or publisher claim also switches on the verified badge in that entity\'s galleries.',
+  kpis:[],mods:['verification (DocStorage)','entitlement','core events: claim.approved']}},
+
+{g:'Paid personas',id:'author',t:'Author creator dashboard',
+ f:()=>`${barPro('Author')}<div class="body">
+ <div class="row">${kp('94','PlotScore','<span class="meta">#1 · +0 7d</span>')}${kp('8.7','Fan rating','<span class="meta">+0.1 30d</span>')}${kp('+18%','Gallery activity 30d')}${kp('$41k–$256k','Modeled revenue / mo','<span class="chip prem">model</span>')}</div>
+ <div class="row"><div class="box"><h4>Views, exact <small>daily snapshots</small></h4>${spark([10,12,11,14,15,15,17,19,18,22,24,27])}<div class="meta">Dashed = genre median</div>${spark([9,9,10,10,11,11,11,12,12,12,13,13],'p',24)}</div>
+ <div class="box"><h4>Engagement decay <small>likes per episode, ep 1 → 142</small></h4>${spark([30,26,22,20,19,18,18,17,17,16,16,17])}<div class="meta">Decay 43% (genre median 55%) · unit_stats.py</div></div></div>
+ <div class="row"><div class="box"><h4>Cadence vs genre</h4><div class="meta">You: 1.0 ep/wk · Dark fantasy median: 1.0 · Top decile: 1.4</div></div>
+ <div class="box"><h4>Fan signals</h4><div class="meta">Wishlist: 2,911 votes (7d) · Episode 142 reactions: 1,685 · Scouts following early: 214</div></div></div>
+ <div class="box"><h4>What to write next <small>genre whitespace (demand ÷ supply) · HHI</small></h4>
+ <div class="tw"><table><tr><th>Subgenre</th><th class="r">Titles</th><th class="r">Avg reach</th><th class="r">HHI</th><th>Market</th></tr>
+ <tr><td>Academy fantasy</td><td class="r">41</td><td class="r">22M</td><td class="r">1,210</td><td><span class="chip ok">Competitive</span></td></tr>
+ <tr><td>Murim revenge</td><td class="r">96</td><td class="r">9M</td><td class="r">2,870</td><td><span class="chip bad">Concentrated</span></td></tr></table></div></div></div>`,
+ n:{purpose:'An author\'s own titles at full depth, benchmarked against genre peers. They can also compare against any competitor title.',
+  loop:'Fan signals from the galleries show up here, which motivates authors to post in their galleries and brings fans back.',
+  kpis:[['Exact views series','🔒','fact_title_daily'],['Engagement decay','🔒','unit_stats.py:52-60'],['Cadence vs peers','🔒','episode_analytics.py:57'],['Revenue band','🔒 model','earnings.py'],['Whitespace / HHI','🔒','kpi_layers.py _genre'],['Fan signals','🔒 trend','fan, community']],
+  mods:['market','fan','community','kpi','valuation']}},
+
+{g:'Paid personas',id:'compare',t:'Competitor compare',
+ f:()=>`${barPro('Author')}<div class="body">
+ <div class="row"><div class="input">+ Tower of Ash</div><div class="input">+ Nine Lanterns</div><div class="input">+ Glass Orchard</div><div class="input">+ Add title</div></div>
+ <div class="tw"><table><tr><th>Metric</th><th class="r">Tower of Ash</th><th class="r">Nine Lanterns</th><th class="r">Glass Orchard</th></tr>
+ ${[['PlotScore','94','88','84'],['Reach pct','99','91','83'],['Momentum pct','87','98','40'],['Engagement pct','91','85','94'],['Monetization pct','97','70','81'],['Quality pct','88','80','93'],['Like-through','4.1%','5.6%','6.2%'],['Subs / view','0.34%','0.51%','0.47%'],['Fan rating (n)','8.7 (12k)','8.2 (3k)','8.9 (6k)'],['Wishlist 7d','2,911','640','1,876'],['Revenue / mo (model)','$41k–$256k','$6k–$38k','$11k–$70k']].map(r=>`<tr><td>${r[0]}</td><td class="r">${r[1]}</td><td class="r">${r[2]}</td><td class="r">${r[3]}</td></tr>`).join('')}
+ </table></div><div class="meta">Percentiles are relative to the whole universe (plotscore.py). Revenue is a model with a 0.4×–2.5× band (earnings.py:54).</div></div>`,
+ n:{purpose:'Any titles side by side at full depth, per your answer on competitor scope.',
+  loop:'Fan rating and wishlist rows are data only Plotline has.',
+  kpis:[['PlotScore components','🔒','plotscore.py:36'],['Like-through, subs/view','🔒','kpi_layers.py _base'],['Revenue band','🔒 model','earnings.py'],['Fan signals','🔒','fan']],
+  mods:['market','fan','kpi']}},
+
+{g:'Paid personas',id:'scouting',t:'Publisher scouting board',
+ f:()=>`${barPro('Publisher')}<div class="body">
+ <div class="row"><div class="seg"><button aria-pressed="true">Novels → comic</button><button>Comic → drama/anime</button><button>All</button></div><div class="input">Filters: genre, status, platform, language</div></div>
+ <div class="tw"><table><tr><th>Title</th><th>Format</th><th>Status</th><th class="r">Readiness</th><th class="r">Wishlist 30d</th><th class="r">Momentum</th><th class="r">Fan ★</th><th>Publisher</th><th></th></tr>
+ ${[['The Salt Archivist','Novel','Completed','86','+41%','▲12','9.1','Independent'],['Red Ledger','Novel','Ongoing','79','+22%','▲27','7.9','—'],['Glass Orchard','Comic','Hiatus','71','+9%','▼3','8.9','Studio Nara']].map(r=>`<tr><td class="t">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="r"><b>${r[3]}</b></td><td class="r">${r[4]}</td><td class="r">${r[5]}</td><td class="r">${r[6]}</td><td>${r[7]}</td><td><span class="btn ghost">Watch</span></td></tr>`).join('')}
+ </table></div><div class="meta">Readiness is the adaptation-readiness model (template.html:614, to be ported to Python). It measures readiness, not confirmed rights availability.</div>
+ <div class="row"><div class="box"><h4>Market structure</h4><div class="meta">Genre HHI, whitespace, platform mix · kpi_layers.py</div>${lines(3)}</div><div class="box"><h4>Alerts</h4><div class="meta">Wishlist spike > 2σ · entered Rising · status → completed</div></div></div></div>`,
+ n:{purpose:'Acquisition pipeline: which IP to sign or adapt next.',
+  loop:'The wishlist column is fan demand, which competitors that rely on scraping cannot show.',
+  kpis:[['Adaptation readiness','🔒','template.html:614'],['Wishlist trend','🔒','fan'],['Momentum','🔒','trends_engine.py'],['HHI / whitespace','🔒','kpi_layers.py']],
+  mods:['market','fan','kpi','core events (alerts)']}},
+
+{g:'Paid personas',id:'portfolio',t:'Publisher portfolio',
+ f:()=>`${barPro('Publisher')}<div class="body">
+ <div class="row">${kp('14','Claimed titles')}${kp('81','Avg PlotScore','<span class="meta">peer median 64</span>')}${kp('$0.4M–$2.6M','Modeled revenue / mo','<span class="chip prem">model</span>')}${kp('8.4','Avg fan rating')}</div>
+ <div class="box"><h4>Titles</h4><div class="tw"><table><tr><th>Title</th><th class="r">PlotScore</th><th class="r">Δ30d</th><th class="r">Fan ★</th><th class="r">Gallery 30d</th><th class="r">Revenue (model)</th></tr>
+ <tr><td class="t">Glass Orchard</td><td class="r">84</td><td class="r">−3</td><td class="r">8.9</td><td class="r">+4%</td><td class="r">$11k–$70k</td></tr>
+ <tr><td class="t">Moth Radio</td><td class="r">77</td><td class="r">+6</td><td class="r">8.1</td><td class="r">+31%</td><td class="r">$5k–$31k</td></tr></table></div></div>
+ <div class="box"><h4>Vs peer publishers <small>share of genre reach</small></h4>${lines(3)}</div>
+ <div class="meta" style="color:var(--bad)">Blocked on data: dim_publisher is empty until adapters extract studios (commit 9a08bd4).</div></div>`,
+ n:{purpose:'Rolls up the titles a publisher has claimed and benchmarks them against peer publishers.',
+  loop:'Verified publishers can post notices in the galleries of the titles they own.',
+  kpis:[['Portfolio rollup','🔒','kpi_layers.py _publisher'],['Peer share','🔒','kpi_layers.py'],['Fan signals','🔒','fan, community']],
+  mods:['market','verification','kpi']}},
+
+{g:'Paid personas',id:'dossier',t:'Investor IP dossier',
+ f:()=>`${barPro('IP investor')}<div class="body">
+ <div class="row"><div class="ph cover" style="flex:0 1 110px">cover</div><div style="flex:3 1 240px;display:grid;gap:6px;align-content:start"><div style="font:800 22px var(--display)">Tower of Ash</div><div class="meta">Canonical IP · 3 platforms · novel + comic · ongoing since 2020</div>
+ <div class="acts"><span class="btn">Watch</span><span class="btn ghost">Export</span></div></div></div>
+ <div class="box"><h4>Valuation band <small>revenue-multiple model · is_model: true</small></h4>
+  <div class="band"><div class="rng" style="left:12%;right:28%"></div><div class="mid" style="left:38%"></div></div>
+  <div class="meta" style="justify-content:space-between"><span>low $—</span><span>mid $—</span><span>high $—</span></div>
+  <div class="meta">Base multiples are placeholders in config.yaml (valuation.base_multiple). No public deal-multiple dataset is assumed.</div></div>
+ <div class="row"><div class="box"><h4>Drivers <small>adj clamp 0.5–2.0</small></h4>
+  <div class="tw"><table><tr><th>Driver</th><th>Value</th><th class="r">Effect</th></tr><tr><td>Annual revenue (model)</td><td>$0.5M–$3.1M</td><td class="r">base</td></tr><tr><td>Momentum pct</td><td>87</td><td class="r">+</td></tr><tr><td>Status</td><td>ongoing</td><td class="r">0</td></tr><tr><td>Platforms</td><td>3</td><td class="r">+</td></tr></table></div></div>
+ <div class="box"><h4>Demand signals</h4><div class="meta">Fan ★ 8.7 (12k) · Wishlist 66k total · Gallery +18% 30d · Scout lead median 74 d</div>${spark([5,6,6,8,9,11,12,15,16,19,21,24])}</div></div>
+ <div class="row"><div class="box"><h4>Author track record</h4><div class="meta">H. Seo: 3/4 works PlotScore ≥ 75</div></div>
+ <div class="box"><h4>Comparable deals</h4><div class="meta">No deal data yet. rel_contract is schema-only (star_schema.py:206).</div></div></div></div>`,
+ n:{purpose:'One page that answers what an IP is worth and whether its demand is real.',
+  loop:'Demand signals (fan rating, wishlist, gallery activity, scout lead time) set this apart from scraped-only tools.',
+  kpis:[['Valuation band','🔒 model','valuation (new)'],['Revenue band','🔒 model','earnings.py'],['Cross-platform reach','🔒','entity_resolution.py'],['Author track record','🔒','kpi_layers.py _author'],['Fan demand signals','🔒','fan, community'],['Comparable deals','🔒 empty','star_schema.py:206']],
+  mods:['valuation (ValuationModel)','market','fan','kpi']}},
+
+/* ---------------- ADMIN ---------------- */
+{g:'Admin',id:'claims',t:'Claim review queue',
+ f:()=>`${barAdmin}<div class="body">
+ <div class="row"><div class="seg"><button aria-pressed="true">Pending 12</button><button>Approved</button><button>Rejected</button><button>Revoked</button></div></div>
+ <div class="tw"><table><tr><th>Submitted</th><th>User</th><th>Type</th><th>Entity</th><th>Docs</th><th>Age</th><th></th></tr>
+ <tr><td>09.23</td><td>j.park@</td><td>Publisher</td><td class="t">Studio Nara</td><td>3</td><td>1 d</td><td><span class="btn ghost">Open</span></td></tr>
+ <tr><td>09.22</td><td>hseo@</td><td>Author</td><td class="t">H. Seo</td><td>2</td><td>2 d</td><td><span class="btn ghost">Open</span></td></tr>
+ <tr><td>09.21</td><td>m.chen@</td><td>Investor entity</td><td class="t">Lumen Story Partners (fund)</td><td>4</td><td>3 d</td><td><span class="btn ghost">Open</span></td></tr></table></div>
+ <div class="row"><div class="box"><h4>Document viewer</h4><div class="ph" style="height:140px">business_registration.pdf (admin-only download)</div></div>
+ <div class="box"><h4>Decision</h4><div class="input area">Review note (sent to user on reject)</div><div class="acts"><span class="btn">Approve</span><span class="btn ghost">Reject</span><span class="btn ghost">Request more</span></div></div></div></div>`,
+ n:{purpose:'Manual review queue for claims. Every decision is audited: reviewer, time and note.',
+  loop:'Approving a claim emits claim.approved, which turns on the entitlement and the verified badge.',
+  kpis:[['Claim funnel','admin','verification']],mods:['verification','entitlement']}},
+
+{g:'Admin',id:'moderation',t:'Moderation queue',
+ f:()=>`${barAdmin}<div class="body">
+ <div class="tw"><table><tr><th>Target</th><th>Gallery</th><th>Reason</th><th class="r">Reports</th><th>Writer</th><th></th></tr>
+ <tr><td class="t">Post 23140 “leak link inside”</td><td>Tower of Ash</td><td>Piracy link</td><td class="r">14</td><td>ㅇㅇ <span class="ip">(39.7)</span></td><td><span class="btn ghost">Remove</span></td></tr>
+ <tr><td class="t">Comment on 23102</td><td>Romance Fantasy</td><td>Harassment</td><td class="r">6</td><td>ㅇㅇ <span class="ip">(221.150)</span></td><td><span class="btn ghost">Review</span></td></tr></table></div>
+ <div class="row"><div class="box"><h4>Actions</h4><div class="meta">Soft delete · ban IP hash (1d / 7d / ∞) · suspend account · lock thread</div></div>
+ <div class="box"><h4>Gallery moderators</h4><div class="meta">Assign per gallery; mods act only within their gallery.</div></div></div></div>`,
+ n:{purpose:'Report handling and moderation per gallery. Bans apply to the hashed IP. The raw IP is never stored.',
+  loop:'Keeping galleries healthy is a precondition for fan retention.',
+  kpis:[],mods:['community (ModerationService)']}}
+];
+
+const $=id=>document.getElementById(id);
+const rail=$('rail'),pick=$('pick');let cur=0;
+const groups=[...new Set(S.map(s=>s.g))];
+rail.innerHTML=groups.map(g=>`<div class="grp"><h3>${g}</h3>${S.map((s,i)=>s.g===g?`<a href="#${s.id}" data-i="${i}"><span>S${i+1}</span>${esc(s.t)}</a>`:'').join('')}</div>`).join('');
+pick.innerHTML=S.map((s,i)=>`<option value="${s.id}">S${i+1} · ${esc(s.t)}</option>`).join('');
+function render(i){
+  cur=(i+S.length)%S.length;const s=S[cur];
+  $('eyebrow').textContent=`S${cur+1} of ${S.length} · ${s.g}`;$('title').textContent=s.t;
+  $('frame').innerHTML=s.f();
+  const n=s.n;
+  $('notes').innerHTML=`<div class="note"><h5>Purpose</h5><p>${n.purpose}</p></div>
+  <div class="note"><h5>Flywheel role</h5><p>${n.loop}</p></div>
+  ${n.kpis.length?`<div class="note"><h5>KPIs on this screen</h5>${n.kpis.map(k=>`<div class="kpi"><span>${k[0]} <span class="chip ${k[1].startsWith('🔒')?'prem':k[1]==='new'?'link':''}">${k[1]}</span></span><code>${k[2]}</code></div>`).join('')}</div>`:''}
+  <div class="note"><h5>Modules</h5><div class="mods">${n.mods.map(m=>`<span class="chip">${m}</span>`).join('')}</div></div>`;
+  rail.querySelectorAll('a').forEach(a=>a.setAttribute('aria-current',String(+a.dataset.i===cur)));
+  pick.value=s.id;
+}
+function fromHash(){const h=location.hash.slice(1);const i=S.findIndex(s=>s.id===h);render(i<0?0:i);}
+window.addEventListener('hashchange',fromHash);
+pick.addEventListener('change',()=>{location.hash=pick.value;});
+$('prev').onclick=()=>{location.hash=S[(cur-1+S.length)%S.length].id;};
+$('next').onclick=()=>{location.hash=S[(cur+1)%S.length].id;};
+function setW(phone){$('frame').classList.toggle('phone',phone);$('wPhone').setAttribute('aria-pressed',phone);$('wDesk').setAttribute('aria-pressed',!phone);try{localStorage.setItem('wf-phone',phone?'1':'0')}catch(e){}}
+$('wDesk').onclick=()=>setW(false);$('wPhone').onclick=()=>setW(true);
+fromHash();
+try{if(localStorage.getItem('wf-phone')==='1')setW(true)}catch(e){}
+</script>

@@ -38,6 +38,18 @@ deployment
 api
 ```
 
+## Product revamp (Phase 1 design)
+
+```{toctree}
+:maxdepth: 2
+:caption: Revamp
+
+product/product-spec
+product/architecture
+```
+
+Clickable wireframes: `docs/product/wireframes.html`.
+
 ## User guide
 
 ```{toctree}

@@ -81,3 +81,11 @@ All scraping targets, CSS selectors, delays, storage paths, and processing param
 - Scraper output follows `data/bronze/{source_name}/{YYYY-MM-DD}/` directory structure.
 - Report filenames include timestamps or dates for idempotency.
 - Deduplication is always done by `(comic_id, date)` pair, keeping the latest snapshot.
+
+## Product revamp (in progress)
+
+Plotline is being repositioned as **IMDb + DCInside for story IP**: free fans (galleries, ratings, wishlist), and paid authors, publishers and IP investors (verified by manual document review).
+- Product spec, persona × KPI matrix and flywheel: `docs/product/product-spec.md`
+- Modular Phase 2 architecture: `docs/product/architecture.md` (module = service + repo + router; replaceable behaviour via registered Protocol implementations; policy in config)
+- Wireframes (19 screens): `docs/product/wireframes.html`
+- Adding or changing a KPI: use the `add-kpi` skill (`.claude/skills/add-kpi/SKILL.md`); never gate KPIs inside route handlers.
