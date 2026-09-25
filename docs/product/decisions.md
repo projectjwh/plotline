@@ -140,6 +140,28 @@ Architecture and product decisions for the Plotline revamp, newest last. **Appen
 - Cost: about 1.5 MB added to each page. A production build would subset or self-host the fonts (O-17).
 - To swap fonts: change `--display` / `--ui` in scale-token layer 2 and the `0. FONTS` block.
 
+**D-029 · Readability tokens with measured contrast targets.** Accepted. [owner: "color schema … better readability"]
+- Before: box vs page 1.07 (dark) / 1.08 (light); borders 1.27; `--faint` text 3.2 (below WCAG AA 4.5); light-theme yellow used as text 3.25.
+- After:
+  - box vs page ≥ 1.15 (1.16 / 1.18)
+  - borders ≥ 1.5 (1.54 / 1.57)
+  - every text token ≥ 4.5 on page, box and raised surfaces in both themes
+- New tokens:
+  - `--mark-text`: the accent when used as text (light `#8A6300`); `--mark` stays for fills.
+  - `--elev`: a subtle shadow in light, none in dark.
+- The US-mode light up/down colors were darkened to `#167A45` / `#C42A47` to pass 4.5.
+- Check with `python docs/product/tools/contrast_check.py`, which must print PASS.
+
+**D-030 · Boxes in one row share top and bottom edges; card grids show only complete rows, with "See more".** Accepted. [owner]
+- In a `.g12` row, every column is a flex column, and its last box grows (`flex:1`). Box headers share `--ph-h` (46px).
+- `completeRows(key, items, {kind, sortBy})`:
+  - shows whole rows only, largest items first
+  - puts the remainder behind "See N more ▾" / "Show less ▴"
+  - column counts mirror the CSS breakpoints (cards 3/2/1, index strips 8/4/2) and re-render when the breakpoint changes
+  - the open state is kept per section in `STATE.more`
+- Applied to: Sectors (sorted by constituents, then reach), the market index strip, and the author dashboard strip. The portfolio strip is fixed at 4 cards.
+- Verified with a DOM check (sibling bottoms within 1px) on 9 screens × 2 themes: 0 misaligned rows, every index strip full.
+
 ---
 
 ## Outstanding decisions

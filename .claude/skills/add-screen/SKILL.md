@@ -18,10 +18,11 @@ Read `docs/product/frontend-guide.md` first. It is the source of truth for struc
    - add the collection to `COLLS` and write through `saveMine`
    - aggregate it in `DERIVE` with `M()`
    - add the two db rules (collection `read:view, write:admin`; `{self}` `write:interact`) to the publish call, and restate every existing rule too, since a declaration replaces the whole set
-6. **Check.**
-   - Run the hex-outside-tokens check from the guide.
+6. **Layout.** Render card grids through `completeRows()` so no row is left half empty, and keep one growing box per column so row edges align.
+7. **Check.**
+   - Run the hex-outside-tokens check from the guide and `python docs/product/tools/contrast_check.py` (must PASS).
    - Load the page once in light and once in dark (headless Chromium) and confirm no console errors.
-7. **Publish and record.**
+8. **Publish and record.**
    - Republish `docs/product/demo.html` to its existing URL.
    - When the db rules changed, run a `list` and an `as_level: "interact"` write check with ArtifactData.
    - Append a `D-0xx` entry to `docs/product/decisions.md`.

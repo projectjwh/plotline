@@ -22,6 +22,11 @@ Rules:
   1. Copy the light block to `:root[data-pl-theme="hc"]` and change the values.
   2. Add `"hc"` to `applyTheme`/`toggleTheme`.
   3. Run any new up/down pair through the dataviz palette validator on that theme's surface.
+- **Contrast:** after any color change, run `python docs/product/tools/contrast_check.py`. It must print `PASS`: text ≥ 4.5:1 on every surface, borders ≥ 1.5, box vs page ≥ 1.15. Use `--mark-text` (not `--mark`) whenever the accent colors text.
+- **Row alignment:** inside a `.g12` row each column is a flex column and its last `.panel` grows, so boxes end on one line. Keep one box per column, or stack boxes in a `.cN.grid` column. Don't set fixed heights on panels.
+- **Card grids:** never render a variable-length card grid directly. Use
+  `const r = completeRows("my-key", items, {kind: "card" | "idx", sortBy: (a, b) => …});`
+  then render `r.shown`, and append `r.more` (the "See N more" button). For `.idx` strips, set `style="--idx-cols:${r.cols}"`.
 - **Density:** fanboard row height is `--row-h` (30px). A "comfortable" mode is one token override: `:root[data-density="comfy"]{--row-h:40px}`.
 - **Typeface:** `--display` and `--ui` use NanumSquare Neo; `--mono` (JetBrains Mono, from Google Fonts) is for numbers, because NanumSquare Neo has no tabular digits (D-028).
 - **Cover art** is generated on a canvas and deliberately doesn't follow the theme, because it stands in for real cover images.

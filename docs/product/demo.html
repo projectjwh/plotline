@@ -23,29 +23,33 @@
 /* ---------- 1. THEME TOKENS (colors only) ---------- */
 :root,:root[data-pl-theme="dark"]{
   color-scheme:dark;
-  --base:#0A0C0F; --panel:#11151B; --raised:#171C24; --hover:#1D232D; --line:#232A34; --line-2:#2D3541;
-  --text:#E9ECF1; --text-2:#B9C0CB; --muted:#8B94A3; --faint:#5E6775;
+  --base:#050608; --panel:#141A22; --raised:#1B212B; --hover:#1F2631; --line:#323B48; --line-2:#434D5C;
+  --text:#E9ECF1; --text-2:#B9C0CB; --muted:#8B94A3; --faint:#838C99;
   --mark:#F2C94C; --mark-ink:#16130A; --mark-soft:rgba(242,201,76,.12); --mark-tint:rgba(242,201,76,.06);
   --up:#F04E54; --dn:#4A86EE; --up-soft:rgba(240,78,84,.14); --dn-soft:rgba(74,134,238,.14); --flat:#3A414C;
   --ok:#3FB87F; --ok-soft:rgba(63,184,127,.12); --warn:#E3A33B; --warn-soft:rgba(227,163,59,.12);
-  --chrome:rgba(10,12,15,.92); --overlay-in:rgba(17,21,27,.92); --overlay-out:rgba(17,21,27,.55);
+  --chrome:rgba(7,9,12,.92); --overlay-in:rgba(19,24,32,.94); --overlay-out:rgba(19,24,32,.6);
   --shadow:rgba(0,0,0,.45); --ring:rgba(255,255,255,.06); --stripe:rgba(255,255,255,.015);
-  --tile-ink:#FFFFFF; --tile-ink-2:rgba(255,255,255,.88); --tile-shadow:rgba(0,0,0,.4); --glab:rgba(10,12,15,.72);
+  --tile-ink:#FFFFFF; --tile-ink-2:rgba(255,255,255,.88); --tile-shadow:rgba(0,0,0,.4); --glab:rgba(7,9,12,.72);
+  --mark-text:#F2C94C;
+  --elev:none;
 }
 :root[data-pl-theme="light"]{
   color-scheme:light;
-  --base:#F5F6F8; --panel:#FFFFFF; --raised:#EEF0F3; --hover:#F1F3F6; --line:#E1E4E9; --line-2:#CDD2DA;
-  --text:#14171C; --text-2:#3A414C; --muted:#5F6773; --faint:#8A919C;
+  --base:#E9EDF2; --panel:#FFFFFF; --raised:#F3F5F8; --hover:#F4F6F9; --line:#C8CFD9; --line-2:#AEB7C3;
+  --text:#14171C; --text-2:#353C47; --muted:#555D69; --faint:#646C79;
   --mark:#B8860B; --mark-ink:#FFFFFF; --mark-soft:rgba(184,134,11,.12); --mark-tint:rgba(184,134,11,.06);
-  --up:#D6343B; --dn:#2F6FDB; --up-soft:rgba(214,52,59,.10); --dn-soft:rgba(47,111,219,.10); --flat:#C9CED6;
-  --ok:#1E8A55; --ok-soft:rgba(30,138,85,.10); --warn:#A86A00; --warn-soft:rgba(168,106,0,.10);
-  --chrome:rgba(245,246,248,.92); --overlay-in:rgba(255,255,255,.94); --overlay-out:rgba(255,255,255,.6);
+  --up:#C8283A; --dn:#2563D0; --up-soft:rgba(214,52,59,.10); --dn-soft:rgba(47,111,219,.10); --flat:#C9CED6;
+  --ok:#1B7A4B; --ok-soft:rgba(30,138,85,.10); --warn:#8F5A00; --warn-soft:rgba(168,106,0,.10);
+  --chrome:rgba(233,237,242,.92); --overlay-in:rgba(255,255,255,.94); --overlay-out:rgba(255,255,255,.6);
   --shadow:rgba(20,23,28,.18); --ring:rgba(20,23,28,.08); --stripe:rgba(20,23,28,.025);
   --tile-ink:#14171C; --tile-ink-2:rgba(20,23,28,.8); --tile-shadow:rgba(255,255,255,.35); --glab:rgba(255,255,255,.8);
+  --mark-text:#8A6300;
+  --elev:0 1px 2px rgba(20,23,28,.06),0 1px 1px rgba(20,23,28,.04);
 }
 /* up/down convention: US = green up, red down (KR is the default above) */
 :root.us,:root.us[data-pl-theme="dark"]{--up:#2BB673; --dn:#F0506A; --up-soft:rgba(43,182,115,.14); --dn-soft:rgba(240,80,106,.14)}
-:root.us[data-pl-theme="light"]{--up:#1E9A5A; --dn:#D93A55; --up-soft:rgba(30,154,90,.10); --dn-soft:rgba(217,58,85,.10)}
+:root.us[data-pl-theme="light"]{--up:#167A45; --dn:#C42A47; --up-soft:rgba(30,154,90,.10); --dn-soft:rgba(217,58,85,.10)}
 
 /* ---------- 2. SCALE TOKENS (type, space, shape, density) ---------- */
 :root{
@@ -54,7 +58,8 @@
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
   --fs-body:14px; --fs-small:12.5px; --fs-board:13px; --fs-label:10.5px;
   --radius:12px; --radius-sm:8px; --gutter:20px; --gap:14px;
-  --row-h:30px;              /* fanboard row height (DCInside density) */
+  --row-h:30px;
+  --ph-h:46px;               /* box header height: keeps header rules aligned across a row */              /* fanboard row height (DCInside density) */
   --maxw:1440px;
 }
 
@@ -82,7 +87,7 @@ button{font:inherit;color:inherit}
 .nav a{padding:6px 10px;border-radius:6px;color:var(--text-2);font-weight:500;white-space:nowrap;font-size:13.5px}
 .nav a:hover{background:var(--raised);color:var(--text)}
 .nav a[aria-current="page"]{color:var(--text);background:var(--raised);box-shadow:inset 0 -2px 0 var(--mark)}
-.nav .pro{color:var(--mark)}
+.nav .pro{color:var(--mark-text)}
 .tools{display:flex;gap:8px;align-items:center}
 @media (max-width:1400px){.search{display:none!important}}
 .search{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);color:var(--muted);font-size:12.5px;min-width:200px}
@@ -92,11 +97,11 @@ button{font:inherit;color:inherit}
 .seg button{border:0;background:transparent;padding:0 10px;height:30px;font:600 11.5px var(--mono);color:var(--muted);cursor:pointer;letter-spacing:.04em}
 .seg button[aria-pressed="true"]{background:var(--raised);color:var(--text)}
 .iconbtn{height:32px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);padding:0 10px;cursor:pointer;font:600 11.5px var(--mono);letter-spacing:.06em;color:var(--text-2)}
-.iconbtn[aria-pressed="true"]{border-color:var(--mark);color:var(--mark)}
+.iconbtn[aria-pressed="true"]{border-color:var(--mark);color:var(--mark-text)}
 
 /* tape */
 .tape{border-top:1px solid var(--line);overflow:hidden;position:relative;height:34px;display:flex;align-items:center;background:var(--base)}
-.tape .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;gap:6px;padding:0 12px 0 20px;background:linear-gradient(90deg,var(--base) 80%,transparent);font:700 10.5px var(--mono);letter-spacing:.12em;color:var(--mark)}
+.tape .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;gap:6px;padding:0 12px 0 20px;background:linear-gradient(90deg,var(--base) 80%,transparent);font:700 10.5px var(--mono);letter-spacing:.12em;color:var(--mark-text)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 var(--up);animation:pulse 1.6s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--up) 60%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
 .track{display:flex;gap:28px;white-space:nowrap;animation:marq 70s linear infinite;padding-left:150px;will-change:transform}
@@ -107,14 +112,20 @@ button{font:inherit;color:inherit}
 .tk .px{color:var(--text-2)}
 
 /* ---------- layout ---------- */
+/* Row alignment: every column in a .g12 row is a flex column; its last box grows,
+   so all boxes in a row end on the same line (D-030). */
+.g12>*{display:flex;flex-direction:column;gap:var(--gap);min-width:0}
+.g12>*>.panel:last-child,.g12>*>.lock:last-child{flex:1 1 auto}
+.g12>.grid{display:flex}
+.more-row{display:flex;justify-content:center;margin-top:var(--gap)}
 .wrap{max-width:var(--maxw);margin:0 auto;padding-block:20px 80px;padding-inline:var(--gutter)}
 .grid{display:grid;gap:var(--gap)}
 .g12{grid-template-columns:repeat(12,minmax(0,1fr))}
 .c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
 @media (max-width:1100px){.c3,.c4{grid-column:span 6}.c5,.c7,.c8,.c9{grid-column:span 12}.c6{grid-column:span 12}}
 @media (max-width:680px){.g12>*{grid-column:span 12!important}.bar{padding-inline:16px;gap:10px;flex-wrap:wrap}.wrap{padding-inline:16px}.search{display:none}.nav{order:3;flex-basis:100%}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);min-width:0;overflow:hidden}
-.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);min-width:0;overflow:hidden;box-shadow:var(--elev)}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;min-height:var(--ph-h);border-bottom:1px solid var(--line);flex-wrap:wrap}
 .ph h3{margin:0;font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);display:flex;gap:8px;align-items:center}
 .ph h3 i{font-style:normal;color:var(--faint);font-weight:500}
 .pb{padding:14px}
@@ -125,7 +136,7 @@ button{font:inherit;color:inherit}
 .sub{color:var(--muted);font-size:13px;max-width:70ch;margin:6px 0 0}
 
 /* index cards */
-.idx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.idx{display:grid;grid-template-columns:repeat(var(--idx-cols,8),minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .ic{background:var(--panel);padding:12px 14px 8px;display:grid;gap:2px;cursor:pointer}
 .ic:hover{background:var(--raised)}
 .ic .code{font:700 11px var(--mono);letter-spacing:.08em;color:var(--text-2);display:flex;justify-content:space-between}
@@ -160,7 +171,7 @@ tbody tr:hover td{background:var(--hover)}
 
 /* chips, buttons, pills */
 .pill{display:inline-flex;align-items:center;gap:5px;font:600 10.5px var(--mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--text-2);white-space:nowrap}
-.pill.mk{background:var(--mark-soft);border-color:transparent;color:var(--mark)}
+.pill.mk{background:var(--mark-soft);border-color:transparent;color:var(--mark-text)}
 .pill.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
 .pill.warn{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
 .pill.up{background:var(--up-soft);border-color:transparent}
@@ -197,7 +208,7 @@ tbody tr:hover td{background:var(--hover)}
 .ipo{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:linear-gradient(90deg,var(--mark-soft),transparent 30%),var(--panel)}
 .ipo .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:0 22px 0 16px;background:linear-gradient(90deg,var(--panel) 75%,transparent)}
 .ipo .lab b{font:800 18px/1 var(--display);letter-spacing:-.02em}
-.ipo .lab small{font:600 10px var(--mono);color:var(--mark);letter-spacing:.14em}
+.ipo .lab small{font:600 10px var(--mono);color:var(--mark-text);letter-spacing:.14em}
 .ipo .track{animation-duration:55s;padding-left:170px;gap:12px;padding-block:12px}
 .ipo:hover .track{animation-play-state:paused}
 .ic2{display:inline-flex;gap:10px;align-items:center;padding:6px 12px 6px 6px;border:1px solid var(--line-2);border-radius:10px;background:var(--raised)}
@@ -239,8 +250,8 @@ tbody tr:hover td{background:var(--hover)}
 .board .c-t{width:58px;color:var(--muted);font:500 11px var(--mono);text-align:right}
 .board .c-v{width:52px;text-align:right;font:600 12px var(--mono)}
 .board .c-ttl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.board .cc{color:var(--mark);font:600 11px var(--mono);margin-left:4px}
-.board .star{color:var(--mark);margin-right:4px}
+.board .cc{color:var(--mark-text);font:600 11px var(--mono);margin-left:4px}
+.board .star{color:var(--mark-text);margin-right:4px}
 .board tr.notice td{background:var(--mark-tint);font-weight:600}
 .board tr.concept td{background:var(--mark-tint)}
 .board tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
@@ -298,7 +309,7 @@ tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
 .kpi{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--line)}
 .kpi code{font:500 10.5px var(--mono);color:var(--muted);text-align:right}
 .foot{margin-top:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--faint);font:500 11px var(--mono);letter-spacing:.04em}
-.sample{color:var(--mark)}
+.sample{color:var(--mark-text)}
 
 /* live demo controls */
 .in,.ta{width:100%;border:1px solid var(--line-2);border-radius:8px;background:var(--base);color:var(--text);font:14px var(--ui);padding:8px 10px}
@@ -468,7 +479,7 @@ P.market=()=>{const T=TOPS();const adv=titles.filter(t=>t.d1>0).length,dec=title
  const nh=titles.filter(t=>last(t)>=Math.max(...t.s.filter(x=>x!=null))).length;
  return `<div class="pagehead"><div><div class="eyebrow">Market overview · ${new Date(2026,8,25).toDateString()} · <span class="sample">sample data</span></div><h1 class="h1">The story-IP market today</h1></div>
  <div class="acts"><span class="pill up">▲ ${adv} advancing</span><span class="pill dn">▼ ${dec} declining</span><span class="pill">${nh} at 120-day high</span></div></div>
- <div class="idx" id="idx">${INDEX.slice(0,8).map(ix=>`<a class="ic" href="#sectors"><span class="code"><span>${ix.code}</span><span class="fl">${ix.list.length}</span></span><span class="v" data-live-idx="${ix.code}">${ix.v.toFixed(2)}</span><span class="d ${cls(ix.d)}" data-live-idxd="${ix.code}">${sgn(ix.d)}</span>${spark(ix.s,160,36)}</a>`).join("")}</div>
+ ${(r=>`<div class="idx" id="idx" style="--idx-cols:${r.cols}">${r.shown.map(ix=>`<a class="ic" href="#sectors"><span class="code"><span>${ix.code}</span><span class="fl">${ix.list.length}</span></span><span class="v" data-live-idx="${ix.code}">${ix.v.toFixed(2)}</span><span class="d ${cls(ix.d)}" data-live-idxd="${ix.code}">${sgn(ix.d)}</span>${spark(ix.s,160,36)}</a>`).join("")}</div>${r.more}`)(completeRows("idx-market",INDEX,{kind:"idx"}))}
  <div style="height:14px"></div>${ipoBanner()}<div style="height:14px"></div>
  <div class="grid g12">
   <div class="c8">${panel('Market map <i>genre → title · size = reach · color = 1D change</i>',`<div class="tm" id="tm"></div>`,`<div class="acts"><div class="tabs" id="tmGroup"><button aria-pressed="true" data-v="g">Genre</button><button aria-pressed="false" data-v="p">Publisher</button></div><div class="tabs" id="tmMetric"><button aria-pressed="true" data-v="d1">1D</button><button aria-pressed="false" data-v="d7">1W</button><button aria-pressed="false" data-v="d30">1M</button></div><span class="legend-scale">−3%<i style="background:${heat(-3)}"></i><i style="background:${heat(-1)}"></i><i style="background:var(--flat)"></i><i style="background:${heat(1)}"></i><i style="background:${heat(3)}"></i>+3%</span></div>`)}</div>
@@ -487,9 +498,9 @@ function sectorBars(){const l=INDEX.slice(3).sort((a,b)=>b.d-a.d);const mx=Math.
  return `<div class="pb" style="display:grid;gap:8px">${l.map(ix=>`<a href="#sectors" style="display:grid;grid-template-columns:120px 1fr 1fr 70px;gap:8px;align-items:center"><span style="font-weight:600;font-size:12.5px">${ix.name}</span><span style="display:flex;justify-content:flex-end">${ix.d<0?`<i style="display:block;height:12px;border-radius:4px 0 0 4px;background:var(--dn);width:${Math.abs(ix.d)/mx*100}%"></i>`:''}</span><span>${ix.d>=0?`<i style="display:block;height:12px;border-radius:0 4px 4px 0;background:var(--up);width:${ix.d/mx*100}%"></i>`:''}</span><span class="mono r ${cls(ix.d)}" style="font-size:12px">${sgn(ix.d)}</span></a>`).join("")}</div>`}
 
 P.sectors=()=>`<div class="pagehead"><div><div class="eyebrow">Sectors</div><h1 class="h1">Genre indices</h1><p class="sub">Each index is the reach-weighted PlotScore of its titles, rebased to 1,000 at the start of the window. Tap a genre to see its constituents.</p></div></div>
- <div class="grid g12">${INDEX.slice(3).map(ix=>{const s=ix.list;const adv=s.filter(t=>t.d1>0).length;const lead=[...s].sort((a,b)=>last(b)-last(a))[0];const w=s.map(t=>t.views);const tot=w.reduce((a,b)=>a+b,0);const hhi=Math.round(w.reduce((a,b)=>a+Math.pow(b/tot*100,2),0));
+ ${(r=>`<div class="grid g12">${r.shown.map(ix=>{const s=ix.list;const adv=s.filter(t=>t.d1>0).length;const lead=[...s].sort((a,b)=>last(b)-last(a))[0];const w=s.map(t=>t.views);const tot=w.reduce((a,b)=>a+b,0);const hhi=Math.round(w.reduce((a,b)=>a+Math.pow(b/tot*100,2),0));
  return `<div class="c4">${panel(`${ix.code} <i>${ix.name}</i>`,`<div class="pb" style="display:grid;gap:8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:800 28px var(--display)">${ix.v.toFixed(2)}</span><span class="chg ${cls(ix.d)}">${sgn(ix.d)}</span></div>${spark(ix.s,300,60)}
- <div class="bl"><span class="fl">Breadth</span><span><span class="up">${adv}</span> / <span class="dn">${s.length-adv}</span></span></div><div class="bl"><span class="fl">HHI (reach)</span><span>${hhi.toLocaleString()} <span class="pill ${hhi>2500?'warn':''}">${hhi>2500?'Concentrated':hhi>1500?'Moderate':'Competitive'}</span></span></div><div class="bl"><span class="fl">Leader</span><a href="#title-${lead.tk}">${lead.tk} · ${last(lead).toFixed(1)}</a></div></div>`)}</div>`}).join("")}</div>`;
+ <div class="bl"><span class="fl">Breadth</span><span><span class="up">${adv}</span> / <span class="dn">${s.length-adv}</span></span></div><div class="bl"><span class="fl">HHI (reach)</span><span>${hhi.toLocaleString()} <span class="pill ${hhi>2500?'warn':''}">${hhi>2500?'Concentrated':hhi>1500?'Moderate':'Competitive'}</span></span></div><div class="bl"><span class="fl">Leader</span><a href="#title-${lead.tk}">${lead.tk} · ${last(lead).toFixed(1)}</a></div></div>`)}</div>`}).join("")}</div>${r.more}`)(completeRows("sectors",INDEX.slice(3),{sortBy:(a,b)=>b.list.length-a.list.length||b.list.reduce((x,t)=>x+t.views,0)-a.list.reduce((x,t)=>x+t.views,0)}))}`;
 
 P.publishers=()=>{const m={};titles.forEach(t=>{(m[t.pub]=m[t.pub]||[]).push(t)});const tot=titles.reduce((a,t)=>a+t.views,0);
  const rows=Object.entries(m).map(([p,l])=>{const ix=mkIndex(p,p,l);return{p,l,ix,share:l.reduce((a,t)=>a+t.views,0)/tot*100,avg:l.reduce((a,t)=>a+last(t),0)/l.length}}).sort((a,b)=>b.share-a.share);
@@ -515,7 +526,7 @@ function titlePage(tk){const t=byTk[tk]||titles[0];const rev=[t.views*.00003*.4,
 P.listings=()=>{const l=TOPS().ipo;return `<div class="pagehead"><div><div class="eyebrow">New listings</div><h1 class="h1">IPO calendar</h1><p class="sub">Titles are "listed" on the day the scraper first sees them (dim_title.first_seen). First-week performance is measured from the listing-day PlotScore.</p></div></div>
  ${ipoBanner()}<div style="height:14px"></div><div class="grid g12">
  <div class="c8">${panel('Recently listed <i>last 30 days</i>',`<div class="tw"><table><thead><tr><th>Title</th><th>Listed</th><th>Platform</th><th class="r">Listing score</th><th class="r">Now</th><th class="r">Since listing</th><th class="r">Watchers</th></tr></thead><tbody>${l.map(t=>{const o=t.s[DAYS-t.listed];const since=(last(t)-o)/o*100;return `<tr data-go="title-${t.tk}"><td>${tname(t)}</td><td class="mono">${t.listed}d ago</td><td>${t.plat}</td><td class="r mono">${o.toFixed(1)}</td><td class="r mono">${last(t).toFixed(1)}</td><td class="r">${chip(since)}</td><td class="r mono">${fmtN(t.wish)}</td></tr>`}).join("")}</tbody></table></div>`)}</div>
- <div class="c4">${panel('Upcoming <i>announced</i>',`<div class="pb" style="display:grid;gap:12px">${[["Oct 02","Hollow Protocol","Webtoon"],["Oct 05","Velvet Sect","Tappytoon"],["Oct 09","Jade Carnival","Manta"],["Oct 14","Last Library","Royal Road"]].map(([d,n,p])=>`<div style="display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center"><span class="mono" style="font-weight:700;color:var(--mark)">${d}</span><span><b>${n}</b><br><span class="ip">${p}</span></span><button class="btn gh sm">Notify</button></div>`).join("")}<p class="sub"><span class="pill warn">New source</span> Needs scraping of the platforms' "coming soon" pages, which the pipeline does not do today.</p></div>`)}</div></div>`};
+ <div class="c4">${panel('Upcoming <i>announced</i>',`<div class="pb" style="display:grid;gap:12px">${[["Oct 02","Hollow Protocol","Webtoon"],["Oct 05","Velvet Sect","Tappytoon"],["Oct 09","Jade Carnival","Manta"],["Oct 14","Last Library","Royal Road"]].map(([d,n,p])=>`<div style="display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center"><span class="mono" style="font-weight:700;color:var(--mark-text)">${d}</span><span><b>${n}</b><br><span class="ip">${p}</span></span><button class="btn gh sm">Notify</button></div>`).join("")}<p class="sub"><span class="pill warn">New source</span> Needs scraping of the platforms' "coming soon" pages, which the pipeline does not do today.</p></div>`)}</div></div>`};
 
 P.episode=()=>{const t=titles[0];return `<div class="pagehead"><div><div class="eyebrow">Episode thread · auto-created 09.23 07:00</div><h1 class="h1">${t.tk} · Ep ${t.eps} “Cinders”</h1></div></div>
  <div class="grid g12"><div class="c4">${panel('Rate this episode',`<div class="pb" style="display:grid;gap:12px"><div style="font:800 40px var(--display)">4.6<span class="fl" style="font-size:16px"> / 5</span></div><div class="acts">${["😭 812","🔥 640","🤯 233","😂 98"].map(x=>`<span class="react">${x}</span>`).join("")}</div><p class="sub">Episode reactions add to the per-episode series. Platforms expose only likes per episode (fact_episode).</p></div>`)}</div>
@@ -525,7 +536,7 @@ P.credits=()=>{const a=titles[0].author;const w=titles.filter(t=>t.author===a);r
 P.plans=()=>`<div class="pagehead"><div><div class="eyebrow">Plans</div><h1 class="h1">Free for fans. Pro for the people who make and buy IP.</h1><p class="sub">Pro plans unlock after your ownership or authority is verified by document review. Prices are placeholders.</p></div></div>
  <div class="grid g12">${[["Fan","Free","No verification",["Charts, indices, market map","Fanboards & anonymous posting","Ratings, lists, wishlist","Scout reputation"],0],["Author","TBD","Author or title claim",["Creator dashboard","Compare any title at full depth","Genre whitespace & gaps","Verified badge & notices"],1],["Publisher","TBD","Publisher or title claim",["Scouting screener","Portfolio vs peers","Market structure (HHI)","Wishlist demand trends"],0],["IP investor","TBD","Authorized-entity documents (PE/VC, studio)",["IP dossier & valuation band","Revenue model & drivers","Fan demand signals","Watch alerts"],0]].map(p=>`<div class="c3"><section class="panel plan ${p[4]?'feat':''}"><span class="eyebrow">${p[0]}</span><span class="pr">${p[1]}${p[1]==='TBD'?'<small class="fl" style="font-size:14px"> /mo</small>':''}</span><span class="pill">${p[2]}</span><ul>${p[3].map(x=>`<li>${x}</li>`).join("")}</ul><a class="btn ${p[1]==='Free'?'gh':''}" href="${p[1]==='Free'?'#market':'#verify'}">${p[1]==='Free'?'Start browsing':'Start verification'}</a></section></div>`).join("")}</div>`;
 P.dashboard=()=>{const w=titles.filter(t=>t.author===titles[0].author);const t=w[0];return `<div class="pagehead"><div><div class="eyebrow">Creator dashboard · ${t.author}</div><h1 class="h1">Your titles</h1></div><div class="acts"><span class="pill ok">✓ Verified author</span><a class="btn gh" href="#compare">Compare</a></div></div>
- <div class="idx">${w.map(x=>`<a class="ic" href="#title-${x.tk}"><span class="code"><span>${x.tk}</span><span class="fl">#${x.rank}</span></span><span class="v">${last(x).toFixed(1)}</span><span class="d ${cls(x.d1)}">${sgn(x.d1)}</span>${spark(x.s,160,36)}</a>`).join("")}<div class="ic"><span class="code"><span>FAN ★</span></span><span class="v">${t.fan}</span><span class="d up">▲ 0.1 30D</span></div><div class="ic"><span class="code"><span>FANBOARD</span></span><span class="v">${fmtN(t.act)}/d</span><span class="d up">▲ 18% 30D</span></div></div><div style="height:14px"></div>
+ ${(r=>`<div class="idx" style="--idx-cols:${r.cols}">${r.shown.join("")}</div>${r.more}`)(completeRows("idx-dash",[...w.map(x=>`<a class="ic" href="#title-${x.tk}"><span class="code"><span>${x.tk}</span><span class="fl">#${x.rank}</span></span><span class="v">${last(x).toFixed(1)}</span><span class="d ${cls(x.d1)}">${sgn(x.d1)}</span>${spark(x.s,160,36)}</a>`),`<div class="ic"><span class="code"><span>FAN ★</span></span><span class="v">${t.fan}</span><span class="d up">▲ 0.1 30D</span></div>`,`<div class="ic"><span class="code"><span>FANBOARD</span></span><span class="v">${fmtN(t.act)}/d</span><span class="d up">▲ 18% 30D</span></div>`],{kind:"idx"}))}<div style="height:14px"></div>
  <div class="grid g12"><div class="c8">${panel(`${t.tk} · PlotScore vs genre index`,`<div class="pb">${lineChart(t.s,{id:"dc"})}</div>`)}</div>
  <div class="c4 grid">${panel('Engagement decay <i>likes per episode</i>',`<div class="pb">${spark([30,26,22,20,19,18,18,17,17,16,16,17],300,70,"var(--mark)")}<div class="bl" style="margin-top:8px"><span class="fl">Decay ep1→now</span><span>43% <span class="fl">(genre 55%)</span></span></div></div>`)}
  ${panel('Cadence',`<div class="pb breadth"><div class="bl"><span class="fl">You</span><span>${t.cad}/wk</span></div><div class="bl"><span class="fl">${t.gname} median</span><span>1.0/wk</span></div><div class="bl"><span class="fl">Top decile</span><span>1.4/wk</span></div></div>`)}</div>
@@ -538,11 +549,11 @@ P.screener=()=>{const l=[...titles].sort((a,b)=>readiness(b)-readiness(a)).slice
  <div class="panel" style="padding:12px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px"><span class="eyebrow" style="margin-right:4px">Filters</span>${["Format: Novel","Status: Completed","Genre: Any","Readiness > 70","Wishlist 30D > +20%","Platform: Any","Publisher: Independent"].map((f,i)=>`<span class="pill ${i<2?'mk':''}">${f} ${i<2?'✕':'▾'}</span>`).join("")}<span class="ip" style="margin-left:auto">${l.length} of ${titles.length} titles</span></div>
  ${lock('Scouting screener',panel('Results',moverTable(l,["name","status","ready","wish","d30","fan","pub","spark"])))}`};
 P.portfolio=()=>{const pub=titles[0].pub;const l=titles.filter(t=>t.pub===pub);const ix=mkIndex(pub,pub,l);return `<div class="pagehead"><div><div class="eyebrow">Portfolio · ${pub}</div><h1 class="h1">Your slate</h1></div><span class="pill ok">✓ Verified publisher</span></div>
- <div class="idx"><div class="ic"><span class="code"><span>SLATE INDEX</span></span><span class="v">${ix.v.toFixed(2)}</span><span class="d ${cls(ix.d)}">${sgn(ix.d)}</span>${spark(ix.s,160,36)}</div><div class="ic"><span class="code"><span>TITLES</span></span><span class="v">${l.length}</span></div><div class="ic"><span class="code"><span>AVG SCORE</span></span><span class="v">${(l.reduce((a,t)=>a+last(t),0)/l.length).toFixed(1)}</span></div><div class="ic"><span class="code"><span>AVG FAN ★</span></span><span class="v">${(l.reduce((a,t)=>a+t.fan,0)/l.length).toFixed(1)}</span></div></div><div style="height:14px"></div>
+ <div class="idx" style="--idx-cols:${innerWidth>680?4:2}"><div class="ic"><span class="code"><span>SLATE INDEX</span></span><span class="v">${ix.v.toFixed(2)}</span><span class="d ${cls(ix.d)}">${sgn(ix.d)}</span>${spark(ix.s,160,36)}</div><div class="ic"><span class="code"><span>TITLES</span></span><span class="v">${l.length}</span></div><div class="ic"><span class="code"><span>AVG SCORE</span></span><span class="v">${(l.reduce((a,t)=>a+last(t),0)/l.length).toFixed(1)}</span></div><div class="ic"><span class="code"><span>AVG FAN ★</span></span><span class="v">${(l.reduce((a,t)=>a+t.fan,0)/l.length).toFixed(1)}</span></div></div><div style="height:14px"></div>
  ${lock('Publisher portfolio',panel('Titles',moverTable(l,["name","px","d7","d30","fan","act","rev"])))}
  <p class="sub"><span class="pill warn">Data gap</span> Real publisher attribution needs adapter work (dim_publisher is empty).</p>`};
 P.dossier=()=>{const t=titles[0];const a=t.views*.00003*12;return `<div class="quote"><div class="cover" style="background-image:url(${cover(t)})"></div><div><div class="eyebrow">IP dossier · canonical IP · 3 platforms · novel + comic</div><h1 class="h1">${esc(t.name)}</h1><div class="price"><span class="big">${last(t).toFixed(1)}</span><span class="d ${cls(t.d30)}">${sgn(t.d30)} 1M</span></div><div class="acts" style="margin-top:12px"><button class="btn">Watch</button><button class="btn gh">Export</button></div></div></div><div style="height:16px"></div>
- ${lock('Investor IP dossier',`<div class="grid g12"><div class="c7">${panel('Valuation band <i>revenue-multiple model</i>',`<div class="pb"><div class="band"><div class="rail"></div><div class="rng" style="left:14%;right:30%"></div><div class="mid" style="left:36%"></div></div><div class="bl"><span class="mono">$${fmtN(Math.round(a*.4*3))}</span><span class="mono" style="color:var(--mark)">$${fmtN(Math.round(a*5))}</span><span class="mono">$${fmtN(Math.round(a*2.5*8))}</span></div><p class="sub">Annual revenue (model) × base multiple (placeholder) × adjustment, clamped to 0.5–2.0. No public dataset of story-IP deal multiples is assumed.</p></div>
+ ${lock('Investor IP dossier',`<div class="grid g12"><div class="c7">${panel('Valuation band <i>revenue-multiple model</i>',`<div class="pb"><div class="band"><div class="rail"></div><div class="rng" style="left:14%;right:30%"></div><div class="mid" style="left:36%"></div></div><div class="bl"><span class="mono">$${fmtN(Math.round(a*.4*3))}</span><span class="mono" style="color:var(--mark-text)">$${fmtN(Math.round(a*5))}</span><span class="mono">$${fmtN(Math.round(a*2.5*8))}</span></div><p class="sub">Annual revenue (model) × base multiple (placeholder) × adjustment, clamped to 0.5–2.0. No public dataset of story-IP deal multiples is assumed.</p></div>
  <div class="tw"><table><thead><tr><th>Driver</th><th>Value</th><th class="r">Effect</th></tr></thead><tbody><tr><td>Annual revenue (model)</td><td class="mono">$${fmtN(Math.round(a*.4))}–${fmtN(Math.round(a*2.5))}</td><td class="r">base</td></tr><tr><td>Momentum percentile</td><td class="mono">87</td><td class="r up">+0.19</td></tr><tr><td>Status</td><td>${t.status}</td><td class="r fl">0</td></tr><tr><td>Cross-platform reach</td><td class="mono">3 platforms</td><td class="r up">+0.11</td></tr></tbody></table></div>`,'<span class="pill mk">is_model</span>')}</div>
  <div class="c5 grid">${panel('Demand signals',`<div class="kv" style="border-top:0"><div><span>Fan rating</span><b>${t.fan}</b></div><div><span>Wishlist</span><b>${fmtN(t.wish)}</b></div><div><span>Fanboard 30D</span><b class="up">▲ 18%</b></div><div><span>Scout lead</span><b>74d</b></div></div><div class="pb">${spark(t.s,400,60,"var(--mark)")}</div>`)}
  ${panel('Comparable deals',`<div class="pb"><p class="sub" style="margin:0">No deal data yet. rel_contract is schema-only (star_schema.py:206) and loads data/manual/contracts.csv only if that file exists.</p></div>`)}</div></div>`)}`};
@@ -645,6 +656,24 @@ function toggleTheme() {
 /* ---------- SCREENS registry: P[route] renders HTML, WIRES[route] attaches handlers ---------- */
 const WIRES = {};
 const SCREENS = { register(route, render, wire) { P[route] = render; if (wire) WIRES[route] = wire; } };
+
+/* ---------- LAYOUT: complete rows + "See more" (D-030) ----------
+   Card grids never end on a half-empty row: show whole rows (largest items first) and put the
+   rest behind a button. Column counts mirror the CSS breakpoints. */
+STATE.more = {};
+function bucket(kind) { const w = innerWidth; return kind === "idx" ? (w > 1100 ? 8 : w > 680 ? 4 : 2) : (w > 1100 ? 3 : w > 680 ? 2 : 1); }
+function completeRows(key, items, {kind = "card", cols, sortBy} = {}) {
+  const c = cols || bucket(kind), list = sortBy ? [...items].sort(sortBy) : items;
+  if (list.length <= c) return {shown: list, cols: Math.max(1, list.length), more: ""};
+  const full = Math.floor(list.length / c) * c;
+  if (full === list.length) return {shown: list, cols: c, more: ""};
+  const open = !!STATE.more[key], hidden = list.length - full;
+  return {shown: open ? list : list.slice(0, full), cols: c,
+    more: `<div class="more-row"><button type="button" class="btn gh sm" data-more="${key}" aria-expanded="${open}">${open ? "Show less ▴" : `See ${hidden} more ▾`}</button></div>`};
+}
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-more]"); if (!b) return; STATE.more[b.dataset.more] = !STATE.more[b.dataset.more]; rerender(); });
+let lastBucket = bucket("idx") + "/" + bucket();
+addEventListener("resize", () => { const b = bucket("idx") + "/" + bucket(); if (b !== lastBucket) { lastBucket = b; rerender(); } });
 
 /* ---------- DATA: boot + subscriptions ---------- */
 (async () => {
@@ -771,8 +800,8 @@ function boardName(ref) { return ref === "LOUNGE" ? "Lounge (free board)" : (byT
 function liveHot() {
   const hot = allPosts().filter(isConcept).slice(0, 4);
   const list = hot.length ? hot : allPosts().slice(0, 4);
-  if (!list.length) return `<div class="pb"><p class="sub" style="margin:0">No posts yet. <a href="#fanboard-LOUNGE" style="color:var(--mark)">Start the first thread</a>.</p></div>`;
-  return `<div class="pb" style="display:grid;gap:12px">${list.map(p => { const v = votesFor(p), n = allComments().filter(c => c.postId === p.id).length; return `<a href="#post-${p.id}" style="display:grid;gap:2px"><span class="eyebrow">${esc(p.tk)} fanboard ${isConcept(p) ? '· <span style="color:var(--mark)">★ concept</span>' : ""}</span><span style="font-weight:600">${esc(p.title)}</span><span class="ip">▲ ${v.up} · ${n} comments · ${ago(p.at)}</span></a>`; }).join("")}</div>`;
+  if (!list.length) return `<div class="pb"><p class="sub" style="margin:0">No posts yet. <a href="#fanboard-LOUNGE" style="color:var(--mark-text)">Start the first thread</a>.</p></div>`;
+  return `<div class="pb" style="display:grid;gap:12px">${list.map(p => { const v = votesFor(p), n = allComments().filter(c => c.postId === p.id).length; return `<a href="#post-${p.id}" style="display:grid;gap:2px"><span class="eyebrow">${esc(p.tk)} fanboard ${isConcept(p) ? '· <span style="color:var(--mark-text)">★ concept</span>' : ""}</span><span style="font-weight:600">${esc(p.title)}</span><span class="ip">▲ ${v.up} · ${n} comments · ${ago(p.at)}</span></a>`; }).join("")}</div>`;
 }
 function liveDiscussed() {
   const act = activity(), rows = Object.entries(act).filter(([tk]) => byTk[tk]).sort((a, b) => b[1] - a[1]).slice(0, 8);
@@ -799,7 +828,7 @@ function liveRatingPanel(t) {
 function liveFanboardPanel(t) {
   const ps = allPosts().filter(p => p.tk === t.tk).slice(0, 5), rv = reviewsFor(t).slice(0, 3);
   return `<div class="c7">${panel(`From the fanboard ${liveBadge()}`, ps.length ? postTable(ps, t) : `<div class="pb"><p class="sub" style="margin:0">No posts yet.</p></div>`, `<a class="pill" href="#fanboard-${t.tk}">Open fanboard →</a>`)}</div>
-   <div class="c5">${panel("Reviews", rv.length ? `<div class="pb" style="padding-top:0">${rv.map(r => `<div class="cmt"><div class="meta">${who({uid: r.uid}, t)} · <b style="color:var(--mark)">${r.score}/10</b> · ${ago(r.at)}${r.owner ? " · excluded (owner)" : ""}</div>${esc(r.review)}</div>`).join("")}</div>` : `<div class="pb"><p class="sub" style="margin:0">No written reviews yet.</p></div>`)}</div>`;
+   <div class="c5">${panel("Reviews", rv.length ? `<div class="pb" style="padding-top:0">${rv.map(r => `<div class="cmt"><div class="meta">${who({uid: r.uid}, t)} · <b style="color:var(--mark-text)">${r.score}/10</b> · ${ago(r.at)}${r.owner ? " · excluded (owner)" : ""}</div>${esc(r.review)}</div>`).join("")}</div>` : `<div class="pb"><p class="sub" style="margin:0">No written reviews yet.</p></div>`)}</div>`;
 }
 
 /* ---------- SCREENS: fanboards (compact, one line per post) ---------- */
@@ -843,14 +872,14 @@ P.fanboard = () => {
 };
 P.post = () => {
   const p = allPosts().find(x => x.id === STATE.arg);
-  if (!p) return `<div class="pagehead"><div><h1 class="h1">Post not found</h1><p class="sub">It may have been deleted or hidden by a moderator. <a href="#fanboards" style="color:var(--mark)">Back to fanboards</a></p></div></div>`;
+  if (!p) return `<div class="pagehead"><div><h1 class="h1">Post not found</h1><p class="sub">It may have been deleted or hidden by a moderator. <a href="#fanboards" style="color:var(--mark-text)">Back to fanboards</a></p></div></div>`;
   const t = byTk[p.tk], v = votesFor(p), myV = (mine("votes").v || {})[p.id], cs = allComments().filter(c => c.postId === p.id);
   const tops = cs.filter(c => !c.parentId), kids = id => cs.filter(c => c.parentId === id);
   const cm = c => `<div class="cmt${c.parentId ? " reply" : ""}"><div class="meta">${who(c, t)} · ${ago(c.at)}${!c.parentId ? ` · <button class="lnk" data-act="reply" data-id="${c.id}">Reply</button>` : ""}${c.uid === LIVE.uid ? ` · <button class="lnk" data-act="delc" data-id="${c.id}">Delete</button>` : ""}</div>${esc(c.body)}</div>`;
   const reported = !!(mine("reports").r || {})[p.id];
   const own = p.uid && p.uid === LIVE.uid;
   return `<div class="eyebrow" style="margin-bottom:8px"><a href="#fanboard-${esc(p.tk)}">← ${esc(boardName(p.tk))}</a></div>
-  <section class="panel"><div class="pb post"><h2 class="h2">${isConcept(p) ? '<span style="color:var(--mark)">★</span> ' : ""}${esc(p.title)}</h2>
+  <section class="panel"><div class="pb post"><h2 class="h2">${isConcept(p) ? '<span style="color:var(--mark-text)">★</span> ' : ""}${esc(p.title)}</h2>
    <div class="meta">${who(p, t)} · ${new Date(p.at).toLocaleString()} · ${cs.length} comments · ▲ ${v.up} ▼ ${v.down}</div>
    <p style="margin:0;color:var(--text-2);max-width:72ch;white-space:pre-wrap">${esc(p.body)}</p>
    <div class="acts" style="justify-content:center"><button class="btn sm ${myV === 1 ? "" : "gh"}" data-act="vote" data-id="${p.id}" data-v="1" ${own ? "disabled title=\"You can't vote on your own post\"" : ""}>▲ ${v.up}</button><button class="btn sm ${myV === -1 ? "" : "gh"}" data-act="vote" data-id="${p.id}" data-v="-1" ${own ? "disabled" : ""}>▼ ${v.down}</button>
@@ -872,9 +901,9 @@ P.profile = () => {
   const myPosts = allPosts().filter(p => p.uid === LIVE.uid), r = mine("ratings").r || {}, f = mine("follows").f || {}, cl = allClaims().filter(c => c.uid === LIVE.uid);
   return `<div class="pagehead"><div><div class="eyebrow">Your profile ${liveBadge()}</div><h1 class="h1"><span data-uid="${esc(LIVE.uid)}">…</span></h1><div class="meta" style="margin-top:6px">${Object.keys(r).length} ratings · ${myPosts.length} posts · following ${Object.keys(f).length}${cl.some(c => c.status === "approved") ? ' · <span class="vb">✓ VERIFIED</span>' : ""}</div></div></div>
   <div class="grid g12"><div class="c6">${panel("Following", Object.keys(f).length ? moverTable(Object.keys(f).filter(k => byTk[k]).map(k => byTk[k]), ["name", "px", "d7"]) : `<div class="pb"><p class="sub" style="margin:0">Follow titles from their title page.</p></div>`)}</div>
-  <div class="c6">${panel("Your ratings", Object.keys(r).length ? `<div class="tw"><table><tbody>${Object.entries(r).filter(([k]) => byTk[k]).map(([k, x]) => `<tr data-go="title-${k}"><td>${tname(byTk[k])}</td><td class="r mono" style="color:var(--mark)">${x.score}/10</td></tr>`).join("")}</tbody></table></div>` : `<div class="pb"><p class="sub" style="margin:0">No ratings yet.</p></div>`)}</div>
+  <div class="c6">${panel("Your ratings", Object.keys(r).length ? `<div class="tw"><table><tbody>${Object.entries(r).filter(([k]) => byTk[k]).map(([k, x]) => `<tr data-go="title-${k}"><td>${tname(byTk[k])}</td><td class="r mono" style="color:var(--mark-text)">${x.score}/10</td></tr>`).join("")}</tbody></table></div>` : `<div class="pb"><p class="sub" style="margin:0">No ratings yet.</p></div>`)}</div>
   <div class="c6">${panel("Your posts", myPosts.length ? postTable(myPosts) : `<div class="pb"><p class="sub" style="margin:0">No posts yet.</p></div>`)}</div>
-  <div class="c6">${panel("Your claims", cl.length ? claimTable(cl, false) : `<div class="pb"><p class="sub" style="margin:0">None. <a href="#verify" style="color:var(--mark)">Verify a title, author or publisher</a>.</p></div>`)}</div></div>`;
+  <div class="c6">${panel("Your claims", cl.length ? claimTable(cl, false) : `<div class="pb"><p class="sub" style="margin:0">None. <a href="#verify" style="color:var(--mark-text)">Verify a title, author or publisher</a>.</p></div>`)}</div></div>`;
 };
 const AUTHORS = [...new Set(titles.map(t => t.author))].sort(), PUBS_L = [...new Set(titles.map(t => t.pub))].filter(p => p !== "Independent").sort();
 P.verify = () => `<div class="pagehead"><div><div class="eyebrow">Verification ${liveBadge()}</div><h1 class="h1">Verify your claim</h1><p class="sub">In the product, you attach contracts or registration documents and a reviewer checks them. In this demo you submit the claim only, and the owner of this artifact approves or rejects it in the Claims queue. An approved author or publisher claim shows a verified badge in that title's fanboard, and your ratings of those titles stop counting.</p></div></div>
