@@ -1,0 +1,12 @@
+# Premium personas: which approved claim types qualify, and which plan must be active.
+# Source: docs/product/product-spec.md §7. Change rules here, not in code.
+personas:
+  author:
+    claim_types: [author, title]
+    plan: author
+  publisher:
+    claim_types: [publisher, title]
+    plan: publisher
+  investor:
+    claim_types: [investor_entity]
+    plan: investor

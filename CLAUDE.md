@@ -89,3 +89,16 @@ Plotline is being repositioned as **IMDb + DCInside for story IP**: free fans (g
 - Modular Phase 2 architecture: `docs/product/architecture.md` (module = service + repo + router; replaceable behaviour via registered Protocol implementations; policy in config)
 - Wireframes (19 screens): `docs/product/wireframes.html`
 - Adding or changing a KPI: use the `add-kpi` skill (`.claude/skills/add-kpi/SKILL.md`); never gate KPIs inside route handlers.
+
+### App backend (Phase 2a, `src/app/`)
+
+```bash
+pip install -r requirements-dev.txt
+pytest                                                    # tests/app, fixture warehouse, no network
+uvicorn --factory src.app.main:create_app --reload        # needs data/plotline.duckdb (python -m src.db.warehouse)
+python -m src.app.cli make-admin you@example.com          # admin is never granted at sign-up
+```
+
+- Modules own their tables (`repo.py`). Wiring happens only in `src/app/context.py`. Behaviour is swapped through registries named in `config/policy/app.yaml`.
+- Every title payload goes through `ctx.kpi.project(...)`. Visibility lives in `config/policy/kpis.yaml`, and undeclared fields are hidden.
+- The analytics DuckDB is read-only for the app (`src/app/market/warehouse.py`).

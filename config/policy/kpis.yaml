@@ -1,0 +1,40 @@
+# Persona × KPI visibility. Source: docs/product/product-spec.md §6.
+# Levels: shown | rounded | hidden. Any field not listed here is HIDDEN (safe default).
+# Change a KPI's audience here, and follow the add-kpi skill (.claude/skills/add-kpi).
+audiences: [fan, author, publisher, investor]
+
+# Descriptive fields every audience sees.
+public: [comic_id, title, platform, source, genre, genre_parent, author, publisher, content_type,
+         cover, synopsis, status, tags, first_seen, listed_days_ago, gallery_id]
+
+fields:
+  plotscore:        {fan: shown,   author: shown, publisher: shown, investor: shown, source: src/models/plotscore.py}
+  best_rank:        {fan: shown,   author: shown, publisher: shown, investor: shown, source: fact_title.best_rank}
+  latest_rank:      {fan: shown,   author: shown, publisher: shown, investor: shown, source: fact_title.latest_rank}
+  rank_change:      {fan: shown,   author: shown, publisher: shown, investor: shown, source: fact_title_daily.rank}
+  rising:           {fan: shown,   author: shown, publisher: shown, investor: shown, source: derived rank_change}
+  rating:           {fan: shown,   author: shown, publisher: shown, investor: shown, source: fact_title.rating}
+  views:            {fan: rounded, author: shown, publisher: shown, investor: shown, source: fact_title.views}
+  subscribers:      {fan: rounded, author: shown, publisher: shown, investor: shown, source: fact_title.subscribers}
+  likes:            {fan: rounded, author: shown, publisher: shown, investor: shown, source: fact_title.likes}
+  comments:         {fan: rounded, author: shown, publisher: shown, investor: shown, source: fact_title.comments}
+  views_change_pct: {fan: shown,   author: shown, publisher: shown, investor: shown, source: fact_title_daily.views}
+  fan_rating:       {fan: shown,   author: shown, publisher: shown, investor: shown, source: fan.ratings (new)}
+  fan_votes:        {fan: shown,   author: shown, publisher: shown, investor: shown, source: fan.ratings (new)}
+  wishlist_total:   {fan: shown,   author: shown, publisher: shown, investor: shown, source: fan.wishlist (new)}
+  # premium diagnostics
+  reach_pct:        {fan: hidden,  author: shown, publisher: shown, investor: shown, source: plotscore.py:36}
+  momentum_pct:     {fan: hidden,  author: shown, publisher: shown, investor: shown, source: plotscore.py:36}
+  engagement_pct:   {fan: hidden,  author: shown, publisher: shown, investor: shown, source: plotscore.py:36}
+  monetization_pct: {fan: hidden,  author: shown, publisher: shown, investor: shown, source: plotscore.py:36}
+  quality_pct:      {fan: hidden,  author: shown, publisher: shown, investor: shown, source: plotscore.py:36}
+  momentum:         {fan: hidden,  author: shown, publisher: shown, investor: shown, source: trends_engine._scored}
+  like_through:     {fan: hidden,  author: shown, publisher: shown, investor: shown, source: kpi_layers._base}
+  subs_per_view:    {fan: hidden,  author: shown, publisher: shown, investor: shown, source: kpi_layers._base}
+  readiness:        {fan: hidden,  author: shown, publisher: shown, investor: shown, source: market/readiness.py (port of template.html:614)}
+  est_usd:          {fan: hidden,  author: shown, publisher: shown, investor: shown, source: src/models/earnings.py, is_model: true}
+  est_usd_low:      {fan: hidden,  author: shown, publisher: shown, investor: shown, source: src/models/earnings.py, is_model: true}
+  est_usd_high:     {fan: hidden,  author: shown, publisher: shown, investor: shown, source: src/models/earnings.py, is_model: true}
+  # dropped from the product (data-quality only; admin sees raw tables)
+  novel_share:        {fan: hidden, author: hidden, publisher: hidden, investor: hidden, source: kpi_layers.py}
+  cover_coverage_pct: {fan: hidden, author: hidden, publisher: hidden, investor: hidden, source: kpi_layers.py}

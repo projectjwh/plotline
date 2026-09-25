@@ -250,3 +250,34 @@ Here `title_key` and `entity_ref` are the warehouse keys (`dim_title.title_key`,
 | `post.voted(post_id)` | community | PromotionRule check |
 
 The event bus is in-process for the MVP, behind an interface, so a queue can replace it later without changing any module.
+
+## 8. Implementation status (Phase 2a: backend core)
+
+Implemented in `src/app/`. Run it with `uvicorn --factory src.app.main:create_app --reload`, then open `/docs` for the full OpenAPI.
+Tests: `pytest` (43 tests in `tests/app`, using a fixture warehouse with the real column names).
+
+| Module | Replaceable seam (registry name in `config/policy/app.yaml`) | Endpoints |
+|---|---|---|
+| identity | `AuthProvider` (`builtin_jwt`) | `POST /auth/register`, `POST /auth/login`, `GET /me` |
+| entitlement | policy `config/policy/entitlements.yaml` | (used by all; admins grant plans while billing is off) |
+| kpi | policy `config/policy/kpis.yaml` | `GET /kpis/catalog` |
+| market | `Warehouse` adapter | `/market/overview`, `/market/indices[/{code}]`, `/market/movers`, `/market/breadth`, `/market/listings`, `/market/treemap`, `/titles`, `/titles/{id}`, `/search`, `/genres`, `/publishers`, `/credits/{author,publisher}/{name}` |
+| community | `PromotionRule` (`threshold`) | `/galleries`, `/galleries/by/{kind}/{ref}`, `/galleries/{id}/posts`, `/posts/{id}` (GET, PATCH, `/delete`, `/comments`), `/comments/{id}/delete`, `/votes`, `/reports`, `/boards` |
+| fan | `RatingAggregator` (`bayesian`), `ScoutRule` (`lead_time`) | `/ratings/{id}`, `/reviews/{id}`, `/follows`, `/me/follows`, `/lists…`, `/wishlist[/{id}]`, `/users/{handle}`, `/scouts` |
+| verification | `DocStorage` (`local_fs`) | `POST /claims` (multipart), `GET /claims/mine` |
+| valuation | `ValuationModel` (`revenue_multiple`) | `/premium/valuation/{id}` |
+| premium | policy `entitlements.yaml` | `/premium/titles/{id}`, `/premium/compare`, `/premium/screener`, `/premium/portfolio` |
+| admin | — | `/admin/claims…`, `/admin/grants`, `/admin/reports…`, `/admin/bans`, `/admin/moderators`, `/admin/events/rising` |
+
+Operational notes:
+- Admin rights are granted only through `python -m src.app.cli make-admin <email>`, never at sign-up, because emails are not verified.
+- Production requires `PLOTLINE_JWT_SECRET` (at least 32 characters) and `PLOTLINE_IP_SALT`. `DATABASE_URL` switches the app DB to Postgres (install `psycopg`).
+- Valuation multiples are `null` until the product owner sets them. Until then the API returns the revenue band plus `valuation: null` and a reason.
+- Not implemented yet (next iterations):
+  - the Next.js frontend
+  - a Stripe webhook to replace admin grants
+  - email verification and password reset
+  - login and registration throttling
+  - a pipeline hook that emits `episode.released` / `title.entered_rising`
+  - an R2/S3 `DocStorage`
+  - batch badge resolution in gallery listings (currently one entitlement lookup per author per page)

@@ -58,7 +58,7 @@ The home screen treats story IP as a market. Its layout follows patterns from Fi
 
 | Market element | Plotline equivalent | Source | Status |
 |---|---|---|---|
-| Index | Genre index: reach-weighted PlotScore of a genre's titles, rebased to 1,000 | `agg_genre_daily` (`genre_parent`, `date`, `total_views`, `avg_plotscore`) in `src/db/star_schema.py` | **new** |
+| Index | Genre index: chain-linked **reach** index (total views of titles observed on consecutive days), rebased to 1,000. The data has no per-day PlotScore, so the prototype's PlotScore-weighted index was replaced by this one (`src/app/market/indices.py`) | `agg_genre_daily` (`genre_parent`, `date`, `total_views`, `avg_plotscore`) in `src/db/star_schema.py` | **new** |
 | Composite index | PLT-ALL, PLT-CMX (comics), PLT-NOV (novels) | same | **new** |
 | Price / % change | PlotScore and its 1D / 1W / 1M change; rank Δ 7D | `fact_score`, `fact_title_daily.rank` | existing |
 | Volume | Fan activity per day (posts + comments + ratings) | community, fan | **new** |
