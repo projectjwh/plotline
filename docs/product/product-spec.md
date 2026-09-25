@@ -50,6 +50,26 @@ flowchart LR
 
 ## 4. Feature set
 
+### 4.0 Market overview: the story-IP market (all personas; fan-facing home)
+
+The home screen treats story IP as a market. Its layout follows patterns from Finviz (index mini-charts, advancing/declining breadth, gainer and loser tables, sector heat-map treemap) and Naver Stock (index strip, rolling tickers, rising/falling and volume rankings, theme boards, IPO calendar).
+
+> **Source caveat.** Both reference sites were blocked from this build environment (finviz.com by the egress proxy; stock.naver.com refused the fetch). The patterns above come from general knowledge of those sites and were not checked against their live pages.
+
+| Market element | Plotline equivalent | Source | Status |
+|---|---|---|---|
+| Index | Genre index: reach-weighted PlotScore of a genre's titles, rebased to 1,000 | `agg_genre_daily` (`genre_parent`, `date`, `total_views`, `avg_plotscore`) in `src/db/star_schema.py` | **new** |
+| Composite index | PLT-ALL, PLT-CMX (comics), PLT-NOV (novels) | same | **new** |
+| Price / % change | PlotScore and its 1D / 1W / 1M change; rank Δ 7D | `fact_score`, `fact_title_daily.rank` | existing |
+| Volume | Fan activity per day (posts + comments + ratings) | community, fan | **new** |
+| Breadth | Advancing vs declining titles; count at a 120-day high | `fact_title_daily` | **new** |
+| Heat map | Treemap: genre (or publisher) → title, sized by reach, colored by Δ | explorer market map (`docs/user-guide/tabs.md`) | existing, restyled |
+| IPO / new listings | Titles first seen in the last 30 days, shown in a moving banner and a calendar | `dim_title.first_seen` | existing field, **new** view |
+| Upcoming IPOs | Announced titles from platform "coming soon" pages | not scraped today | **new data source** |
+| Market cap | Valuation band (premium, model) | valuation (§5) | **new** |
+
+Up/down colors follow a user-selectable convention: KR (red up, blue down, the default) or US (green up, red down). The US green/red pair fails the colorblind separation check (validator ΔE 5.5 under deuteranopia), so every change also carries a ▲/▼ glyph and a sign.
+
 ### 4.1 Fans (free)
 
 | Feature | Fan value | Signal it produces (paid value) | Wireframe |
@@ -153,6 +173,9 @@ Legend: ✔ shown · 🔒 premium only · ✘ hidden · *admin* means internal o
 | Platform aggregates | `kpi_layers.py` (`_platform`) | ✔ titles, reach | 🔒 | 🔒 | 🔒 | |
 | **Fan rating (weighted), distribution** | new | ✔ | ✔ | ✔ | ✔ | Core IMDb value |
 | **Wishlist votes, gallery activity, follow growth, scout lead time** | new | ✔ totals | 🔒 trends | 🔒 | 🔒 | The flywheel signals (§3) |
+| **Genre / composite index, breadth, 120-day highs** | new, derived from `agg_genre_daily`, `fact_title_daily` | ✔ | ✔ | ✔ | ✔ | Market pulse for everyone; the home screen (§4.0) |
+| **New listings (IPO)** | `dim_title.first_seen` | ✔ | ✔ | ✔ | ✔ | Discovery; feeds scout points |
+| **Fan activity "volume"** | new (community + fan) | ✔ totals | 🔒 trend | 🔒 | 🔒 | Makes fan activity visible, which encourages more of it |
 | `novel_share`, `cover_coverage_pct`, `coverage_pct`, `with_cover` | `kpi_layers.py` | ✘ | ✘ | ✘ | ✘ | **Drop from the product.** Data-quality metrics with no user value; admin only |
 
 This table is the seed for `kpi_registry` (see [architecture.md](architecture.md) §4). In Phase 2, code enforces it from a single declaration, and this table is generated from that declaration.

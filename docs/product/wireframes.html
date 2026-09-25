@@ -1,499 +1,562 @@
-<title>Plotline Wireframes</title>
+<title>Plotline Terminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
 :root{
-  --bg:#F4F5F7; --surface:#FFFFFF; --sunk:#E9ECF0; --ink:#1C2129; --muted:#646C78; --line:#C8CDD5; --line-2:#DDE1E7;
-  --link:#2D5B86; --link-bg:#E3ECF5; --prem:#9A5F12; --prem-bg:#F6EBDC; --ok:#2F6B45; --ok-bg:#E1EFE6; --bad:#9B3131; --bad-bg:#F5E2E2;
-  --hatch:repeating-linear-gradient(135deg,#D9DDE3 0 1px,transparent 1px 7px);
-  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+  --base:#0A0C0F; --panel:#11151B; --raised:#171C24; --hover:#1D232D; --line:#232A34; --line-2:#2D3541;
+  --text:#E9ECF1; --text-2:#B9C0CB; --muted:#8B94A3; --faint:#5E6775;
+  --mark:#F2C94C; --mark-ink:#16130A; --mark-soft:rgba(242,201,76,.12);
+  --up:#F04E54; --dn:#4A86EE; --up-soft:rgba(240,78,84,.14); --dn-soft:rgba(74,134,238,.14); --flat:#3A414C;
+  --ok:#3FB87F; --warn:#E3A33B;
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  color-scheme:dark; --bg:#14171C; --surface:#1C2027; --sunk:#232830; --ink:#E3E6EA; --muted:#98A0AB; --line:#39414C; --line-2:#2C323B;
-  --link:#86AED6; --link-bg:#1F2F40; --prem:#DDA35A; --prem-bg:#3A2C18; --ok:#7DC096; --ok-bg:#1B3024; --bad:#E08C8C; --bad-bg:#3A1F1F;
-  --hatch:repeating-linear-gradient(135deg,#2E343D 0 1px,transparent 1px 7px);}}
-:root[data-theme="dark"]{
-  color-scheme:dark; --bg:#14171C; --surface:#1C2027; --sunk:#232830; --ink:#E3E6EA; --muted:#98A0AB; --line:#39414C; --line-2:#2C323B;
-  --link:#86AED6; --link-bg:#1F2F40; --prem:#DDA35A; --prem-bg:#3A2C18; --ok:#7DC096; --ok-bg:#1B3024; --bad:#E08C8C; --bad-bg:#3A1F1F;
-  --hatch:repeating-linear-gradient(135deg,#2E343D 0 1px,transparent 1px 7px);}
+:root.us{--up:#2BB673; --dn:#F0506A; --up-soft:rgba(43,182,115,.14); --dn-soft:rgba(240,80,106,.14)}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);margin:0}
-a{color:var(--link)}
-:focus-visible{outline:2px solid var(--link);outline-offset:2px}
-.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
-/* rail */
-.rail{border-right:1px solid var(--line);padding:20px 16px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto;background:var(--surface)}
-.brand{font:800 20px/1 var(--display);letter-spacing:-.01em}
-.brand small{display:block;font:500 11px/1.4 var(--mono);color:var(--muted);letter-spacing:.04em;margin-top:6px;text-transform:uppercase}
-.grp{margin-top:18px}
-.grp h3{font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px}
-.grp a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:4px;font-size:13px}
-.grp a span{font:500 11px var(--mono);color:var(--muted);min-width:24px}
-.grp a:hover{background:var(--sunk)}
-.grp a[aria-current="true"]{background:var(--link-bg);color:var(--link)}
-.grp a[aria-current="true"] span{color:var(--link)}
-.legend{margin-top:20px;font-size:12px;color:var(--muted);display:grid;gap:6px}
-/* main */
-main{padding-block:24px 64px;padding-inline:28px;min-width:0}
-.head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:16px}
-.eyebrow{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-h1{font:800 28px/1.1 var(--display);margin:4px 0 0;letter-spacing:-.015em;text-wrap:balance}
-.ctrls{display:flex;gap:8px;flex-wrap:wrap}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
-.seg button{font:500 12px var(--sans);border:0;background:transparent;color:var(--ink);padding:6px 10px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
-/* frame */
-.frame{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-inline:auto;width:100%;transition:max-width .2s}
-.frame.phone{max-width:390px}
-.bar{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.logo{font:800 15px var(--display)}
-.search{flex:1;min-width:120px;height:28px;border:1px solid var(--line);border-radius:4px;background:var(--sunk);font-size:12px;color:var(--muted);display:flex;align-items:center;padding:0 8px}
-.nav{display:flex;gap:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
-.frame.phone .nav{display:none}
-.body{padding:16px;display:grid;gap:14px}
-.row{display:flex;gap:12px;flex-wrap:wrap}
-.row>*{flex:1 1 200px;min-width:0}
-.row.tiles>*{flex:1 1 120px}
-.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.frame.phone .row>*{flex-basis:100%}
-.box{border:1px solid var(--line);border-radius:6px;padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
-.box h4{margin:0;font:700 13px var(--display);letter-spacing:.01em;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.box h4 small{font:400 11px var(--mono);color:var(--muted)}
-.ph{background:var(--hatch),var(--sunk);border:1px dashed var(--line);border-radius:4px;display:grid;place-items:center;color:var(--muted);font:500 11px var(--mono);text-align:center;padding:6px}
-.cover{aspect-ratio:3/4;max-width:100%}
-.line{height:8px;border-radius:2px;background:var(--line-2)}
-.w60{width:60%}.w80{width:80%}.w40{width:40%}
-.num{font:700 22px var(--display);font-variant-numeric:tabular-nums}
-.lbl{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.chip{display:inline-flex;gap:4px;align-items:center;font:500 11px var(--mono);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap}
-.chip.ok{border-color:transparent;background:var(--ok-bg);color:var(--ok)}
-.chip.bad{border-color:transparent;background:var(--bad-bg);color:var(--bad)}
-.chip.prem{border-color:transparent;background:var(--prem-bg);color:var(--prem)}
-.chip.link{border-color:transparent;background:var(--link-bg);color:var(--link)}
-.btn{font:600 12px var(--sans);border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:4px;padding:6px 10px;cursor:pointer;white-space:nowrap}
-.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
-.btn.prem{background:var(--prem);border-color:var(--prem);color:var(--surface)}
+html,body{background:var(--base)}
+body{color:var(--text);font:14px/1.45 var(--ui);margin:0;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:4px}
+.num,.mono,td,th{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono)}
+.up{color:var(--up)} .dn{color:var(--dn)} .fl{color:var(--muted)}
+
+/* ---------- top chrome ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(10,12,15,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:18px;padding-block:10px;padding-inline:20px;max-width:1440px;margin:0 auto}
+.logo{font:800 22px/1 var(--display);letter-spacing:-.03em;display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.logo b{background:linear-gradient(transparent 70%,var(--mark) 70% 94%,transparent 94%);padding-inline:1px;color:var(--text)}
+.logo small{font:500 10px var(--mono);color:var(--muted);letter-spacing:.12em}
+.nav{display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.nav::-webkit-scrollbar{display:none}
+.nav a{padding:6px 10px;border-radius:6px;color:var(--text-2);font-weight:500;white-space:nowrap;font-size:13.5px}
+.nav a:hover{background:var(--raised);color:var(--text)}
+.nav a[aria-current="page"]{color:var(--text);background:var(--raised);box-shadow:inset 0 -2px 0 var(--mark)}
+.nav .pro{color:var(--mark)}
+.tools{display:flex;gap:8px;align-items:center}
+@media (max-width:1400px){.search{display:none!important}}
+.search{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);color:var(--muted);font-size:12.5px;min-width:200px}
+.search kbd{font:500 10.5px var(--mono);border:1px solid var(--line-2);border-radius:4px;padding:0 5px;margin-left:auto}
+.sel{height:32px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);color:var(--text);padding:0 8px;font:500 12.5px var(--ui)}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:transparent;padding:0 10px;height:30px;font:600 11.5px var(--mono);color:var(--muted);cursor:pointer;letter-spacing:.04em}
+.seg button[aria-pressed="true"]{background:var(--raised);color:var(--text)}
+.iconbtn{height:32px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);padding:0 10px;cursor:pointer;font:600 11.5px var(--mono);letter-spacing:.06em;color:var(--text-2)}
+.iconbtn[aria-pressed="true"]{border-color:var(--mark);color:var(--mark)}
+
+/* tape */
+.tape{border-top:1px solid var(--line);overflow:hidden;position:relative;height:34px;display:flex;align-items:center;background:var(--base)}
+.tape .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;gap:6px;padding:0 12px 0 20px;background:linear-gradient(90deg,var(--base) 80%,transparent);font:700 10.5px var(--mono);letter-spacing:.12em;color:var(--mark)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 var(--up);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--up) 60%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
+.track{display:flex;gap:28px;white-space:nowrap;animation:marq 70s linear infinite;padding-left:150px;will-change:transform}
+.tape:hover .track{animation-play-state:paused}
+@keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tk{display:inline-flex;gap:8px;align-items:baseline;font:500 12px var(--mono)}
+.tk b{color:var(--text);font-weight:700}
+.tk .px{color:var(--text-2)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1440px;margin:0 auto;padding-block:20px 80px;padding-inline:20px}
+.grid{display:grid;gap:14px}
+.g12{grid-template-columns:repeat(12,minmax(0,1fr))}
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
+@media (max-width:1100px){.c3,.c4{grid-column:span 6}.c5,.c7,.c8,.c9{grid-column:span 12}.c6{grid-column:span 12}}
+@media (max-width:680px){.g12>*{grid-column:span 12!important}.bar{padding-inline:16px;gap:10px;flex-wrap:wrap}.wrap{padding-inline:16px}.search{display:none}.nav{order:3;flex-basis:100%}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0;overflow:hidden}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ph h3{margin:0;font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);display:flex;gap:8px;align-items:center}
+.ph h3 i{font-style:normal;color:var(--faint);font-weight:500}
+.pb{padding:14px}
+.eyebrow{font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.h1{font:800 clamp(28px,4vw,44px)/1 var(--display);letter-spacing:-.03em;margin:6px 0 0;text-wrap:balance}
+.h2{font:800 22px/1.1 var(--display);letter-spacing:-.02em;margin:0}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.sub{color:var(--muted);font-size:13px;max-width:70ch;margin:6px 0 0}
+
+/* index cards */
+.idx{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ic{background:var(--panel);padding:12px 14px 8px;display:grid;gap:2px;cursor:pointer}
+.ic:hover{background:var(--raised)}
+.ic .code{font:700 11px var(--mono);letter-spacing:.08em;color:var(--text-2);display:flex;justify-content:space-between}
+.ic .v{font:700 22px var(--display);letter-spacing:-.02em}
+.ic .d{font:600 12px var(--mono)}
+.ic svg{height:36px;width:100%;display:block;margin-top:4px}
+
+/* breadth */
+.breadth{display:grid;gap:8px}
+.bb{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;background:transparent}
+.bb span{display:block;height:100%}
+.bl{display:flex;justify-content:space-between;font:600 12px var(--mono)}
+
+/* tables */
 .tw{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}
-th{font:500 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;border-bottom:1px solid var(--line);padding:6px}
-td{border-bottom:1px solid var(--line-2);padding:6px;white-space:nowrap}
-td.t{white-space:normal;min-width:160px}
-td.r,th.r{text-align:right}
-tr.concept td{background:var(--link-bg)}
-.ip{color:var(--muted);font:400 11px var(--mono)}
-.badge{font:600 10px var(--mono);color:var(--ok);background:var(--ok-bg);border-radius:3px;padding:0 4px}
-.lock{position:relative;border:1px dashed var(--prem);border-radius:6px;padding:12px;overflow:hidden;min-height:120px}
-.lock .blur{filter:blur(3px);opacity:.55;display:grid;gap:8px;pointer-events:none}
-.lock .over{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;padding:12px;background:color-mix(in srgb,var(--surface) 55%,transparent)}
-.lock .over b{font:700 13px var(--display);color:var(--prem)}
-.lock .over p{margin:0;font-size:12px;color:var(--muted);max-width:32ch}
-.bars{display:grid;gap:4px}
-.bars div{display:grid;grid-template-columns:22px 1fr 36px;gap:6px;align-items:center;font:400 11px var(--mono);color:var(--muted)}
-.bars i{display:block;height:8px;background:var(--ink);opacity:.6;border-radius:2px}
-.band{position:relative;height:28px;border-radius:4px;background:var(--sunk);margin-top:6px}
-.band .rng{position:absolute;top:6px;bottom:6px;background:var(--prem-bg);border:1px solid var(--prem);border-radius:3px}
-.band .mid{position:absolute;top:2px;bottom:2px;width:2px;background:var(--prem)}
-.steps{display:flex;gap:6px;flex-wrap:wrap}
-.steps span{font:500 11px var(--mono);padding:4px 8px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
-.steps span.on{border-color:var(--ink);color:var(--ink);font-weight:600}
-.steps span.done{background:var(--ok-bg);color:var(--ok);border-color:transparent}
-.field{display:grid;gap:4px}
-.field label{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.input{height:30px;border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:0 8px;display:flex;align-items:center;font-size:12px;color:var(--muted)}
-.input.area{height:80px;align-items:flex-start;padding-top:6px}
-.cmt{border-left:2px solid var(--line);padding-left:10px;display:grid;gap:2px;font-size:12.5px}
-.cmt.reply{margin-left:18px}
-.meta{font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.spark{width:100%;height:44px;display:block}
-.spark path.l{fill:none;stroke:var(--ink);stroke-width:1.5}
-.spark path.a{fill:var(--sunk)}
-.spark path.p{fill:none;stroke:var(--prem);stroke-width:1.5;stroke-dasharray:3 3}
-/* annotations */
-.notes{display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
-.note{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:10px}
-.note h5{margin:0;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.note p{margin:0;font-size:13px}
-.note ul{margin:0;padding-left:16px;display:grid;gap:4px;font-size:13px}
-.kpi{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;border-bottom:1px solid var(--line-2);padding-bottom:4px}
-.kpi code{font:400 11px var(--mono);color:var(--muted)}
-.mods{display:flex;gap:4px;flex-wrap:wrap}
-.pager{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
-.sample{font:500 11px var(--mono);color:var(--prem)}
-@media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}.notes{position:static}}
-@media (max-width:760px){
-  .app{grid-template-columns:minmax(0,1fr)}
-  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
-  .grp-list{display:none}
-  main{padding-inline:16px}
-}
-.mobile-pick{display:none;margin-top:12px}
-.mobile-pick select{width:100%;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:13px var(--sans)}
-@media (max-width:760px){.mobile-pick{display:block}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--panel);position:sticky;top:0}
+td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--hover)}
+.r{text-align:right}
+.tn{display:flex;align-items:center;gap:10px;min-width:0}
+.tn .cv{width:26px;height:36px;border-radius:4px;background-size:cover;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+.tn b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.tn small{display:block;font:500 10.5px var(--mono);color:var(--muted);letter-spacing:.04em}
+.chg{font:600 12.5px var(--mono);padding:2px 6px;border-radius:5px;display:inline-block;min-width:64px;text-align:right}
+.chg.up{background:var(--up-soft)} .chg.dn{background:var(--dn-soft)}
+.flash-up{animation:fu 1s}.flash-dn{animation:fd 1s}
+@keyframes fu{0%{background:color-mix(in srgb,var(--up) 38%,transparent)}100%{}}
+@keyframes fd{0%{background:color-mix(in srgb,var(--dn) 38%,transparent)}100%{}}
+
+/* chips, buttons, pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font:600 10.5px var(--mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--text-2);white-space:nowrap}
+.pill.mk{background:var(--mark-soft);border-color:transparent;color:var(--mark)}
+.pill.ok{background:rgba(63,184,127,.12);border-color:transparent;color:var(--ok)}
+.pill.warn{background:rgba(227,163,59,.12);border-color:transparent;color:var(--warn)}
+.pill.up{background:var(--up-soft);border-color:transparent}
+.pill.dn{background:var(--dn-soft);border-color:transparent}
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--mark);background:var(--mark);color:var(--mark-ink);font:700 13px var(--ui);cursor:pointer;white-space:nowrap}
+.btn.gh{background:transparent;color:var(--text);border-color:var(--line-2)}
+.btn.gh:hover{background:var(--raised)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{border:1px solid transparent;background:transparent;border-radius:6px;padding:4px 10px;font:600 12px var(--ui);color:var(--muted);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--raised);color:var(--text);border-color:var(--line-2)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
+.kv div{background:var(--panel);padding:10px 14px;display:grid;gap:2px}
+.kv span{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kv b{font:600 15px var(--mono)}
+
+/* treemap */
+.tm{position:relative;height:460px;background:var(--base)}
+.tm .grp{position:absolute;border:1px solid var(--base);overflow:hidden}
+.tm .glab{position:absolute;left:0;top:0;right:0;height:18px;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);padding:3px 6px;background:rgba(10,12,15,.72);z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile{position:absolute;border:1px solid var(--base);display:grid;place-content:center;text-align:center;overflow:hidden;cursor:pointer;transition:filter .15s,background-color .6s}
+.tile:hover{filter:brightness(1.25);z-index:2;outline:1px solid var(--text)}
+.tile b{font:700 12px var(--mono);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.tile span{font:500 10.5px var(--mono);color:rgba(255,255,255,.88)}
+.tile.big b{font-size:15px}
+.legend-scale{display:flex;align-items:center;gap:6px;font:500 10.5px var(--mono);color:var(--muted)}
+.legend-scale i{display:block;width:22px;height:10px}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--raised);border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;font-size:12px;box-shadow:0 12px 30px rgba(0,0,0,.5);min-width:180px;display:grid;gap:4px}
+.tip b{font:700 13px var(--ui)}
+.tip .row{display:flex;justify-content:space-between;gap:14px;font:500 11.5px var(--mono);color:var(--text-2)}
+
+/* IPO banner */
+.ipo{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:linear-gradient(90deg,var(--mark-soft),transparent 30%),var(--panel)}
+.ipo .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:0 22px 0 16px;background:linear-gradient(90deg,var(--panel) 75%,transparent)}
+.ipo .lab b{font:800 18px/1 var(--display);letter-spacing:-.02em}
+.ipo .lab small{font:600 10px var(--mono);color:var(--mark);letter-spacing:.14em}
+.ipo .track{animation-duration:55s;padding-left:170px;gap:12px;padding-block:12px}
+.ipo:hover .track{animation-play-state:paused}
+.ic2{display:inline-flex;gap:10px;align-items:center;padding:6px 12px 6px 6px;border:1px solid var(--line-2);border-radius:10px;background:var(--raised)}
+.ic2 .cv{width:34px;height:46px;border-radius:5px;background-size:cover}
+.ic2 b{display:block;font:700 13px var(--ui)}
+.ic2 small{display:block;font:500 11px var(--mono);color:var(--muted)}
+
+/* covers + hero */
+.cover{border-radius:10px;background-size:cover;background-position:center;aspect-ratio:3/4;box-shadow:0 20px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06)}
+.quote{display:grid;grid-template-columns:170px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:680px){.quote{grid-template-columns:96px minmax(0,1fr);gap:14px}}
+.price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:10px}
+.price .big{font:800 56px/1 var(--display);letter-spacing:-.04em}
+.price .d{font:700 16px var(--mono)}
+.meta{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:12.5px}
+.meta a{color:var(--text-2);text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
+
+/* charts */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.axis text{fill:var(--muted);font:500 10px var(--mono)}
+.gridl{stroke:var(--line);stroke-width:1}
+.xh{stroke:var(--text-2);stroke-width:1;stroke-dasharray:3 3}
+
+/* lock */
+.lock{position:relative;min-height:190px}
+.lock .blur{filter:blur(5px);opacity:.45;pointer-events:none;user-select:none}
+.lock .ov{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;gap:8px;padding:16px;background:radial-gradient(closest-side,rgba(17,21,27,.92),rgba(17,21,27,.55))}
+.lock .ov b{font:800 18px var(--display);letter-spacing:-.01em}
+.lock .ov p{margin:0;color:var(--muted);font-size:12.5px;max-width:34ch}
+
+/* galleries */
+.post{display:grid;gap:10px}
+.nick{font-weight:600;color:var(--text)}
+.ip{font:500 11px var(--mono);color:var(--faint)}
+.vb{display:inline-flex;align-items:center;gap:4px;font:700 10px var(--mono);padding:1px 6px;border-radius:4px;background:var(--mark);color:var(--mark-ink);letter-spacing:.06em}
+tr.concept td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
+.cmt{display:grid;gap:4px;padding:12px 0;border-bottom:1px solid var(--line)}
+.cmt.reply{padding-left:22px;border-left:2px solid var(--line-2);margin-left:6px}
+.input{height:38px;border:1px solid var(--line-2);border-radius:8px;background:var(--base);display:flex;align-items:center;padding:0 12px;color:var(--muted);font-size:13px}
+.input.area{height:110px;align-items:flex-start;padding-top:10px}
+.field{display:grid;gap:6px}
+.field label{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.react{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border:1px solid var(--line-2);border-radius:999px;font:600 12.5px var(--mono);background:var(--raised)}
+
+/* steps */
+.steps{display:flex;gap:6px;flex-wrap:wrap;counter-reset:s}
+.steps span{display:flex;gap:8px;align-items:center;padding:6px 12px 6px 6px;border:1px solid var(--line-2);border-radius:999px;font:600 12px var(--ui);color:var(--muted)}
+.steps span::before{counter-increment:s;content:counter(s);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--raised);font:700 11px var(--mono)}
+.steps span.done{color:var(--ok)}.steps span.done::before{content:"✓";background:rgba(63,184,127,.18)}
+.steps span.on{color:var(--text);border-color:var(--mark)}.steps span.on::before{background:var(--mark);color:var(--mark-ink)}
+.drop{border:1.5px dashed var(--line-2);border-radius:12px;padding:26px;text-align:center;color:var(--muted);display:grid;gap:6px;background:repeating-linear-gradient(135deg,transparent 0 10px,rgba(255,255,255,.015) 10px 20px)}
+
+/* plan cards */
+.plan{display:grid;gap:12px;padding:18px;align-content:start}
+.plan .pr{font:800 34px/1 var(--display);letter-spacing:-.03em}
+.plan ul{margin:0;padding-left:18px;display:grid;gap:6px;color:var(--text-2);font-size:13px}
+.plan.feat{border-color:var(--mark);box-shadow:0 0 0 1px var(--mark) inset}
+
+/* band */
+.band{position:relative;height:46px;margin-top:10px}
+.band .rail{position:absolute;left:0;right:0;top:20px;height:6px;border-radius:3px;background:var(--raised)}
+.band .rng{position:absolute;top:14px;height:18px;border-radius:5px;background:var(--mark-soft);border:1px solid var(--mark)}
+.band .mid{position:absolute;top:8px;width:2px;height:30px;background:var(--mark)}
+
+/* hist */
+.hist{display:grid;gap:5px}
+.hist div{display:grid;grid-template-columns:18px 1fr 38px;gap:8px;align-items:center;font:500 11px var(--mono);color:var(--muted)}
+.hist i{display:block;height:8px;border-radius:0 4px 4px 0;background:var(--mark)}
+
+/* spec drawer */
+.drawer{position:fixed;right:0;top:0;bottom:0;width:min(380px,100%);background:var(--panel);border-left:1px solid var(--line-2);z-index:40;transform:translateX(100%);visibility:hidden;transition:transform .25s,visibility .25s;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 18px;overflow:auto;display:grid;gap:14px;align-content:start;box-shadow:-20px 0 40px rgba(0,0,0,.4)}
+.drawer.open{transform:none;visibility:visible}
+.drawer h4{margin:0;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.drawer p{margin:0;color:var(--text-2);font-size:13px}
+.kpi{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--line)}
+.kpi code{font:500 10.5px var(--mono);color:var(--muted);text-align:right}
+.foot{margin-top:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--faint);font:500 11px var(--mono);letter-spacing:.04em}
+.sample{color:var(--mark)}
+@media (prefers-reduced-motion:reduce){.track{animation:none!important}.dot{animation:none}.flash-up,.flash-dn{animation:none}.drawer{transition:none}}
 </style>
 
-<div class="app">
-  <aside class="rail">
-    <div class="brand">Plotline<small>Wireframes · Phase 1 · low fidelity</small></div>
-    <div class="mobile-pick"><label class="lbl" for="pick">Screen</label><select id="pick"></select></div>
-    <div class="grp-list" id="rail"></div>
-    <div class="legend">
-      <div><span class="chip">✔</span> shown to fans</div>
-      <div><span class="chip prem">🔒</span> premium (verified + paid)</div>
-      <div><span class="chip link">new</span> fan signal created on Plotline</div>
-      <div class="sample">All titles, names and numbers are sample data.</div>
+<header class="top">
+  <div class="bar">
+    <a class="logo" href="#market"><b>plotline</b><small>STORY-IP MARKET</small></a>
+    <nav class="nav" id="nav" aria-label="Main"></nav>
+    <div class="tools">
+      <div class="search" aria-hidden="true">⌕ Search titles, tickers, authors<kbd>/</kbd></div>
+      <label class="sr" for="persona" style="position:absolute;left:-9999px">View as</label>
+      <select class="sel" id="persona" title="View as persona">
+        <option value="fan">Fan · Free</option><option value="author">Author · Pro</option><option value="publisher">Publisher · Pro</option><option value="investor">Investor · Pro</option><option value="admin">Admin</option>
+      </select>
+      <div class="seg" role="group" aria-label="Up/down colors"><button type="button" id="cvKR" aria-pressed="true" title="Red up, blue down">KR</button><button type="button" id="cvUS" aria-pressed="false" title="Green up, red down">US</button></div>
+      <button type="button" class="iconbtn" id="specBtn" aria-pressed="false">SPEC</button>
     </div>
-  </aside>
-  <main>
-    <div class="head">
-      <div><div class="eyebrow" id="eyebrow"></div><h1 id="title"></h1></div>
-      <div class="ctrls">
-        <div class="seg" role="group" aria-label="Frame width">
-          <button type="button" id="wDesk" aria-pressed="true">Desktop</button>
-          <button type="button" id="wPhone" aria-pressed="false">Phone</button>
-        </div>
-      </div>
-    </div>
-    <div class="layout">
-      <div><div class="frame" id="frame"></div>
-        <div class="pager"><button type="button" class="btn ghost" id="prev">← Previous</button><button type="button" class="btn ghost" id="next">Next →</button></div>
-      </div>
-      <div class="notes" id="notes"></div>
-    </div>
-  </main>
-</div>
+  </div>
+  <div class="tape" aria-label="Top movers ticker"><div class="lab"><span class="dot"></span>LIVE*</div><div class="track" id="tape"></div></div>
+</header>
+
+<main class="wrap" id="view"></main>
+<aside class="drawer" id="drawer" aria-label="Spec notes"></aside>
+<div class="tip" id="tip" hidden></div>
 
 <script>
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const bar=(active)=>`<div class="bar"><span class="logo">Plotline</span><div class="search">Search titles, authors, galleries…</div>
-<nav class="nav"><span${active==='home'?' style="color:var(--ink);font-weight:600"':''}>Home</span><span>Charts</span><span>Galleries</span><span>Wishlist</span><span>For creators & business</span></nav>
-<span class="chip">Sign in</span></div>`;
-const barPro=(who)=>`<div class="bar"><span class="logo">Plotline <span class="chip prem">${who}</span></span><div class="search">Search any title, author, publisher…</div>
-<nav class="nav"><span>Dashboard</span><span>Compare</span><span>Scouting</span><span>Market</span><span>Alerts</span></nav><span class="chip ok">✓ Verified</span></div>`;
-const barAdmin=`<div class="bar"><span class="logo">Plotline <span class="chip bad">Admin</span></span><nav class="nav"><span>Claims</span><span>Moderation</span><span>Galleries</span><span>Config</span></nav></div>`;
-const lines=(n)=>Array.from({length:n},(_,i)=>`<div class="line ${['w80','w60','','w40'][i%4]}"></div>`).join('');
-function spark(pts,cls='l',h=44){const w=200,mx=Math.max(...pts),mn=Math.min(...pts),sx=w/(pts.length-1),y=v=>h-4-((v-mn)/((mx-mn)||1))*(h-8);
-  const d=pts.map((v,i)=>`${i?'L':'M'}${(i*sx).toFixed(1)},${y(v).toFixed(1)}`).join('');
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">${cls==='l'?`<path class="a" d="${d}L${w},${h}L0,${h}Z"/>`:''}<path class="${cls}" d="${d}"/></svg>`;}
-const hist=(v)=>`<div class="bars">${v.map((x,i)=>`<div><span>${10-i}</span><i style="width:${x}%"></i><span>${x}%</span></div>`).join('')}</div>`;
-const lock=(title,body,cta='Verify to unlock')=>`<div class="lock"><div class="blur">${body}</div><div class="over"><b>🔒 ${title}</b><p>Available to verified authors, publishers and IP investors.</p><span class="btn prem">${cta}</span></div></div>`;
-const kp=(n,l,extra='')=>`<div class="box"><span class="lbl">${l}</span><span class="num">${n}</span>${extra}</div>`;
-
-const S=[
-/* ---------------- FAN ---------------- */
-{g:'Fan · free',id:'home',t:'Home feed',
- f:()=>`${bar('home')}<div class="body">
- <div class="row"><div class="box"><h4>New episodes from what you follow <small>today</small></h4>
-  ${['Tower of Ash · Ep 142 · 318 comments','The Salt Archivist · Ch 57 · 94 comments','Nine Lanterns · Ep 23 · 41 comments'].map(x=>`<div class="meta" style="justify-content:space-between"><span style="color:var(--ink)">${x}</span><span class="chip">Episode thread →</span></div>`).join('')}</div>
- <div class="box"><h4>Rising this week <small>rank Δ 7d</small></h4>
-  ${[['Nine Lanterns','▲ 41'],['Glass Orchard','▲ 33'],['Red Ledger','▲ 27']].map(([a,b])=>`<div class="meta" style="justify-content:space-between"><span style="color:var(--ink)">${a}</span><span class="chip ok">${b}</span></div>`).join('')}
-  <div class="meta"><span class="chip link">new</span> Followed early? You earn scout points.</div></div></div>
- <div class="box"><h4>Concept posts across galleries <small>promoted by fan upvotes</small></h4>
-  <div class="tw"><table><tr><th>Gallery</th><th>Post</th><th>By</th><th class="r">Up</th></tr>
-  <tr><td>Tower of Ash</td><td class="t">Theory: the ash tower is the author's earlier novel's world</td><td>ㅇㅇ <span class="ip">(118.235)</span></td><td class="r">412</td></tr>
-  <tr><td>Romance Fantasy</td><td class="t">Every regression-villainess title ranked by pacing</td><td>lanternkeeper</td><td class="r">288</td></tr>
-  <tr><td>Glass Orchard</td><td class="t">Author notice: hiatus ends 3 Oct <span class="badge">✓ AUTHOR</span></td><td>M. Arden</td><td class="r">203</td></tr></table></div></div>
- <div class="row"><div class="box"><h4>Adaptation wishlist <small>this week</small></h4>${lines(3)}<span class="btn ghost">Vote →</span></div>
- <div class="box"><h4>Top fan-rated <small>weighted, ≥ 20 votes</small></h4>${lines(3)}</div></div></div>`,
- n:{purpose:'Daily return surface. It combines what the fan follows (new episodes), what is moving (Rising), and what the community endorses (concept posts).',
-  loop:'Episode threads and concept posts make up the daily habit. The Rising list tells fans what scout points are for.',
-  kpis:[['PlotScore / rank Δ','✔','plotscore.py, fact_score'],['Rising badge','✔','trends_engine.py'],['Concept posts','new','community'],['Fan rating (weighted)','new','fan']],
-  mods:['market','community','fan']}},
-
-{g:'Fan · free',id:'charts',t:'Charts',
- f:()=>`${bar()}<div class="body">
- <div class="row"><div class="seg"><button aria-pressed="true">Trending</button><button>Rising</button><button>Fan-rated</button><button>Most wished</button></div>
- <div class="seg"><button aria-pressed="true">All</button><button>Comics</button><button>Novels</button></div></div>
- <div class="tw"><table><tr><th>#</th><th>Title</th><th>Platform</th><th class="r">PlotScore</th><th class="r">Fan ★</th><th class="r">Views</th><th>Cadence</th><th>7d</th></tr>
- ${[['1','Tower of Ash','Webtoon','94','8.7','1.2B','1 / wk','—'],['2','The Salt Archivist','Royal Road','91','9.1','48M','3 / wk','▲2'],['3','Nine Lanterns','Tapas','88','8.2','120M','1 / wk','▲41'],['4','Red Ledger','Webnovel','86','7.9','310M','7 / wk','▲27'],['5','Glass Orchard','Tappytoon','84','8.9','64M','hiatus','▼3']].map(r=>`<tr><td>${r[0]}</td><td class="t">${r[1]}</td><td>${r[2]}</td><td class="r"><b>${r[3]}</b></td><td class="r">${r[4]}</td><td class="r">${r[5]}</td><td>${r[6]}</td><td>${r[7].startsWith('▲')?`<span class="chip ok">${r[7]}</span>`:r[7].startsWith('▼')?`<span class="chip bad">${r[7]}</span>`:r[7]}</td></tr>`).join('')}
- </table></div>
- <div class="meta">Views are rounded for fans. Exact series and revenue are premium.</div></div>`,
- n:{purpose:'IMDb-style charts. The four tabs map to four signal types: market (Trending), momentum (Rising), community quality (Fan-rated) and demand (Most wished).',
-  loop:'"Most wished" makes the wishlist visible, and that visibility drives more votes.',
-  kpis:[['PlotScore','✔','plotscore.py'],['Views (rounded)','✔','fact_title_daily'],['Cadence','✔','episode_analytics.py:57'],['Wishlist votes','new','fan'],['Revenue','🔒 hidden','earnings.py']],
-  mods:['market','fan','kpi']}},
-
-{g:'Fan · free',id:'title',t:'Title page',
- f:()=>`${bar()}<div class="body">
- <div class="row"><div class="ph cover" style="flex:0 1 150px">cover</div>
- <div style="flex:3 1 260px;display:grid;gap:8px;align-content:start">
-  <div class="eyebrow">Web comic · Fantasy › Dark fantasy · Ongoing</div>
-  <div style="font:800 24px/1.1 var(--display)">Tower of Ash</div>
-  <div class="meta">by <a href="#credits">H. Seo</a> (story) · <a href="#credits">K. Lim</a> (art) · Publisher: <a href="#credits">Studio Nara</a></div>
-  <div class="row tiles" style="gap:8px">
-   ${kp('94','PlotScore','<span class="meta">rank #1 · <span class="chip ok">Rising</span></span>')}
-   ${kp('8.7','Fan rating','<span class="meta">12,480 votes · <a href="#title">rate</a></span>')}
-   ${kp('9.4','Platform rating','<span class="meta">Webtoon</span>')}</div>
-  <div class="meta"><span class="chip">Where to read:</span><span class="chip">Webtoon EN</span><span class="chip">Naver KR</span><span class="chip">Ridi (novel)</span><span class="chip">3 platforms</span></div>
-  <div class="acts"><span class="btn">+ Follow</span><span class="btn ghost">Add to list</span><span class="btn ghost">Wish adaptation</span></div>
- </div></div>
- <div class="row"><div class="box"><h4>Rounded stats</h4><div class="meta">1.2B views · 4.1M subscribers · 1 ep / wk · 142 episodes · style: Dark & moody</div></div>
- <div class="box"><h4>Fan rating distribution</h4>${hist([38,24,14,9,6,4,2,1,1,1])}</div></div>
- <div class="row"><div class="box"><h4>Gallery <small>2,314 posts · 18 concept</small></h4>
-  <div class="meta" style="color:var(--ink)">Theory: the ash tower is the author's earlier novel's world</div><div class="meta" style="color:var(--ink)">Ep 142 thread: that last panel <span class="chip">318</span></div><a href="#gallery">Open gallery →</a></div>
- <div class="box"><h4>Reviews <small>top by helpful</small></h4>${lines(4)}</div></div>
- <div class="row">
-  ${lock('Performance & value',`<div class="row">${kp('$41k–$256k','Modeled revenue / mo')}${kp('$—','Valuation band')}</div>${spark([3,4,4,6,7,9,12,14,13,16,19,22])}`)}
-  ${lock('Competitor benchmarks',`<table><tr><th>Component</th><th>Pct</th></tr><tr><td>Reach</td><td>99</td></tr><tr><td>Momentum</td><td>87</td></tr><tr><td>Engagement</td><td>91</td></tr></table>`)}
- </div></div>`,
- n:{purpose:'The canonical page for one IP. The fan layer comes first. Premium panels appear locked below it and serve as the acquisition funnel for paid personas.',
-  loop:'Rate, Follow, Wish adaptation and Gallery each write a fan signal. The locked panels turn fan traffic into paid leads.',
-  kpis:[['PlotScore, rank','✔','plotscore.py'],['Fan rating + distribution','new','fan · weighted'],['Views / subs','✔ rounded','fact_title_daily'],['Cross-platform count','✔','entity_resolution.py'],['Art-style group','✔ facet','art_style.py'],['Revenue band','🔒','earnings.py'],['Valuation band','🔒','valuation (new)'],['PlotScore components','🔒','plotscore.py:36']],
-  mods:['market','fan','community','kpi','entitlement']}},
-
-{g:'Fan · free',id:'gallery',t:'Title gallery',
- f:()=>`${bar()}<div class="body">
- <div class="row" style="align-items:center"><div><div class="eyebrow">Gallery</div><div style="font:800 20px var(--display)">Tower of Ash</div></div>
- <div class="acts" style="flex:0 0 auto"><span class="btn">Write</span></div></div>
- <div class="row"><div class="seg"><button aria-pressed="true">All</button><button>Concept ★</button><button>Episode threads</button><button>Notices</button></div></div>
- <div class="tw"><table><tr><th>No.</th><th>Title</th><th>Writer</th><th>Date</th><th class="r">Views</th><th class="r">Up</th></tr>
- <tr><td>—</td><td class="t"><b>📌 Notice: season 3 schedule</b> <span class="badge">✓ AUTHOR</span></td><td>H. Seo</td><td>09.20</td><td class="r">18,204</td><td class="r">1,022</td></tr>
- <tr class="concept"><td>23145</td><td class="t">★ Theory: the ash tower is the author's earlier novel's world [87]</td><td>ㅇㅇ <span class="ip">(118.235)</span></td><td>09.23</td><td class="r">9,811</td><td class="r">412</td></tr>
- <tr><td>23144</td><td class="t">Ep 142 thread — that last panel [318]</td><td>system</td><td>09.23</td><td class="r">22,090</td><td class="r">155</td></tr>
- <tr><td>23143</td><td class="t">Is the KR raw ahead by 20 eps? [12]</td><td>ㅇㅇ <span class="ip">(211.36)</span></td><td>09.23</td><td class="r">640</td><td class="r">4</td></tr>
- <tr><td>23142</td><td class="t">Fanart: Ren in the snow [31]</td><td>ashenjay</td><td>09.22</td><td class="r">2,113</td><td class="r">98</td></tr></table></div>
- <div class="meta">Post count in [brackets] = comments. ★ rows reached the concept threshold: up ≥ N and up/(up+down) ≥ r, both set in config.</div></div>`,
- n:{purpose:'A DCInside-style board, one per title, one per genre, plus free boards. It shows dense post rows, guest posts marked with an IP prefix, a concept tab, and verified-author notices.',
-  loop:'Posting without an account keeps friction low. Concept promotion gives fans status. A verified author posting here draws fans back.',
-  kpis:[['Gallery activity (posts/day)','new','community → 🔒 trend for B2B'],['Concept ratio','new','community']],
-  mods:['community','identity','entitlement (badge)']}},
-
-{g:'Fan · free',id:'post',t:'Post and comments',
- f:()=>`${bar()}<div class="body">
- <div class="box"><div class="eyebrow">Tower of Ash gallery · Concept ★</div>
-  <div style="font:700 18px var(--display)">Theory: the ash tower is the author's earlier novel's world</div>
-  <div class="meta">ㅇㅇ <span class="ip">(118.235)</span> · 09.23 14:02 · views 9,811 · comments 87</div>
-  ${lines(6)}<div class="ph" style="height:120px">image</div>
-  <div class="acts" style="justify-content:center"><span class="btn">▲ Up 412</span><span class="btn ghost">▼ Down 9</span><span class="btn ghost">Report</span></div>
-  <div class="meta" style="justify-content:flex-end"><span>Edit</span><span>Delete</span><span>(guest password required)</span></div></div>
- <div class="box"><h4>Comments <small>87</small></h4>
-  <div class="cmt"><div class="meta"><b style="color:var(--ink)">H. Seo</b> <span class="badge">✓ AUTHOR</span> 14:40</div>No comment 👀 but keep reading ep 150.</div>
-  <div class="cmt reply"><div class="meta"><b style="color:var(--ink)">ㅇㅇ</b><span class="ip">(175.223)</span> 14:42</div>the author replied, it's confirmed lol</div>
-  <div class="cmt"><div class="meta"><b style="color:var(--ink)">lanternkeeper</b> 15:01</div>The map in ch 3 of the novel matches.</div>
-  <div class="row"><div class="input">Nickname</div><div class="input">Password</div></div><div class="input area">Write a comment…</div><span class="btn" style="justify-self:end">Post</span></div></div>`,
- n:{purpose:'Post detail with votes, a report action, and one level of reply threading. Guests edit or delete using the password they set when posting.',
-  loop:'A verified author replying is the highest-value moment for fans. Votes feed the PromotionRule.',
-  kpis:[['Up/down votes','new','community.votes'],['Reports','admin','community.moderation']],
-  mods:['community','identity']}},
-
-{g:'Fan · free',id:'write',t:'Write a post',
- f:()=>`${bar()}<div class="body">
- <div class="box"><h4>Write in: Tower of Ash gallery</h4>
-  <div class="seg"><button aria-pressed="true">Guest</button><button>Signed in (lanternkeeper)</button></div>
-  <div class="row"><div class="field"><label>Nickname</label><div class="input">ㅇㅇ</div></div><div class="field"><label>Password (to edit later)</label><div class="input">••••</div></div></div>
-  <div class="field"><label>Title</label><div class="input">Is the KR raw ahead by 20 eps?</div></div>
-  <div class="field"><label>Body</label><div class="input area">Text, images, spoiler blocks…</div></div>
-  <div class="row"><span class="chip">Spoiler tag</span><span class="chip">Episode: 142</span><span class="chip">Image ≤ 10</span></div>
-  <div class="meta">Your IP prefix (e.g. 118.235) is shown with guest posts. Guests are rate-limited.</div>
-  <span class="btn" style="justify-self:end">Post</span></div></div>`,
- n:{purpose:'Low-friction posting, which is the core DCInside mechanic. Signed-in posts accumulate reputation. Guest posts do not.',
-  loop:'Guest posting lowers the barrier to a first contribution. Signing in converts through reputation and lists.',
-  kpis:[],
-  mods:['community (AnonIdentity policy)','core ratelimit']}},
-
-{g:'Fan · free',id:'episode',t:'Episode thread',
- f:()=>`${bar()}<div class="body">
- <div class="box"><div class="eyebrow">Auto-created · Episode released 09.23 07:00</div>
-  <div style="font:700 18px var(--display)">Tower of Ash · Ep 142 “Cinders” thread</div>
-  <div class="row"><div class="box"><span class="lbl">Rate this episode</span><div class="row" style="gap:4px">${[1,2,3,4,5].map(i=>`<span class="chip">${'★'.repeat(i)}</span>`).join('')}</div></div>
-  <div class="box"><span class="lbl">Reactions</span><div class="row" style="gap:4px"><span class="chip">😭 812</span><span class="chip">🔥 640</span><span class="chip">🤯 233</span></div></div></div>
-  <div class="cmt"><div class="meta"><b style="color:var(--ink)">ㅇㅇ</b><span class="ip">(58.140)</span> 07:03</div>first. that last panel!!</div>
-  <div class="cmt"><div class="meta"><b style="color:var(--ink)">ashenjay</b> 07:10 · ▲ 88</div>Spoiler: [hidden — tap to reveal]</div></div></div>`,
- n:{purpose:'One thread per episode, created automatically when the scraper detects a release (event: episode.released).',
-  loop:'This is the daily habit. Episode-level reactions become a per-episode engagement series. Platforms expose only likes per episode (star_schema.py fact_episode).',
-  kpis:[['Episode reactions / rating','new','community → 🔒 series for authors'],['Episode likes','✔','fact_episode']],
-  mods:['community','core events','pipeline hook']}},
-
-{g:'Fan · free',id:'wishlist',t:'Adaptation wishlist',
- f:()=>`${bar()}<div class="body">
- <div class="row"><div class="seg"><button aria-pressed="true">Anime</button><button>Live-action drama</button><button>Film</button><button>Game</button></div></div>
- <div class="tw"><table><tr><th>#</th><th>Title</th><th>Status</th><th class="r">Votes (7d)</th><th class="r">Total</th><th></th></tr>
- ${[['1','The Salt Archivist','Completed','3,204','41,880'],['2','Tower of Ash','Ongoing','2,911','66,020'],['3','Glass Orchard','Hiatus','1,876','19,400'],['4','Red Ledger','Ongoing','1,102','8,730']].map(r=>`<tr><td>${r[0]}</td><td class="t">${r[1]}</td><td>${r[2]}</td><td class="r">${r[3]}</td><td class="r">${r[4]}</td><td><span class="btn ghost">Wish</span></td></tr>`).join('')}</table></div>
- <div class="meta">One vote per account per title per medium. Guests can view but not vote.</div></div>`,
- n:{purpose:'Fans say which IP they want adapted, and into which medium.',
-  loop:'This is the most direct fan-to-business signal. Publishers and investors see it as a demand trend on the scouting board and in the dossier.',
-  kpis:[['Wishlist votes by medium','new','fan → 🔒 trend']],
-  mods:['fan']}},
-
-{g:'Fan · free',id:'credits',t:'Author credits page',
- f:()=>`${bar()}<div class="body">
- <div class="row"><div class="ph" style="flex:0 1 96px;aspect-ratio:1">photo</div>
-  <div style="flex:3 1 240px;display:grid;gap:6px;align-content:start"><div style="font:800 22px var(--display)">H. Seo <span class="badge">✓ VERIFIED</span></div>
-  <div class="meta">Writer · 4 works · 3 platforms · 22k followers</div><div class="acts"><span class="btn">+ Follow</span><span class="btn ghost">Gallery posts</span></div></div></div>
- <div class="box"><h4>Works</h4><div class="tw"><table><tr><th>Title</th><th>Role</th><th>Format</th><th>Years</th><th class="r">PlotScore</th><th class="r">Fan ★</th></tr>
- <tr><td class="t">Tower of Ash</td><td>Story</td><td>Comic</td><td>2023–</td><td class="r">94</td><td class="r">8.7</td></tr>
- <tr><td class="t">Tower of Ash (novel)</td><td>Author</td><td>Novel</td><td>2020–2022</td><td class="r">81</td><td class="r">8.4</td></tr>
- <tr><td class="t">Paper Moth</td><td>Author</td><td>Novel</td><td>2018–2019</td><td class="r">52</td><td class="r">7.1</td></tr></table></div></div>
- ${lock('Author track record',`<div class="row">${kp('3 / 4','Hit rate (PlotScore ≥ 75)')}${kp('$—','Modeled revenue across works')}</div>`)}</div>`,
- n:{purpose:'IMDb-style credits for a creator, gathering their works across platforms and formats (novel → comic).',
-  loop:'Following creators produces follow-growth signals. The locked track record is investor value.',
-  kpis:[['Works, roles','✔','bridge_title_author'],['Follow growth','new','fan'],['Track record metrics','🔒','kpi_layers.py _author']],
-  mods:['market','fan','kpi']}},
-
-{g:'Fan · free',id:'profile',t:'Fan profile',
- f:()=>`${bar()}<div class="body">
- <div class="row"><div style="display:grid;gap:4px"><div style="font:800 20px var(--display)">lanternkeeper</div><div class="meta">Joined 2026 · 312 ratings · 41 reviews · 1,204 gallery posts</div></div>
- <div class="box" style="flex:0 1 220px"><span class="lbl">Scout score</span><span class="num">1,840</span><div class="meta"><span class="chip link">Top 2% scout</span></div></div></div>
- <div class="box"><h4>Early calls <small>followed before it entered Rising</small></h4>
- <div class="tw"><table><tr><th>Title</th><th>Followed</th><th>Entered Rising</th><th class="r">Lead</th><th class="r">Points</th></tr>
- <tr><td class="t">Nine Lanterns</td><td>06.02</td><td>09.18</td><td class="r">108 d</td><td class="r">+320</td></tr>
- <tr><td class="t">Red Ledger</td><td>07.30</td><td>09.10</td><td class="r">42 d</td><td class="r">+140</td></tr></table></div></div>
- <div class="row"><div class="box"><h4>Lists</h4><div class="meta" style="color:var(--ink)">Best slow-burn romance fantasy (24)</div><div class="meta" style="color:var(--ink)">Completed & bingeable (51)</div></div>
- <div class="box"><h4>Following</h4>${lines(3)}</div></div></div>`,
- n:{purpose:'Fan identity: taste proven by scout lead time, plus lists and reviews.',
-  loop:'Scout points reward early discovery. Aggregated across fans, scout lead time can become a leading indicator for investors. That is a hypothesis to validate.',
-  kpis:[['Scout lead time','new','fan.ScoutRule → 🔒 aggregate'],['List co-occurrence','new','fan']],
-  mods:['fan','core events']}},
-
-/* ---------------- PAID ---------------- */
-{g:'Paid personas',id:'pricing',t:'Plans and persona selection',
- f:()=>`${bar()}<div class="body">
- <div class="row">
-  ${[['Fan','Free','No verification','Ratings, lists, galleries, wishlist, charts'],['Author','TBD / mo','Author or title claim','Creator dashboard, compare any title, what-to-write-next, fan tools'],['Publisher','TBD / mo','Publisher or title claim','Scouting board, portfolio, market structure'],['IP investor','TBD / mo','Authorized-entity claim (PE/VC, studio, company)','IP dossier, valuation band, alerts']].map((p,i)=>`<div class="box"><span class="lbl">${p[0]}</span><span class="num">${p[1]}</span><div class="meta">Requires: ${p[2]}</div><div style="font-size:12px">${p[3]}</div><span class="btn${i?' prem':''}">${i?'Start verification':'Join free'}</span></div>`).join('')}
- </div><div class="meta">Prices are placeholders (config). While billing is off, paid plans join a waitlist after approval.</div></div>`,
- n:{purpose:'Persona selection and plan comparison. Verification comes before payment.',
-  loop:'The paid plans are the destination of the locked panels on fan pages.',
-  kpis:[],mods:['entitlement','billing']}},
-
-{g:'Paid personas',id:'verify',t:'Verification wizard',
- f:()=>`${bar()}<div class="body">
- <div class="steps"><span class="done">1 Persona</span><span class="done">2 Entity</span><span class="on">3 Documents</span><span>4 Review</span><span>5 Plan</span></div>
- <div class="box"><h4>Claim: Publisher · Studio Nara</h4>
-  <div class="field"><label>Matched entity</label><div class="input">Studio Nara — 14 titles on 3 platforms (dim_publisher)</div></div>
-  <div class="field"><label>Your role</label><div class="input">Head of licensing</div></div>
-  <div class="ph" style="height:110px">Drop files: business registration, contract excerpt, authorization letter<br>PDF / PNG / JPG · ≤ 10 MB each</div>
-  <div class="meta">Documents are visible only to Plotline reviewers and are never published.</div>
-  <div class="acts" style="justify-content:flex-end"><span class="btn ghost">Back</span><span class="btn">Submit for review</span></div></div>
- <div class="box"><h4>Evidence we accept</h4><div class="tw"><table><tr><th>Persona</th><th>Examples</th></tr>
- <tr><td>Author</td><td class="t">Platform contract, author dashboard screenshot with account ID, publisher letter</td></tr>
- <tr><td>Publisher</td><td class="t">Business registration + licensing contract or platform partner agreement</td></tr>
- <tr><td>IP investor</td><td class="t">Fund / company registration, authorization letter, PE/VC mandate</td></tr></table></div></div></div>`,
- n:{purpose:'Manual document review, as you chose. Status is tracked through pending → approved or rejected (with a note) → revoked.',
-  loop:'An approved author or publisher claim also switches on the verified badge in that entity\'s galleries.',
-  kpis:[],mods:['verification (DocStorage)','entitlement','core events: claim.approved']}},
-
-{g:'Paid personas',id:'author',t:'Author creator dashboard',
- f:()=>`${barPro('Author')}<div class="body">
- <div class="row">${kp('94','PlotScore','<span class="meta">#1 · +0 7d</span>')}${kp('8.7','Fan rating','<span class="meta">+0.1 30d</span>')}${kp('+18%','Gallery activity 30d')}${kp('$41k–$256k','Modeled revenue / mo','<span class="chip prem">model</span>')}</div>
- <div class="row"><div class="box"><h4>Views, exact <small>daily snapshots</small></h4>${spark([10,12,11,14,15,15,17,19,18,22,24,27])}<div class="meta">Dashed = genre median</div>${spark([9,9,10,10,11,11,11,12,12,12,13,13],'p',24)}</div>
- <div class="box"><h4>Engagement decay <small>likes per episode, ep 1 → 142</small></h4>${spark([30,26,22,20,19,18,18,17,17,16,16,17])}<div class="meta">Decay 43% (genre median 55%) · unit_stats.py</div></div></div>
- <div class="row"><div class="box"><h4>Cadence vs genre</h4><div class="meta">You: 1.0 ep/wk · Dark fantasy median: 1.0 · Top decile: 1.4</div></div>
- <div class="box"><h4>Fan signals</h4><div class="meta">Wishlist: 2,911 votes (7d) · Episode 142 reactions: 1,685 · Scouts following early: 214</div></div></div>
- <div class="box"><h4>What to write next <small>genre whitespace (demand ÷ supply) · HHI</small></h4>
- <div class="tw"><table><tr><th>Subgenre</th><th class="r">Titles</th><th class="r">Avg reach</th><th class="r">HHI</th><th>Market</th></tr>
- <tr><td>Academy fantasy</td><td class="r">41</td><td class="r">22M</td><td class="r">1,210</td><td><span class="chip ok">Competitive</span></td></tr>
- <tr><td>Murim revenge</td><td class="r">96</td><td class="r">9M</td><td class="r">2,870</td><td><span class="chip bad">Concentrated</span></td></tr></table></div></div></div>`,
- n:{purpose:'An author\'s own titles at full depth, benchmarked against genre peers. They can also compare against any competitor title.',
-  loop:'Fan signals from the galleries show up here, which motivates authors to post in their galleries and brings fans back.',
-  kpis:[['Exact views series','🔒','fact_title_daily'],['Engagement decay','🔒','unit_stats.py:52-60'],['Cadence vs peers','🔒','episode_analytics.py:57'],['Revenue band','🔒 model','earnings.py'],['Whitespace / HHI','🔒','kpi_layers.py _genre'],['Fan signals','🔒 trend','fan, community']],
-  mods:['market','fan','community','kpi','valuation']}},
-
-{g:'Paid personas',id:'compare',t:'Competitor compare',
- f:()=>`${barPro('Author')}<div class="body">
- <div class="row"><div class="input">+ Tower of Ash</div><div class="input">+ Nine Lanterns</div><div class="input">+ Glass Orchard</div><div class="input">+ Add title</div></div>
- <div class="tw"><table><tr><th>Metric</th><th class="r">Tower of Ash</th><th class="r">Nine Lanterns</th><th class="r">Glass Orchard</th></tr>
- ${[['PlotScore','94','88','84'],['Reach pct','99','91','83'],['Momentum pct','87','98','40'],['Engagement pct','91','85','94'],['Monetization pct','97','70','81'],['Quality pct','88','80','93'],['Like-through','4.1%','5.6%','6.2%'],['Subs / view','0.34%','0.51%','0.47%'],['Fan rating (n)','8.7 (12k)','8.2 (3k)','8.9 (6k)'],['Wishlist 7d','2,911','640','1,876'],['Revenue / mo (model)','$41k–$256k','$6k–$38k','$11k–$70k']].map(r=>`<tr><td>${r[0]}</td><td class="r">${r[1]}</td><td class="r">${r[2]}</td><td class="r">${r[3]}</td></tr>`).join('')}
- </table></div><div class="meta">Percentiles are relative to the whole universe (plotscore.py). Revenue is a model with a 0.4×–2.5× band (earnings.py:54).</div></div>`,
- n:{purpose:'Any titles side by side at full depth, per your answer on competitor scope.',
-  loop:'Fan rating and wishlist rows are data only Plotline has.',
-  kpis:[['PlotScore components','🔒','plotscore.py:36'],['Like-through, subs/view','🔒','kpi_layers.py _base'],['Revenue band','🔒 model','earnings.py'],['Fan signals','🔒','fan']],
-  mods:['market','fan','kpi']}},
-
-{g:'Paid personas',id:'scouting',t:'Publisher scouting board',
- f:()=>`${barPro('Publisher')}<div class="body">
- <div class="row"><div class="seg"><button aria-pressed="true">Novels → comic</button><button>Comic → drama/anime</button><button>All</button></div><div class="input">Filters: genre, status, platform, language</div></div>
- <div class="tw"><table><tr><th>Title</th><th>Format</th><th>Status</th><th class="r">Readiness</th><th class="r">Wishlist 30d</th><th class="r">Momentum</th><th class="r">Fan ★</th><th>Publisher</th><th></th></tr>
- ${[['The Salt Archivist','Novel','Completed','86','+41%','▲12','9.1','Independent'],['Red Ledger','Novel','Ongoing','79','+22%','▲27','7.9','—'],['Glass Orchard','Comic','Hiatus','71','+9%','▼3','8.9','Studio Nara']].map(r=>`<tr><td class="t">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="r"><b>${r[3]}</b></td><td class="r">${r[4]}</td><td class="r">${r[5]}</td><td class="r">${r[6]}</td><td>${r[7]}</td><td><span class="btn ghost">Watch</span></td></tr>`).join('')}
- </table></div><div class="meta">Readiness is the adaptation-readiness model (template.html:614, to be ported to Python). It measures readiness, not confirmed rights availability.</div>
- <div class="row"><div class="box"><h4>Market structure</h4><div class="meta">Genre HHI, whitespace, platform mix · kpi_layers.py</div>${lines(3)}</div><div class="box"><h4>Alerts</h4><div class="meta">Wishlist spike > 2σ · entered Rising · status → completed</div></div></div></div>`,
- n:{purpose:'Acquisition pipeline: which IP to sign or adapt next.',
-  loop:'The wishlist column is fan demand, which competitors that rely on scraping cannot show.',
-  kpis:[['Adaptation readiness','🔒','template.html:614'],['Wishlist trend','🔒','fan'],['Momentum','🔒','trends_engine.py'],['HHI / whitespace','🔒','kpi_layers.py']],
-  mods:['market','fan','kpi','core events (alerts)']}},
-
-{g:'Paid personas',id:'portfolio',t:'Publisher portfolio',
- f:()=>`${barPro('Publisher')}<div class="body">
- <div class="row">${kp('14','Claimed titles')}${kp('81','Avg PlotScore','<span class="meta">peer median 64</span>')}${kp('$0.4M–$2.6M','Modeled revenue / mo','<span class="chip prem">model</span>')}${kp('8.4','Avg fan rating')}</div>
- <div class="box"><h4>Titles</h4><div class="tw"><table><tr><th>Title</th><th class="r">PlotScore</th><th class="r">Δ30d</th><th class="r">Fan ★</th><th class="r">Gallery 30d</th><th class="r">Revenue (model)</th></tr>
- <tr><td class="t">Glass Orchard</td><td class="r">84</td><td class="r">−3</td><td class="r">8.9</td><td class="r">+4%</td><td class="r">$11k–$70k</td></tr>
- <tr><td class="t">Moth Radio</td><td class="r">77</td><td class="r">+6</td><td class="r">8.1</td><td class="r">+31%</td><td class="r">$5k–$31k</td></tr></table></div></div>
- <div class="box"><h4>Vs peer publishers <small>share of genre reach</small></h4>${lines(3)}</div>
- <div class="meta" style="color:var(--bad)">Blocked on data: dim_publisher is empty until adapters extract studios (commit 9a08bd4).</div></div>`,
- n:{purpose:'Rolls up the titles a publisher has claimed and benchmarks them against peer publishers.',
-  loop:'Verified publishers can post notices in the galleries of the titles they own.',
-  kpis:[['Portfolio rollup','🔒','kpi_layers.py _publisher'],['Peer share','🔒','kpi_layers.py'],['Fan signals','🔒','fan, community']],
-  mods:['market','verification','kpi']}},
-
-{g:'Paid personas',id:'dossier',t:'Investor IP dossier',
- f:()=>`${barPro('IP investor')}<div class="body">
- <div class="row"><div class="ph cover" style="flex:0 1 110px">cover</div><div style="flex:3 1 240px;display:grid;gap:6px;align-content:start"><div style="font:800 22px var(--display)">Tower of Ash</div><div class="meta">Canonical IP · 3 platforms · novel + comic · ongoing since 2020</div>
- <div class="acts"><span class="btn">Watch</span><span class="btn ghost">Export</span></div></div></div>
- <div class="box"><h4>Valuation band <small>revenue-multiple model · is_model: true</small></h4>
-  <div class="band"><div class="rng" style="left:12%;right:28%"></div><div class="mid" style="left:38%"></div></div>
-  <div class="meta" style="justify-content:space-between"><span>low $—</span><span>mid $—</span><span>high $—</span></div>
-  <div class="meta">Base multiples are placeholders in config.yaml (valuation.base_multiple). No public deal-multiple dataset is assumed.</div></div>
- <div class="row"><div class="box"><h4>Drivers <small>adj clamp 0.5–2.0</small></h4>
-  <div class="tw"><table><tr><th>Driver</th><th>Value</th><th class="r">Effect</th></tr><tr><td>Annual revenue (model)</td><td>$0.5M–$3.1M</td><td class="r">base</td></tr><tr><td>Momentum pct</td><td>87</td><td class="r">+</td></tr><tr><td>Status</td><td>ongoing</td><td class="r">0</td></tr><tr><td>Platforms</td><td>3</td><td class="r">+</td></tr></table></div></div>
- <div class="box"><h4>Demand signals</h4><div class="meta">Fan ★ 8.7 (12k) · Wishlist 66k total · Gallery +18% 30d · Scout lead median 74 d</div>${spark([5,6,6,8,9,11,12,15,16,19,21,24])}</div></div>
- <div class="row"><div class="box"><h4>Author track record</h4><div class="meta">H. Seo: 3/4 works PlotScore ≥ 75</div></div>
- <div class="box"><h4>Comparable deals</h4><div class="meta">No deal data yet. rel_contract is schema-only (star_schema.py:206).</div></div></div></div>`,
- n:{purpose:'One page that answers what an IP is worth and whether its demand is real.',
-  loop:'Demand signals (fan rating, wishlist, gallery activity, scout lead time) set this apart from scraped-only tools.',
-  kpis:[['Valuation band','🔒 model','valuation (new)'],['Revenue band','🔒 model','earnings.py'],['Cross-platform reach','🔒','entity_resolution.py'],['Author track record','🔒','kpi_layers.py _author'],['Fan demand signals','🔒','fan, community'],['Comparable deals','🔒 empty','star_schema.py:206']],
-  mods:['valuation (ValuationModel)','market','fan','kpi']}},
-
-/* ---------------- ADMIN ---------------- */
-{g:'Admin',id:'claims',t:'Claim review queue',
- f:()=>`${barAdmin}<div class="body">
- <div class="row"><div class="seg"><button aria-pressed="true">Pending 12</button><button>Approved</button><button>Rejected</button><button>Revoked</button></div></div>
- <div class="tw"><table><tr><th>Submitted</th><th>User</th><th>Type</th><th>Entity</th><th>Docs</th><th>Age</th><th></th></tr>
- <tr><td>09.23</td><td>j.park@</td><td>Publisher</td><td class="t">Studio Nara</td><td>3</td><td>1 d</td><td><span class="btn ghost">Open</span></td></tr>
- <tr><td>09.22</td><td>hseo@</td><td>Author</td><td class="t">H. Seo</td><td>2</td><td>2 d</td><td><span class="btn ghost">Open</span></td></tr>
- <tr><td>09.21</td><td>m.chen@</td><td>Investor entity</td><td class="t">Lumen Story Partners (fund)</td><td>4</td><td>3 d</td><td><span class="btn ghost">Open</span></td></tr></table></div>
- <div class="row"><div class="box"><h4>Document viewer</h4><div class="ph" style="height:140px">business_registration.pdf (admin-only download)</div></div>
- <div class="box"><h4>Decision</h4><div class="input area">Review note (sent to user on reject)</div><div class="acts"><span class="btn">Approve</span><span class="btn ghost">Reject</span><span class="btn ghost">Request more</span></div></div></div></div>`,
- n:{purpose:'Manual review queue for claims. Every decision is audited: reviewer, time and note.',
-  loop:'Approving a claim emits claim.approved, which turns on the entitlement and the verified badge.',
-  kpis:[['Claim funnel','admin','verification']],mods:['verification','entitlement']}},
-
-{g:'Admin',id:'moderation',t:'Moderation queue',
- f:()=>`${barAdmin}<div class="body">
- <div class="tw"><table><tr><th>Target</th><th>Gallery</th><th>Reason</th><th class="r">Reports</th><th>Writer</th><th></th></tr>
- <tr><td class="t">Post 23140 “leak link inside”</td><td>Tower of Ash</td><td>Piracy link</td><td class="r">14</td><td>ㅇㅇ <span class="ip">(39.7)</span></td><td><span class="btn ghost">Remove</span></td></tr>
- <tr><td class="t">Comment on 23102</td><td>Romance Fantasy</td><td>Harassment</td><td class="r">6</td><td>ㅇㅇ <span class="ip">(221.150)</span></td><td><span class="btn ghost">Review</span></td></tr></table></div>
- <div class="row"><div class="box"><h4>Actions</h4><div class="meta">Soft delete · ban IP hash (1d / 7d / ∞) · suspend account · lock thread</div></div>
- <div class="box"><h4>Gallery moderators</h4><div class="meta">Assign per gallery; mods act only within their gallery.</div></div></div></div>`,
- n:{purpose:'Report handling and moderation per gallery. Bans apply to the hashed IP. The raw IP is never stored.',
-  loop:'Keeping galleries healthy is a precondition for fan retention.',
-  kpis:[],mods:['community (ModerationService)']}}
-];
-
-const $=id=>document.getElementById(id);
-const rail=$('rail'),pick=$('pick');let cur=0;
-const groups=[...new Set(S.map(s=>s.g))];
-rail.innerHTML=groups.map(g=>`<div class="grp"><h3>${g}</h3>${S.map((s,i)=>s.g===g?`<a href="#${s.id}" data-i="${i}"><span>S${i+1}</span>${esc(s.t)}</a>`:'').join('')}</div>`).join('');
-pick.innerHTML=S.map((s,i)=>`<option value="${s.id}">S${i+1} · ${esc(s.t)}</option>`).join('');
-function render(i){
-  cur=(i+S.length)%S.length;const s=S[cur];
-  $('eyebrow').textContent=`S${cur+1} of ${S.length} · ${s.g}`;$('title').textContent=s.t;
-  $('frame').innerHTML=s.f();
-  const n=s.n;
-  $('notes').innerHTML=`<div class="note"><h5>Purpose</h5><p>${n.purpose}</p></div>
-  <div class="note"><h5>Flywheel role</h5><p>${n.loop}</p></div>
-  ${n.kpis.length?`<div class="note"><h5>KPIs on this screen</h5>${n.kpis.map(k=>`<div class="kpi"><span>${k[0]} <span class="chip ${k[1].startsWith('🔒')?'prem':k[1]==='new'?'link':''}">${k[1]}</span></span><code>${k[2]}</code></div>`).join('')}</div>`:''}
-  <div class="note"><h5>Modules</h5><div class="mods">${n.mods.map(m=>`<span class="chip">${m}</span>`).join('')}</div></div>`;
-  rail.querySelectorAll('a').forEach(a=>a.setAttribute('aria-current',String(+a.dataset.i===cur)));
-  pick.value=s.id;
+/* ============ seeded sample data ============ */
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=rng(20260925);const pick=a=>a[Math.floor(R()*a.length)];
+const GENRES=[["FANTASY","Fantasy",38],["ROMFAN","Romance fantasy",26],["ACTION","Action",22],["MURIM","Murim",14],["BL","BL",12],["THRILL","Thriller",11],["DRAMA","Drama",10],["SLICE","Slice of life",7],["HORROR","Horror",6],["SCIFI","Sci-fi",5]];
+const PUBS=["Studio Nara","Moonbeam Media","Kite & Quill","Redline Comics","Hanok Press","Blue Lantern","Parallax Ink","Independent"];
+const PLATS=["Webtoon","Tapas","Tappytoon","Manta","Royal Road","Webnovel","Wattpad","Lezhin","Naver","Kakao"];
+const W1=["Tower","Salt","Nine","Glass","Red","Paper","Iron","Silent","Ember","Hollow","Velvet","Last","Crown","Ash","Moon","Winter","Ghost","Golden","Broken","Starfall","Cinder","Jade","Mirror","Thorn","Hundredth"];
+const W2=["Ash","Archivist","Lanterns","Orchard","Ledger","Moth","Regent","Tide","Garden","Knight","Contract","Heir","Oath","Library","Blade","Duchess","Radio","Sect","Dungeon","Villainess","Protocol","Carnival","Sword","Return","Queen"];
+const AUTH=["H. Seo","K. Lim","M. Arden","J. Park","R. Okafor","S. Tanaka","L. Moreau","D. Kwon","A. Reyes","Y. Chen","P. Novak","E. Han","T. Baek","N. Ito","C. Vale"];
+const used=new Set();const titles=[];const DAYS=120;
+for(let i=0;i<64;i++){
+  let nm;do{nm=(R()<.35?"The ":"")+pick(W1)+" "+pick(W2)}while(used.has(nm));used.add(nm);
+  const g=GENRES[Math.min(GENRES.length-1,Math.floor(Math.pow(R(),1.3)*GENRES.length))];
+  const words=nm.replace("The ","").split(" ");
+  let tk=(words[0].slice(0,2)+words[1].slice(0,2)).toUpperCase();while(titles.some(t=>t.tk===tk))tk=tk.slice(0,3)+String.fromCharCode(65+Math.floor(R()*26));
+  const novel=R()<.38;const listed=i>=56?Math.floor(1+R()*27):DAYS+Math.floor(R()*900);
+  const base=35+R()*55,mu=(R()-.45)*.18,vol=.6+R()*1.6;const s=[];let v=base;
+  for(let d=0;d<DAYS;d++){v=Math.max(8,Math.min(99.4,v+mu+(R()-.5)*vol));s.push(+v.toFixed(1))}
+  if(listed<DAYS){for(let d=0;d<DAYS-listed;d++)s[d]=null;let x=45+R()*30;for(let d=DAYS-listed;d<DAYS;d++){x=Math.min(99,x+(R()-.3)*2.2);s[d]=+x.toFixed(1)}}
+  const views=Math.round(Math.pow(10,5.5+R()*3.6)*(s[DAYS-1]/60));
+  titles.push({i,tk,name:nm,g:g[0],gname:g[1],novel,plat:pick(PLATS),pub:pick(PUBS),author:pick(AUTH),s,listed,views,
+    subs:Math.round(views*(.002+R()*.01)),fan:+(6.2+R()*3.3).toFixed(1),votes:Math.round(200+R()*16000),
+    act:Math.round(40+R()*R()*9000),wish:Math.round(R()*R()*70000),status:pick(["Ongoing","Ongoing","Ongoing","Completed","Hiatus"]),
+    eps:Math.round(12+R()*260),cad:+(pick([1,1,1,2,3,5,7])*(novel?1.5:1)).toFixed(1),hue:Math.floor(R()*360),hue2:Math.floor(R()*360),pat:Math.floor(R()*4)});
 }
-function fromHash(){const h=location.hash.slice(1);const i=S.findIndex(s=>s.id===h);render(i<0?0:i);}
-window.addEventListener('hashchange',fromHash);
-pick.addEventListener('change',()=>{location.hash=pick.value;});
-$('prev').onclick=()=>{location.hash=S[(cur-1+S.length)%S.length].id;};
-$('next').onclick=()=>{location.hash=S[(cur+1)%S.length].id;};
-function setW(phone){$('frame').classList.toggle('phone',phone);$('wPhone').setAttribute('aria-pressed',phone);$('wDesk').setAttribute('aria-pressed',!phone);try{localStorage.setItem('wf-phone',phone?'1':'0')}catch(e){}}
-$('wDesk').onclick=()=>setW(false);$('wPhone').onclick=()=>setW(true);
-fromHash();
-try{if(localStorage.getItem('wf-phone')==='1')setW(true)}catch(e){}
+const last=t=>t.s[DAYS-1],prev=(t,k)=>t.s[DAYS-1-k];
+function chg(t,k=1){const p=prev(t,k);return p==null?null:(last(t)-p)/p*100}
+titles.forEach(t=>{t.d1=chg(t,1);t.d7=chg(t,7);t.d30=chg(t,30)});
+function ranks(day){const a=titles.filter(t=>t.s[day]!=null).sort((x,y)=>y.s[day]-x.s[day]);const m={};a.forEach((t,i)=>m[t.tk]=i+1);return m}
+let RK=ranks(DAYS-1);const RK7=ranks(DAYS-8);
+titles.forEach(t=>{t.rank=RK[t.tk];t.rd=RK7[t.tk]!=null?RK7[t.tk]-t.rank:null});
+const byTk=Object.fromEntries(titles.map(t=>[t.tk,t]));
+function indexSeries(list){const out=[];let b=null;for(let d=0;d<DAYS;d++){let num=0,w=0;list.forEach(t=>{if(t.s[d]!=null){num+=t.s[d]*t.views;w+=t.views}});const v=w?num/w:null;if(b==null&&v!=null)b=v;out.push(v==null?null:v/b*1000)}return out}
+function mkIndex(code,name,list){const s=indexSeries(list);const l=s[DAYS-1],p=s[DAYS-2];return{code,name,s,v:l,d:(l-p)/p*100,list}}
+let INDEX=[mkIndex("PLT-ALL","All titles",titles),mkIndex("PLT-CMX","Comics",titles.filter(t=>!t.novel)),mkIndex("PLT-NOV","Novels",titles.filter(t=>t.novel)),...GENRES.map(g=>mkIndex(g[0],g[1],titles.filter(t=>t.g===g[0]))).filter(x=>x.list.length)];
+
+/* ============ helpers ============ */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtN=n=>n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(1)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":String(n);
+const sgn=v=>v==null?"—":(v>0?"▲ ":v<0?"▼ ":"")+Math.abs(v).toFixed(2)+"%";
+const cls=v=>v==null||Math.abs(v)<.005?"fl":v>0?"up":"dn";
+const chip=v=>`<span class="chg ${cls(v)}">${sgn(v)}</span>`;
+const rkd=v=>v==null?'<span class="fl">new</span>':v===0?'<span class="fl">–</span>':`<span class="${v>0?'up':'dn'} mono">${v>0?'▲':'▼'}${Math.abs(v)}</span>`;
+const coverCache={};
+function cover(t){if(coverCache[t.tk])return coverCache[t.tk];const c=document.createElement("canvas");c.width=180;c.height=240;const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,180,240);g.addColorStop(0,`hsl(${t.hue} 55% 38%)`);g.addColorStop(1,`hsl(${t.hue2} 60% 14%)`);x.fillStyle=g;x.fillRect(0,0,180,240);
+  x.globalAlpha=.18;x.fillStyle="#fff";
+  if(t.pat===0){for(let yy=0;yy<240;yy+=9)for(let xx=(yy/9%2)*4.5;xx<180;xx+=9){x.beginPath();x.arc(xx,yy,1.2+yy/240*2.4,0,7);x.fill()}}
+  else if(t.pat===1){x.lineWidth=2;x.strokeStyle="#fff";for(let k=-240;k<180;k+=14){x.beginPath();x.moveTo(k,240);x.lineTo(k+240,0);x.stroke()}}
+  else if(t.pat===2){for(let r=20;r<260;r+=18){x.beginPath();x.arc(150,40,r,0,7);x.lineWidth=1.5;x.strokeStyle="#fff";x.stroke()}}
+  else{for(let k=0;k<7;k++){x.fillRect(0,k*36,180,12)}}
+  x.globalAlpha=1;x.fillStyle="rgba(0,0,0,.35)";x.fillRect(0,170,180,70);
+  x.fillStyle="#fff";x.font="800 54px 'Bricolage Grotesque',Arial Black,sans-serif";x.fillText(t.tk.slice(0,2),14,70);
+  x.font="700 13px 'JetBrains Mono',monospace";x.fillStyle="rgba(255,255,255,.85)";
+  const w=t.name.toUpperCase().split(" ");let line="",yy=196;w.forEach(wd=>{if((line+" "+wd).length>16){x.fillText(line.trim(),14,yy);yy+=16;line=wd}else line+=" "+wd});x.fillText(line.trim(),14,yy);
+  return coverCache[t.tk]=c.toDataURL("image/png")}
+const tname=t=>`<div class="tn"><span class="cv" style="background-image:url(${cover(t)})"></span><span><b>${esc(t.name)}</b><small>${t.tk} · ${t.gname}${t.novel?' · NOVEL':''}</small></span></div>`;
+function spark(s,w=160,h=36,color){const v=s.filter(x=>x!=null);if(v.length<2)return"";const off=s.length-v.length;const mn=Math.min(...v),mx=Math.max(...v);const sx=w/(s.length-1),y=q=>h-3-(q-mn)/((mx-mn)||1)*(h-6);
+  const pts=v.map((q,i)=>`${((i+off)*sx).toFixed(1)},${y(q).toFixed(1)}`);const col=color||(v[v.length-1]>=v[0]?"var(--up)":"var(--dn)");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path d="M${pts.join("L")}L${w},${h}L${(off*sx).toFixed(1)},${h}Z" fill="${col}" opacity=".12"/><path d="M${pts.join("L")}" fill="none" stroke="${col}" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>`}
+const panel=(title,body,right="",extra="")=>`<section class="panel ${extra}"><div class="ph"><h3>${title}</h3>${right}</div>${body}</section>`;
+const persona=()=>STATE.persona;const isPro=()=>["author","publisher","investor"].includes(STATE.persona);
+function lock(title,inner){if(isPro())return inner;return `<div class="lock"><div class="blur">${inner}</div><div class="ov"><span class="pill mk">PRO</span><b>${title}</b><p>For verified authors, publishers and IP investors. Verification is by document review.</p><a class="btn sm" href="#plans">See plans</a></div></div>`}
+
+/* ============ charts ============ */
+function lineChart(series,{h=240,label="PlotScore",id="lc",band=false}={}){
+  const W=760,H=h,pl=40,pr=12,pt=12,pb=24;const v=series.filter(x=>x!=null);const off=series.length-v.length;
+  let mn=Math.min(...v),mx=Math.max(...v);const pad=(mx-mn)*.12||1;mn-=pad;mx+=pad;
+  const sx=i=>pl+(i)/(series.length-1)*(W-pl-pr),sy=q=>pt+(1-(q-mn)/(mx-mn))*(H-pt-pb);
+  const ticks=[];const step=niceStep((mx-mn)/4);for(let q=Math.ceil(mn/step)*step;q<=mx;q+=step)ticks.push(q);
+  const d=v.map((q,i)=>`${sx(i+off).toFixed(1)},${sy(q).toFixed(1)}`).join("L");const col=v[v.length-1]>=v[0]?"var(--up)":"var(--dn)";
+  const xl=[0,30,60,90,119].filter(i=>i>=off).map(i=>`<text x="${sx(i)}" y="${H-6}" text-anchor="middle">${i===119?"Today":"−"+(119-i)+"d"}</text>`).join("");
+  return `<div class="chart" data-chart="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label} over 120 days">
+   <g class="axis">${ticks.map(q=>`<line class="gridl" x1="${pl}" x2="${W-pr}" y1="${sy(q)}" y2="${sy(q)}"/><text x="${pl-6}" y="${sy(q)+3}" text-anchor="end">${q.toFixed(step<1?1:0)}</text>`).join("")}${xl}</g>
+   <path d="M${d}L${sx(series.length-1)},${H-pb}L${sx(off)},${H-pb}Z" fill="${col}" opacity=".10"/>
+   <path d="M${d}" fill="none" stroke="${col}" stroke-width="2"/>
+   <circle cx="${sx(series.length-1)}" cy="${sy(v[v.length-1])}" r="4" fill="${col}" stroke="var(--panel)" stroke-width="2"/>
+   <line class="xh" id="${id}-x" x1="0" x2="0" y1="${pt}" y2="${H-pb}" visibility="hidden"/><circle id="${id}-d" r="4" fill="var(--text)" visibility="hidden"/>
+   <rect x="${pl}" y="${pt}" width="${W-pl-pr}" height="${H-pt-pb}" fill="transparent" data-hit="${id}"/></svg></div>`;
+}
+function niceStep(r){const p=Math.pow(10,Math.floor(Math.log10(r)));const f=r/p;return(f<1.5?1:f<3?2:f<7?5:10)*p}
+function wireChart(id,series,fmt=q=>q.toFixed(1)){
+  const hit=document.querySelector(`[data-hit="${id}"]`);if(!hit)return;const svg=hit.ownerSVGElement;const tip=$("tip");
+  const W=760,pl=40,pr=12;const v=series.filter(x=>x!=null);let mn=Math.min(...v),mx=Math.max(...v);const pad=(mx-mn)*.12||1;mn-=pad;mx+=pad;
+  const H=svg.viewBox.baseVal.height,pt=12,pb=24;const sy=q=>pt+(1-(q-mn)/(mx-mn))*(H-pt-pb);
+  hit.addEventListener("mousemove",e=>{const b=svg.getBoundingClientRect();const x=(e.clientX-b.left)/b.width*W;let i=Math.round((x-pl)/(W-pl-pr)*(series.length-1));i=Math.max(0,Math.min(series.length-1,i));if(series[i]==null)return;
+    const cx=pl+i/(series.length-1)*(W-pl-pr);const xl=$(id+"-x"),dt=$(id+"-d");xl.setAttribute("x1",cx);xl.setAttribute("x2",cx);xl.setAttribute("visibility","visible");dt.setAttribute("cx",cx);dt.setAttribute("cy",sy(series[i]));dt.setAttribute("visibility","visible");
+    tip.hidden=false;tip.innerHTML=`<div class="row"><span>${i===119?"Today":(119-i)+" days ago"}</span></div><b class="mono">${fmt(series[i])}</b>`;tip.style.left=Math.min(innerWidth-200,e.clientX+14)+"px";tip.style.top=(e.clientY-10)+"px"});
+  hit.addEventListener("mouseleave",()=>{tip.hidden=true;$(id+"-x").setAttribute("visibility","hidden");$(id+"-d").setAttribute("visibility","hidden")});
+}
+
+/* squarified treemap */
+function squarify(items,x,y,w,h){const out=[];let rest=items.slice();const total=rest.reduce((a,b)=>a+b.v,0);const scale=w*h/total;rest=rest.map(o=>({...o,a:o.v*scale}));
+  while(rest.length){const short=Math.min(w,h);let row=[rest[0]],i=1;const worst=r=>{const s=r.reduce((a,b)=>a+b.a,0);const mxx=Math.max(...r.map(o=>o.a)),mnn=Math.min(...r.map(o=>o.a));return Math.max(short*short*mxx/(s*s),s*s/(short*short*mnn))};
+    while(i<rest.length&&worst(row.concat(rest[i]))<=worst(row)){row.push(rest[i]);i++}
+    const s=row.reduce((a,b)=>a+b.a,0);if(w>=h){const cw=s/h;let cy=y;row.forEach(o=>{const ch=o.a/cw;out.push({...o,x,y:cy,w:cw,h:ch});cy+=ch});x+=cw;w-=cw}else{const rh=s/w;let cx=x;row.forEach(o=>{const cw=o.a/rh;out.push({...o,x:cx,y,w:cw,h:rh});cx+=cw});y+=rh;h-=rh}
+    rest=rest.slice(i)}return out}
+function heat(v){if(v==null)return"var(--flat)";const k=Math.min(1,Math.abs(v)/3);return `color-mix(in srgb, ${v>=0?'var(--up)':'var(--dn)'} ${Math.round(18+k*72)}%, var(--flat))`}
+function renderTreemap(el,groupBy="g",metric="d1"){
+  const W=el.clientWidth,H=el.clientHeight;const groups={};titles.forEach(t=>{const k=groupBy==="g"?t.gname:t.pub;(groups[k]=groups[k]||[]).push(t)});
+  const gi=Object.entries(groups).map(([k,l])=>({k,l,v:l.reduce((a,t)=>a+Math.sqrt(t.views),0)})).sort((a,b)=>b.v-a.v);
+  let html="";squarify(gi,0,0,W,H).forEach(g=>{html+=`<div class="grp" style="left:${g.x}px;top:${g.y}px;width:${g.w}px;height:${g.h}px"><div class="glab">${esc(g.k)}</div>`;
+    squarify(g.l.map(t=>({t,v:Math.sqrt(t.views)})).sort((a,b)=>b.v-a.v),0,18,g.w,Math.max(1,g.h-18)).forEach(o=>{const t=o.t;const val=t[metric];const big=o.w>90&&o.h>54;
+      html+=`<a class="tile${big?' big':''}" href="#title-${t.tk}" data-tip="${t.tk}" data-live-tile="${t.tk}" style="left:${o.x}px;top:${o.y}px;width:${o.w}px;height:${o.h}px;background-color:${heat(val)}">${o.w>44&&o.h>26?`<b>${t.tk}</b>`:''}${o.w>52&&o.h>40?`<span>${sgn(val).replace("▲ ","+").replace("▼ ","−")}</span>`:''}</a>`});html+="</div>"});
+  el.innerHTML=html;el.dataset.metric=metric;
+  el.querySelectorAll("[data-tip]").forEach(a=>{a.addEventListener("mousemove",e=>showTip(e,byTk[a.dataset.tip]));a.addEventListener("mouseleave",()=>$("tip").hidden=true)})}
+function showTip(e,t){const tip=$("tip");tip.hidden=false;tip.innerHTML=`<b>${esc(t.name)}</b><div class="row"><span>${t.tk} · ${t.gname}</span><span>#${t.rank}</span></div><div class="row"><span>PlotScore</span><span>${last(t).toFixed(1)}</span></div><div class="row"><span>1D</span><span class="${cls(t.d1)}">${sgn(t.d1)}</span></div><div class="row"><span>1W</span><span class="${cls(t.d7)}">${sgn(t.d7)}</span></div><div class="row"><span>Reach</span><span>${fmtN(t.views)}</span></div><div class="row"><span>Fan activity</span><span>${fmtN(t.act)}/d</span></div>`;
+  tip.style.left=Math.min(innerWidth-220,e.clientX+14)+"px";tip.style.top=Math.min(innerHeight-180,e.clientY+14)+"px"}
+
+/* ============ tables ============ */
+function moverTable(list,cols=["rank","name","px","d1","act"],opts={}){
+  const H={rank:'<th class="r">#</th>',name:"<th>Title</th>",px:'<th class="r">PlotScore</th>',d1:'<th class="r">1D</th>',d7:'<th class="r">1W</th>',d30:'<th class="r">1M</th>',rd:'<th class="r">Rank 7D</th>',act:'<th class="r">Fan vol.</th>',views:'<th class="r">Reach</th>',fan:'<th class="r">Fan ★</th>',plat:"<th>Platform</th>",spark:"<th>90D</th>",wish:'<th class="r">Wishlist</th>',status:"<th>Status</th>",pub:"<th>Publisher</th>",rev:'<th class="r">Rev/mo (model)</th>',ready:'<th class="r">Readiness</th>'};
+  const C={rank:t=>`<td class="r mono fl">${t.rank}</td>`,name:t=>`<td>${tname(t)}</td>`,px:t=>`<td class="r mono" data-live="${t.tk}" data-f="px">${last(t).toFixed(1)}</td>`,d1:t=>`<td class="r" data-live="${t.tk}" data-f="d1">${chip(t.d1)}</td>`,d7:t=>`<td class="r">${chip(t.d7)}</td>`,d30:t=>`<td class="r">${chip(t.d30)}</td>`,rd:t=>`<td class="r">${rkd(t.rd)}</td>`,
+    act:t=>`<td class="r mono">${fmtN(t.act)}</td>`,views:t=>`<td class="r mono">${fmtN(t.views)}</td>`,fan:t=>`<td class="r mono">${t.fan}</td>`,plat:t=>`<td>${t.plat}</td>`,spark:t=>`<td style="width:110px">${spark(t.s.slice(-90),100,26)}</td>`,wish:t=>`<td class="r mono">${fmtN(t.wish)}</td>`,
+    status:t=>`<td><span class="pill ${t.status==="Completed"?"ok":t.status==="Hiatus"?"warn":""}">${t.status}</span></td>`,pub:t=>`<td>${t.pub}</td>`,rev:t=>`<td class="r mono">$${fmtN(Math.round(t.views*.00003*.4))}–${fmtN(Math.round(t.views*.00003*2.5))}</td>`,ready:t=>`<td class="r mono">${readiness(t)}</td>`};
+  return `<div class="tw"${opts.max?` style="max-height:${opts.max}px"`:''}><table><thead><tr>${cols.map(c=>H[c]).join("")}</tr></thead><tbody>${list.map(t=>`<tr data-go="title-${t.tk}">${cols.map(c=>C[c](t)).join("")}</tr>`).join("")}</tbody></table></div>`}
+function readiness(t){const reach=Math.min(1,Math.log10(t.views)/9.5),comp=t.status==="Completed"?1:t.status==="Hiatus"?.3:.6,mom=Math.max(0,Math.min(1,((t.d30||0)+10)/20)),depth=Math.min(1,t.eps/100);return Math.round(100*(.3*reach+.18*comp+.12*mom+.1*depth+.15*.75+.15*Math.min(1,t.fan/10)))}
+
+/* ============ pages ============ */
+const TOPS=()=>{const live=titles.filter(t=>t.d1!=null);return{gain:[...live].sort((a,b)=>b.d1-a.d1),lose:[...live].sort((a,b)=>a.d1-b.d1),vol:[...titles].sort((a,b)=>b.act-a.act),ipo:titles.filter(t=>t.listed<DAYS).sort((a,b)=>a.listed-b.listed)}};
+function ipoBanner(){const l=TOPS().ipo;const item=t=>{const since=(last(t)-t.s[DAYS-t.listed])/t.s[DAYS-t.listed]*100;return `<a class="ic2" href="#title-${t.tk}"><span class="cv" style="background-image:url(${cover(t)})"></span><span><b>${esc(t.name)}</b><small>${t.tk} · ${t.plat} · listed ${t.listed}d ago</small></span><span class="chg ${cls(since)}">${sgn(since)}</span></a>`};
+  return `<div class="ipo"><div class="lab"><small>NEW LISTINGS</small><b>Just launched</b></div><div class="track">${l.map(item).join("")}${l.map(item).join("")}</div></div>`}
+
+const P={};
+P.market=()=>{const T=TOPS();const adv=titles.filter(t=>t.d1>0).length,dec=titles.filter(t=>t.d1<0).length,unch=titles.length-adv-dec;
+ const nh=titles.filter(t=>last(t)>=Math.max(...t.s.filter(x=>x!=null))).length;
+ return `<div class="pagehead"><div><div class="eyebrow">Market overview · ${new Date(2026,8,25).toDateString()} · <span class="sample">sample data</span></div><h1 class="h1">The story-IP market today</h1></div>
+ <div class="acts"><span class="pill up">▲ ${adv} advancing</span><span class="pill dn">▼ ${dec} declining</span><span class="pill">${nh} at 120-day high</span></div></div>
+ <div class="idx" id="idx">${INDEX.slice(0,8).map(ix=>`<a class="ic" href="#sectors"><span class="code"><span>${ix.code}</span><span class="fl">${ix.list.length}</span></span><span class="v" data-live-idx="${ix.code}">${ix.v.toFixed(2)}</span><span class="d ${cls(ix.d)}" data-live-idxd="${ix.code}">${sgn(ix.d)}</span>${spark(ix.s,160,36)}</a>`).join("")}</div>
+ <div style="height:14px"></div>${ipoBanner()}<div style="height:14px"></div>
+ <div class="grid g12">
+  <div class="c8">${panel('Market map <i>genre → title · size = reach · color = 1D change</i>',`<div class="tm" id="tm"></div>`,`<div class="acts"><div class="tabs" id="tmGroup"><button aria-pressed="true" data-v="g">Genre</button><button aria-pressed="false" data-v="p">Publisher</button></div><div class="tabs" id="tmMetric"><button aria-pressed="true" data-v="d1">1D</button><button aria-pressed="false" data-v="d7">1W</button><button aria-pressed="false" data-v="d30">1M</button></div><span class="legend-scale">−3%<i style="background:${heat(-3)}"></i><i style="background:${heat(-1)}"></i><i style="background:var(--flat)"></i><i style="background:${heat(1)}"></i><i style="background:${heat(3)}"></i>+3%</span></div>`)}</div>
+  <div class="c4 grid">
+   ${panel('Market breadth',`<div class="pb breadth"><div class="bl"><span class="up">▲ ${adv}</span><span class="fl">${unch} unch.</span><span class="dn">${dec} ▼</span></div><div class="bb"><span style="flex:${adv};background:var(--up)"></span><span style="flex:${unch||.001};background:var(--flat)"></span><span style="flex:${dec};background:var(--dn)"></span></div>
+    <div class="bl"><span class="fl">New 120D highs</span><span>${nh}</span></div><div class="bl"><span class="fl">New listings (30D)</span><span>${T.ipo.length}</span></div><div class="bl"><span class="fl">Fan activity today</span><span>${fmtN(titles.reduce((a,t)=>a+t.act,0))}</span></div></div>`)}
+   ${panel('Hot in galleries <i>concept ★</i>',`<div class="pb" style="display:grid;gap:10px">${[["ASH","Theory: the tower is the author's earlier novel's world",412],["ROMFAN","Every regression-villainess title ranked by pacing",288],["BL","Author notice: season 2 date confirmed",203]].map(([g,t,u])=>`<a href="#post" style="display:grid;gap:2px"><span class="eyebrow">${g} gallery</span><span style="font-weight:600">${t}</span><span class="ip">▲ ${u} · 87 comments</span></a>`).join("")}</div>`)}
+  </div>
+  <div class="c4">${panel('Top gainers <i>1D</i>',moverTable(T.gain.slice(0,8),["name","px","d1"]),'<a class="pill" href="#screener">Screener →</a>')}</div>
+  <div class="c4">${panel('Top losers <i>1D</i>',moverTable(T.lose.slice(0,8),["name","px","d1"]))}</div>
+  <div class="c4">${panel('Most discussed <i>fan volume</i>',moverTable(T.vol.slice(0,8),["name","act","d1"]))}</div>
+  <div class="c6">${panel('Sector performance <i>1D</i>',sectorBars())}</div>
+  <div class="c6">${panel('Rank movers <i>7D</i>',moverTable([...titles].filter(t=>t.rd!=null).sort((a,b)=>Math.abs(b.rd)-Math.abs(a.rd)).slice(0,6),["name","rd","px","spark"]))}</div>
+ </div>`};
+function sectorBars(){const l=INDEX.slice(3).sort((a,b)=>b.d-a.d);const mx=Math.max(...l.map(x=>Math.abs(x.d)))||1;
+ return `<div class="pb" style="display:grid;gap:8px">${l.map(ix=>`<a href="#sectors" style="display:grid;grid-template-columns:120px 1fr 1fr 70px;gap:8px;align-items:center"><span style="font-weight:600;font-size:12.5px">${ix.name}</span><span style="display:flex;justify-content:flex-end">${ix.d<0?`<i style="display:block;height:12px;border-radius:4px 0 0 4px;background:var(--dn);width:${Math.abs(ix.d)/mx*100}%"></i>`:''}</span><span>${ix.d>=0?`<i style="display:block;height:12px;border-radius:0 4px 4px 0;background:var(--up);width:${ix.d/mx*100}%"></i>`:''}</span><span class="mono r ${cls(ix.d)}" style="font-size:12px">${sgn(ix.d)}</span></a>`).join("")}</div>`}
+
+P.sectors=()=>`<div class="pagehead"><div><div class="eyebrow">Sectors</div><h1 class="h1">Genre indices</h1><p class="sub">Each index is the reach-weighted PlotScore of its titles, rebased to 1,000 at the start of the window. Tap a genre to see its constituents.</p></div></div>
+ <div class="grid g12">${INDEX.slice(3).map(ix=>{const s=ix.list;const adv=s.filter(t=>t.d1>0).length;const lead=[...s].sort((a,b)=>last(b)-last(a))[0];const w=s.map(t=>t.views);const tot=w.reduce((a,b)=>a+b,0);const hhi=Math.round(w.reduce((a,b)=>a+Math.pow(b/tot*100,2),0));
+ return `<div class="c4">${panel(`${ix.code} <i>${ix.name}</i>`,`<div class="pb" style="display:grid;gap:8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:800 28px var(--display)">${ix.v.toFixed(2)}</span><span class="chg ${cls(ix.d)}">${sgn(ix.d)}</span></div>${spark(ix.s,300,60)}
+ <div class="bl"><span class="fl">Breadth</span><span><span class="up">${adv}</span> / <span class="dn">${s.length-adv}</span></span></div><div class="bl"><span class="fl">HHI (reach)</span><span>${hhi.toLocaleString()} <span class="pill ${hhi>2500?'warn':''}">${hhi>2500?'Concentrated':hhi>1500?'Moderate':'Competitive'}</span></span></div><div class="bl"><span class="fl">Leader</span><a href="#title-${lead.tk}">${lead.tk} · ${last(lead).toFixed(1)}</a></div></div>`)}</div>`}).join("")}</div>`;
+
+P.publishers=()=>{const m={};titles.forEach(t=>{(m[t.pub]=m[t.pub]||[]).push(t)});const tot=titles.reduce((a,t)=>a+t.views,0);
+ const rows=Object.entries(m).map(([p,l])=>{const ix=mkIndex(p,p,l);return{p,l,ix,share:l.reduce((a,t)=>a+t.views,0)/tot*100,avg:l.reduce((a,t)=>a+last(t),0)/l.length}}).sort((a,b)=>b.share-a.share);
+ return `<div class="pagehead"><div><div class="eyebrow">Publishers</div><h1 class="h1">Publisher board</h1><p class="sub">Share of tracked reach and the performance of each publisher's slate. <span class="pill warn">Data gap</span> The live warehouse has no publisher data yet (dim_publisher is empty, commit 9a08bd4). This board needs studio extraction in the scrapers.</p></div></div>
+ ${panel('All publishers',`<div class="tw"><table><thead><tr><th>Publisher</th><th class="r">Titles</th><th class="r">Reach share</th><th class="r">Avg PlotScore</th><th class="r">Slate 1D</th><th>90D</th><th>Top title</th></tr></thead><tbody>${rows.map(r=>{const top=[...r.l].sort((a,b)=>last(b)-last(a))[0];return `<tr data-go="portfolio"><td style="font-weight:600">${r.p}</td><td class="r mono">${r.l.length}</td><td class="r mono"><span style="display:inline-flex;gap:8px;align-items:center">${r.share.toFixed(1)}%<i style="display:inline-block;height:6px;width:${r.share*2}px;background:var(--mark);border-radius:3px"></i></span></td><td class="r mono">${r.avg.toFixed(1)}</td><td class="r">${chip(r.ix.d)}</td><td style="width:110px">${spark(r.ix.s.slice(-90),100,26)}</td><td>${top.tk}</td></tr>`}).join("")}</tbody></table></div>`)}`};
+
+function titlePage(tk){const t=byTk[tk]||titles[0];const rev=[t.views*.00003*.4,t.views*.00003,t.views*.00003*2.5];
+ return `<div class="quote"><div class="cover" style="background-image:url(${cover(t)})"></div><div>
+  <div class="eyebrow">${t.tk} · ${t.novel?"Web novel":"Web comic"} · ${t.gname} · ${t.status}</div><h1 class="h1">${esc(t.name)}</h1>
+  <div class="meta" style="margin-top:8px">by <a href="#credits">${t.author}</a> · <a href="#portfolio">${t.pub}</a> · on ${t.plat} + ${1+t.i%3} more</div>
+  <div class="price"><span class="big" data-live="${t.tk}" data-f="pxbig">${last(t).toFixed(1)}</span><span class="d ${cls(t.d1)}" data-live="${t.tk}" data-f="d1txt">${sgn(t.d1)} today</span><span class="pill">Rank #${t.rank} ${t.rd?`<span class="${t.rd>0?'up':'dn'}">${t.rd>0?'▲':'▼'}${Math.abs(t.rd)}</span>`:''}</span>${t.d7>2?'<span class="pill up">Rising</span>':''}</div>
+  <div class="meta" style="margin-top:4px">PlotScore 0–100 · reach 30% · momentum 25% · engagement 20% · monetization 15% · quality 10%</div>
+  <div class="acts" style="margin-top:14px"><button class="btn">＋ Follow</button><button class="btn gh">★ Rate</button><button class="btn gh">✦ Wish adaptation</button><a class="btn gh" href="#gallery">Gallery · ${fmtN(t.act)}/d</a></div>
+ </div></div><div style="height:18px"></div>
+ <div class="grid g12">
+  <div class="c8">${panel('PlotScore <i>120 days</i>',`<div class="pb">${lineChart(t.s,{id:"tc"})}</div><div class="kv"><div><span>Fan rating</span><b>${t.fan} <small class="fl">(${fmtN(t.votes)})</small></b></div><div><span>Reach</span><b>${fmtN(t.views)}</b></div><div><span>Subscribers</span><b>${fmtN(t.subs)}</b></div><div><span>Cadence</span><b>${t.cad}/wk</b></div><div><span>Episodes</span><b>${t.eps}</b></div><div><span>Wishlist</span><b>${fmtN(t.wish)}</b></div></div>`,`<div class="tabs"><button aria-pressed="false">1W</button><button aria-pressed="false">1M</button><button aria-pressed="true">120D</button><button aria-pressed="false">ALL</button></div>`)}</div>
+  <div class="c4 grid">${panel('Fan rating',`<div class="pb" style="display:grid;gap:10px"><div style="display:flex;align-items:baseline;gap:8px"><span style="font:800 40px var(--display)">${t.fan}</span><span class="fl mono">/10 · weighted · ${fmtN(t.votes)} votes</span></div><div class="hist">${[38,24,14,9,6,4,2,1,1,1].map((x,i)=>`<div><span>${10-i}</span><i style="width:${x*2.4}%"></i><span>${x}%</span></div>`).join("")}</div></div>`)}
+   ${panel('Where to read',`<div class="pb acts">${[t.plat,...PLATS.filter(p=>p!==t.plat).slice(t.i%4,t.i%4+1+t.i%3)].map(p=>`<span class="pill">${p} ↗</span>`).join("")}</div>`)}</div>
+  <div class="c6">${panel('Valuation <i>market-cap analogue · model</i>',lock('Valuation band',`<div class="pb"><div class="band"><div class="rail"></div><div class="rng" style="left:14%;right:30%"></div><div class="mid" style="left:36%"></div></div><div class="bl"><span class="fl">Low</span><span class="fl">Mid</span><span class="fl">High</span></div><div class="bl"><span class="mono">$${fmtN(Math.round(rev[0]*12*3))}</span><span class="mono">$${fmtN(Math.round(rev[1]*12*5))}</span><span class="mono">$${fmtN(Math.round(rev[2]*12*8))}</span></div><p class="sub">Band = modeled annual revenue × base multiple × adjustment. The multiples are <b>placeholders</b> (config) and not market data.</p></div>`),'<span class="pill mk">is_model</span>')}</div>
+  <div class="c6">${panel('Revenue & engagement <i>model</i>',lock('Revenue band & diagnostics',`<div class="kv" style="border-top:0"><div><span>Rev / mo</span><b>$${fmtN(Math.round(rev[0]))}–${fmtN(Math.round(rev[2]))}</b></div><div><span>Like-through</span><b>${(2+t.i%5).toFixed(1)}%</b></div><div><span>Decay ep1→now</span><b>${30+t.i%30}%</b></div><div><span>Readiness</span><b>${readiness(t)}</b></div></div><div class="pb">${spark(t.s,600,60,"var(--mark)")}</div>`))}</div>
+  <div class="c12">${panel('From the gallery',galleryRows(t,5),`<a class="pill" href="#gallery">Open gallery →</a>`)}</div>
+ </div>`}
+function galleryRows(t,n=8){const rows=[["📌 Notice: season schedule","AUTHOR",null,"09.20",18204,1022,"n"],["Theory: the tower is the author's earlier novel's world","ㅇㅇ","118.235","09.23",9811,412,"c"],[`Ep ${t.eps} thread — that last panel`,"system",null,"09.23",22090,155,""],["Is the KR raw ahead by 20 eps?","ㅇㅇ","211.36","09.23",640,4,""],["Fanart: snowfall chapter","ashenjay",null,"09.22",2113,98,""],["Ranking every arc so far","lanternkeeper",null,"09.22",3320,141,"c"],["Why the pacing works","ㅇㅇ","58.140","09.21",880,22,""],["Translation differences EN vs KR","polyglot",null,"09.21",1440,37,""]].slice(0,n);
+ return `<div class="tw"><table><thead><tr><th class="r">No.</th><th>Title</th><th>Writer</th><th>Date</th><th class="r">Views</th><th class="r">▲</th></tr></thead><tbody>${rows.map((r,i)=>`<tr data-go="post" class="${r[6]==='c'?'concept':''}"><td class="r mono fl">${r[6]==='n'?'—':23145-i}</td><td style="white-space:normal;min-width:220px">${r[6]==='c'?'<span class="pill mk" style="margin-right:6px">★ concept</span>':''}${r[6]==='n'?'<b>':''}${r[0]}${r[6]==='n'?'</b>':''}</td><td>${r[1]==='AUTHOR'?`<span class="nick">${t.author}</span> <span class="vb">✓ AUTHOR</span>`:`<span class="nick">${r[1]}</span>${r[2]?` <span class="ip">(${r[2]})</span>`:''}`}</td><td class="mono fl">${r[3]}</td><td class="r mono">${r[4].toLocaleString()}</td><td class="r mono">${r[5]}</td></tr>`).join("")}</tbody></table></div>`}
+
+P.listings=()=>{const l=TOPS().ipo;return `<div class="pagehead"><div><div class="eyebrow">New listings</div><h1 class="h1">IPO calendar</h1><p class="sub">Titles are "listed" on the day the scraper first sees them (dim_title.first_seen). First-week performance is measured from the listing-day PlotScore.</p></div></div>
+ ${ipoBanner()}<div style="height:14px"></div><div class="grid g12">
+ <div class="c8">${panel('Recently listed <i>last 30 days</i>',`<div class="tw"><table><thead><tr><th>Title</th><th>Listed</th><th>Platform</th><th class="r">Listing score</th><th class="r">Now</th><th class="r">Since listing</th><th class="r">Watchers</th></tr></thead><tbody>${l.map(t=>{const o=t.s[DAYS-t.listed];const since=(last(t)-o)/o*100;return `<tr data-go="title-${t.tk}"><td>${tname(t)}</td><td class="mono">${t.listed}d ago</td><td>${t.plat}</td><td class="r mono">${o.toFixed(1)}</td><td class="r mono">${last(t).toFixed(1)}</td><td class="r">${chip(since)}</td><td class="r mono">${fmtN(t.wish)}</td></tr>`}).join("")}</tbody></table></div>`)}</div>
+ <div class="c4">${panel('Upcoming <i>announced</i>',`<div class="pb" style="display:grid;gap:12px">${[["Oct 02","Hollow Protocol","Webtoon"],["Oct 05","Velvet Sect","Tappytoon"],["Oct 09","Jade Carnival","Manta"],["Oct 14","Last Library","Royal Road"]].map(([d,n,p])=>`<div style="display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center"><span class="mono" style="font-weight:700;color:var(--mark)">${d}</span><span><b>${n}</b><br><span class="ip">${p}</span></span><button class="btn gh sm">Notify</button></div>`).join("")}<p class="sub"><span class="pill warn">New source</span> Needs scraping of the platforms' "coming soon" pages, which the pipeline does not do today.</p></div>`)}</div></div>`};
+
+P.gallery=()=>{const t=titles[0];return `<div class="pagehead"><div><div class="eyebrow">Gallery · ${t.tk}</div><h1 class="h1">${esc(t.name)} gallery</h1><div class="meta" style="margin-top:6px">2,314 posts · 18 concept · 3 moderators · <span class="vb">✓ AUTHOR ACTIVE</span></div></div><div class="acts"><button class="btn">Write post</button><a class="btn gh" href="#title-${t.tk}">Title page</a></div></div>
+ ${panel('Posts',galleryRows(t),`<div class="tabs"><button aria-pressed="true">All</button><button aria-pressed="false">★ Concept</button><button aria-pressed="false">Episode threads</button><button aria-pressed="false">Notices</button></div>`)}
+ <p class="sub">★ Concept = up ≥ N and up/(up+down) ≥ r (set in config). Guest writers show their first two IP octets.</p>`};
+P.post=()=>{const t=titles[0];return `<div class="grid g12"><div class="c8">${panel(`${t.tk} gallery · ★ concept`,`<div class="pb post"><h2 class="h2">Theory: the tower is the author's earlier novel's world</h2><div class="meta"><span class="nick">ㅇㅇ</span><span class="ip">(118.235)</span>· 09.23 14:02 · 9,811 views · 87 comments</div>
+ <p style="margin:0;color:var(--text-2);max-width:65ch">The map in chapter 3 of the 2020 novel matches the floor plan in episode 131, down to the collapsed east stair. Also, the bell motif shows up in both the prologue and the season 2 finale.</p><div class="cover" style="aspect-ratio:16/7;background-image:url(${cover(titles[1])})"></div>
+ <div class="acts" style="justify-content:center"><button class="btn">▲ 412</button><button class="btn gh">▼ 9</button><button class="btn gh">Report</button></div></div>`)}</div>
+ <div class="c4">${panel('Comments <i>87</i>',`<div class="pb" style="padding-top:0"><div class="cmt"><div class="meta"><span class="nick">${t.author}</span><span class="vb">✓ AUTHOR</span>14:40</div>No comment 👀 but keep reading to ep 150.</div><div class="cmt reply"><div class="meta"><span class="nick">ㅇㅇ</span><span class="ip">(175.223)</span>14:42</div>the author replied. that's basically confirmed</div><div class="cmt"><div class="meta"><span class="nick">lanternkeeper</span>15:01 · ▲ 41</div>The bell shows up in ch 3 too.</div>
+ <div style="display:grid;gap:8px;margin-top:12px"><div class="acts"><div class="input" style="flex:1">Nickname</div><div class="input" style="flex:1">Password</div></div><div class="input area">Write a comment…</div><button class="btn" style="justify-self:end">Post</button></div></div>`)}</div></div>`};
+P.episode=()=>{const t=titles[0];return `<div class="pagehead"><div><div class="eyebrow">Episode thread · auto-created 09.23 07:00</div><h1 class="h1">${t.tk} · Ep ${t.eps} “Cinders”</h1></div></div>
+ <div class="grid g12"><div class="c4">${panel('Rate this episode',`<div class="pb" style="display:grid;gap:12px"><div style="font:800 40px var(--display)">4.6<span class="fl" style="font-size:16px"> / 5</span></div><div class="acts">${["😭 812","🔥 640","🤯 233","😂 98"].map(x=>`<span class="react">${x}</span>`).join("")}</div><p class="sub">Episode reactions add to the per-episode series. Platforms expose only likes per episode (fact_episode).</p></div>`)}</div>
+ <div class="c8">${panel('Thread <i>318</i>',`<div class="pb" style="padding-top:0"><div class="cmt"><div class="meta"><span class="nick">ㅇㅇ</span><span class="ip">(58.140)</span>07:03</div>first. that last panel!!</div><div class="cmt"><div class="meta"><span class="nick">ashenjay</span>07:10 · ▲ 88</div><span style="background:var(--raised);padding:2px 8px;border-radius:4px;color:var(--muted)">Spoiler · tap to reveal</span></div><div class="cmt"><div class="meta"><span class="nick">polyglot</span>07:21</div>KR version uses a different word for “ash” here, which changes the meaning.</div></div>`)}</div></div>`};
+P.wishlist=()=>{const l=[...titles].sort((a,b)=>b.wish-a.wish).slice(0,10);return `<div class="pagehead"><div><div class="eyebrow">Adaptation wishlist</div><h1 class="h1">What should be adapted next?</h1><p class="sub">One vote per account, per title, per medium. Publishers and investors see this as a demand trend.</p></div><div class="tabs"><button aria-pressed="true">Anime</button><button aria-pressed="false">Drama</button><button aria-pressed="false">Film</button><button aria-pressed="false">Game</button></div></div>
+ ${panel('Most wished',`<div class="tw"><table><thead><tr><th class="r">#</th><th>Title</th><th>Status</th><th class="r">Votes 7D</th><th class="r">Total</th><th></th></tr></thead><tbody>${l.map((t,i)=>`<tr data-go="title-${t.tk}"><td class="r mono fl">${i+1}</td><td>${tname(t)}</td><td><span class="pill ${t.status==='Completed'?'ok':''}">${t.status}</span></td><td class="r mono">${fmtN(Math.round(t.wish*.06))}</td><td class="r"><span style="display:inline-flex;gap:8px;align-items:center" class="mono">${fmtN(t.wish)}<i style="display:inline-block;height:6px;width:${t.wish/l[0].wish*120}px;background:var(--mark);border-radius:3px"></i></span></td><td><button class="btn sm">✦ Wish</button></td></tr>`).join("")}</tbody></table></div>`)}`};
+P.credits=()=>{const a=titles[0].author;const w=titles.filter(t=>t.author===a);return `<div class="quote" style="grid-template-columns:110px minmax(0,1fr)"><div class="cover" style="aspect-ratio:1;border-radius:50%;background-image:url(${cover(w[0])})"></div><div><div class="eyebrow">Writer · ${w.length} works · <span class="vb">✓ VERIFIED</span></div><h1 class="h1">${a}</h1><div class="acts" style="margin-top:12px"><button class="btn">＋ Follow · 22K</button><a class="btn gh" href="#gallery">Gallery posts</a></div></div></div><div style="height:16px"></div>
+ <div class="grid g12"><div class="c8">${panel('Works',moverTable(w,["name","plat","status","px","fan","d7"]))}</div><div class="c4">${panel('Track record <i>pro</i>',lock('Author track record',`<div class="kv" style="border-top:0"><div><span>Hit rate ≥75</span><b>${w.filter(t=>last(t)>=75).length}/${w.length}</b></div><div><span>Best score</span><b>${Math.max(...w.map(last)).toFixed(1)}</b></div><div><span>Total reach</span><b>${fmtN(w.reduce((a,t)=>a+t.views,0))}</b></div><div><span>Platforms</span><b>${new Set(w.map(t=>t.plat)).size}</b></div></div>`))}</div></div>`};
+P.profile=()=>`<div class="pagehead"><div><div class="eyebrow">Fan profile</div><h1 class="h1">lanternkeeper</h1><div class="meta" style="margin-top:6px">Joined 2026 · 312 ratings · 41 reviews · 1,204 posts</div></div>
+ <div class="panel" style="padding:14px 18px;display:grid;gap:2px"><span class="eyebrow">Scout score</span><span style="font:800 36px var(--display);color:var(--mark)">1,840</span><span class="pill mk">Top 2% scout</span></div></div>
+ <div class="grid g12"><div class="c8">${panel('Early calls <i>followed before the title started rising</i>',`<div class="tw"><table><thead><tr><th>Title</th><th>Called</th><th>Started rising</th><th class="r">Lead</th><th class="r">Since call</th><th class="r">Points</th></tr></thead><tbody>${titles.slice(3,8).map((t,i)=>`<tr data-go="title-${t.tk}"><td>${tname(t)}</td><td class="mono">06.0${i+1}</td><td class="mono">09.1${i}</td><td class="r mono">${108-i*17}d</td><td class="r">${chip(12+i*7.3)}</td><td class="r mono" style="color:var(--mark)">+${320-i*45}</td></tr>`).join("")}</tbody></table></div>`)}</div>
+ <div class="c4">${panel('Lists',`<div class="pb" style="display:grid;gap:10px">${["Best slow-burn romance fantasy · 24","Completed & bingeable · 51","Murim for beginners · 12"].map(x=>`<div style="display:flex;justify-content:space-between"><span>${x.split(" · ")[0]}</span><span class="mono fl">${x.split(" · ")[1]}</span></div>`).join("")}</div>`)}</div></div>`;
+
+P.plans=()=>`<div class="pagehead"><div><div class="eyebrow">Plans</div><h1 class="h1">Free for fans. Pro for the people who make and buy IP.</h1><p class="sub">Pro plans unlock after your ownership or authority is verified by document review. Prices are placeholders.</p></div></div>
+ <div class="grid g12">${[["Fan","Free","No verification",["Charts, indices, market map","Galleries & anonymous posting","Ratings, lists, wishlist","Scout reputation"],0],["Author","TBD","Author or title claim",["Creator dashboard","Compare any title at full depth","Genre whitespace & gaps","Verified badge & notices"],1],["Publisher","TBD","Publisher or title claim",["Scouting screener","Portfolio vs peers","Market structure (HHI)","Wishlist demand trends"],0],["IP investor","TBD","Authorized-entity documents (PE/VC, studio)",["IP dossier & valuation band","Revenue model & drivers","Fan demand signals","Watch alerts"],0]].map(p=>`<div class="c3"><section class="panel plan ${p[4]?'feat':''}"><span class="eyebrow">${p[0]}</span><span class="pr">${p[1]}${p[1]==='TBD'?'<small class="fl" style="font-size:14px"> /mo</small>':''}</span><span class="pill">${p[2]}</span><ul>${p[3].map(x=>`<li>${x}</li>`).join("")}</ul><a class="btn ${p[1]==='Free'?'gh':''}" href="${p[1]==='Free'?'#market':'#verify'}">${p[1]==='Free'?'Start browsing':'Start verification'}</a></section></div>`).join("")}</div>`;
+P.verify=()=>`<div class="pagehead"><div><div class="eyebrow">Verification</div><h1 class="h1">Verify your claim</h1></div><div class="steps"><span class="done">Persona</span><span class="done">Entity</span><span class="on">Documents</span><span>Review</span><span>Plan</span></div></div>
+ <div class="grid g12"><div class="c7">${panel('Claim · Publisher',`<div class="pb" style="display:grid;gap:14px"><div class="field"><label>Matched entity</label><div class="input" style="color:var(--text)">Studio Nara · 14 titles on 3 platforms</div></div><div class="field"><label>Your role</label><div class="input" style="color:var(--text)">Head of licensing</div></div>
+ <div class="drop"><b style="color:var(--text)">Drop documents here</b><span>Business registration · licensing contract · authorization letter</span><span class="ip">PDF, PNG, JPG · up to 10 MB each</span></div>
+ <div class="acts" style="justify-content:space-between"><span class="ip">Only Plotline reviewers can see your documents. They are never published.</span><div class="acts"><button class="btn gh">Back</button><button class="btn">Submit for review</button></div></div></div>`)}</div>
+ <div class="c5">${panel('Accepted evidence',`<div class="tw"><table><tbody>${[["Author","Platform contract, dashboard screenshot showing account ID, publisher letter"],["Publisher","Business registration, plus a licensing contract or platform partner agreement"],["IP investor","Fund or company registration, authorization letter, PE/VC mandate"]].map(r=>`<tr style="cursor:default"><td style="font-weight:600;vertical-align:top">${r[0]}</td><td style="white-space:normal;color:var(--text-2)">${r[1]}</td></tr>`).join("")}</tbody></table></div>`)}</div></div>`;
+P.dashboard=()=>{const w=titles.filter(t=>t.author===titles[0].author);const t=w[0];return `<div class="pagehead"><div><div class="eyebrow">Creator dashboard · ${t.author}</div><h1 class="h1">Your titles</h1></div><div class="acts"><span class="pill ok">✓ Verified author</span><a class="btn gh" href="#compare">Compare</a></div></div>
+ <div class="idx">${w.map(x=>`<a class="ic" href="#title-${x.tk}"><span class="code"><span>${x.tk}</span><span class="fl">#${x.rank}</span></span><span class="v">${last(x).toFixed(1)}</span><span class="d ${cls(x.d1)}">${sgn(x.d1)}</span>${spark(x.s,160,36)}</a>`).join("")}<div class="ic"><span class="code"><span>FAN ★</span></span><span class="v">${t.fan}</span><span class="d up">▲ 0.1 30D</span></div><div class="ic"><span class="code"><span>GALLERY</span></span><span class="v">${fmtN(t.act)}/d</span><span class="d up">▲ 18% 30D</span></div></div><div style="height:14px"></div>
+ <div class="grid g12"><div class="c8">${panel(`${t.tk} · PlotScore vs genre index`,`<div class="pb">${lineChart(t.s,{id:"dc"})}</div>`)}</div>
+ <div class="c4 grid">${panel('Engagement decay <i>likes per episode</i>',`<div class="pb">${spark([30,26,22,20,19,18,18,17,17,16,16,17],300,70,"var(--mark)")}<div class="bl" style="margin-top:8px"><span class="fl">Decay ep1→now</span><span>43% <span class="fl">(genre 55%)</span></span></div></div>`)}
+ ${panel('Cadence',`<div class="pb breadth"><div class="bl"><span class="fl">You</span><span>${t.cad}/wk</span></div><div class="bl"><span class="fl">${t.gname} median</span><span>1.0/wk</span></div><div class="bl"><span class="fl">Top decile</span><span>1.4/wk</span></div></div>`)}</div>
+ <div class="c12">${panel('What to write next <i>whitespace = demand ÷ supply</i>',`<div class="tw"><table><thead><tr><th>Genre</th><th class="r">Titles</th><th class="r">Avg reach</th><th class="r">HHI</th><th>Market</th><th class="r">Index 1D</th></tr></thead><tbody>${INDEX.slice(3).map(ix=>{const w2=ix.list.map(q=>q.views),tot=w2.reduce((a,b)=>a+b,0),h=Math.round(w2.reduce((a,b)=>a+Math.pow(b/tot*100,2),0));return `<tr><td style="font-weight:600">${ix.name}</td><td class="r mono">${ix.list.length}</td><td class="r mono">${fmtN(Math.round(tot/ix.list.length))}</td><td class="r mono">${h.toLocaleString()}</td><td><span class="pill ${h>2500?'warn':h>1500?'':'ok'}">${h>2500?'Concentrated':h>1500?'Moderate':'Competitive'}</span></td><td class="r">${chip(ix.d)}</td></tr>`}).join("")}</tbody></table></div>`)}</div></div>`};
+P.compare=()=>{const l=[titles[0],titles[5],titles[9]];const rows=[["PlotScore",t=>last(t).toFixed(1)],["1W",t=>chip(t.d7)],["1M",t=>chip(t.d30)],["Reach",t=>fmtN(t.views)],["Subscribers",t=>fmtN(t.subs)],["Fan rating (votes)",t=>`${t.fan} (${fmtN(t.votes)})`],["Wishlist",t=>fmtN(t.wish)],["Fan volume / day",t=>fmtN(t.act)],["Cadence",t=>t.cad+"/wk"],["Readiness",t=>readiness(t)],["Rev / mo (model)",t=>`$${fmtN(Math.round(t.views*.000012))}–${fmtN(Math.round(t.views*.000075))}`]];
+ return `<div class="pagehead"><div><div class="eyebrow">Compare</div><h1 class="h1">Side by side</h1></div><button class="btn gh">＋ Add title</button></div>
+ ${panel('Titles',`<div class="tw"><table><thead><tr><th>Metric</th>${l.map(t=>`<th class="r">${t.tk}</th>`).join("")}</tr></thead><tbody><tr style="cursor:default"><td></td>${l.map(t=>`<td class="r"><div style="display:inline-grid;justify-items:end;gap:4px"><span class="cv" style="width:48px;height:64px;border-radius:6px;display:block;background:url(${cover(t)}) center/cover"></span><b style="font-size:12.5px">${esc(t.name)}</b></div></td>`).join("")}</tr>${rows.map(r=>`<tr style="cursor:default"><td class="fl">${r[0]}</td>${l.map(t=>`<td class="r mono">${r[1](t)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`)}
+ <p class="sub">Percentiles are relative to the whole universe (plotscore.py). Revenue is modeled, with a 0.4×–2.5× band (earnings.py:54).</p>`};
+P.screener=()=>{const l=[...titles].sort((a,b)=>readiness(b)-readiness(a)).slice(0,18);return `<div class="pagehead"><div><div class="eyebrow">Scouting screener</div><h1 class="h1">Find the next adaptation</h1></div><div class="acts"><button class="btn gh">Save screen</button><button class="btn">Set alert</button></div></div>
+ <div class="panel" style="padding:12px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px"><span class="eyebrow" style="margin-right:4px">Filters</span>${["Format: Novel","Status: Completed","Genre: Any","Readiness > 70","Wishlist 30D > +20%","Platform: Any","Publisher: Independent"].map((f,i)=>`<span class="pill ${i<2?'mk':''}">${f} ${i<2?'✕':'▾'}</span>`).join("")}<span class="ip" style="margin-left:auto">${l.length} of ${titles.length} titles</span></div>
+ ${lock('Scouting screener',panel('Results',moverTable(l,["name","status","ready","wish","d30","fan","pub","spark"])))}`};
+P.portfolio=()=>{const pub=titles[0].pub;const l=titles.filter(t=>t.pub===pub);const ix=mkIndex(pub,pub,l);return `<div class="pagehead"><div><div class="eyebrow">Portfolio · ${pub}</div><h1 class="h1">Your slate</h1></div><span class="pill ok">✓ Verified publisher</span></div>
+ <div class="idx"><div class="ic"><span class="code"><span>SLATE INDEX</span></span><span class="v">${ix.v.toFixed(2)}</span><span class="d ${cls(ix.d)}">${sgn(ix.d)}</span>${spark(ix.s,160,36)}</div><div class="ic"><span class="code"><span>TITLES</span></span><span class="v">${l.length}</span></div><div class="ic"><span class="code"><span>AVG SCORE</span></span><span class="v">${(l.reduce((a,t)=>a+last(t),0)/l.length).toFixed(1)}</span></div><div class="ic"><span class="code"><span>AVG FAN ★</span></span><span class="v">${(l.reduce((a,t)=>a+t.fan,0)/l.length).toFixed(1)}</span></div></div><div style="height:14px"></div>
+ ${lock('Publisher portfolio',panel('Titles',moverTable(l,["name","px","d7","d30","fan","act","rev"])))}
+ <p class="sub"><span class="pill warn">Data gap</span> Real publisher attribution needs adapter work (dim_publisher is empty).</p>`};
+P.dossier=()=>{const t=titles[0];const a=t.views*.00003*12;return `<div class="quote"><div class="cover" style="background-image:url(${cover(t)})"></div><div><div class="eyebrow">IP dossier · canonical IP · 3 platforms · novel + comic</div><h1 class="h1">${esc(t.name)}</h1><div class="price"><span class="big">${last(t).toFixed(1)}</span><span class="d ${cls(t.d30)}">${sgn(t.d30)} 1M</span></div><div class="acts" style="margin-top:12px"><button class="btn">Watch</button><button class="btn gh">Export</button></div></div></div><div style="height:16px"></div>
+ ${lock('Investor IP dossier',`<div class="grid g12"><div class="c7">${panel('Valuation band <i>revenue-multiple model</i>',`<div class="pb"><div class="band"><div class="rail"></div><div class="rng" style="left:14%;right:30%"></div><div class="mid" style="left:36%"></div></div><div class="bl"><span class="mono">$${fmtN(Math.round(a*.4*3))}</span><span class="mono" style="color:var(--mark)">$${fmtN(Math.round(a*5))}</span><span class="mono">$${fmtN(Math.round(a*2.5*8))}</span></div><p class="sub">Annual revenue (model) × base multiple (placeholder) × adjustment, clamped to 0.5–2.0. No public dataset of story-IP deal multiples is assumed.</p></div>
+ <div class="tw"><table><thead><tr><th>Driver</th><th>Value</th><th class="r">Effect</th></tr></thead><tbody><tr><td>Annual revenue (model)</td><td class="mono">$${fmtN(Math.round(a*.4))}–${fmtN(Math.round(a*2.5))}</td><td class="r">base</td></tr><tr><td>Momentum percentile</td><td class="mono">87</td><td class="r up">+0.19</td></tr><tr><td>Status</td><td>${t.status}</td><td class="r fl">0</td></tr><tr><td>Cross-platform reach</td><td class="mono">3 platforms</td><td class="r up">+0.11</td></tr></tbody></table></div>`,'<span class="pill mk">is_model</span>')}</div>
+ <div class="c5 grid">${panel('Demand signals',`<div class="kv" style="border-top:0"><div><span>Fan rating</span><b>${t.fan}</b></div><div><span>Wishlist</span><b>${fmtN(t.wish)}</b></div><div><span>Gallery 30D</span><b class="up">▲ 18%</b></div><div><span>Scout lead</span><b>74d</b></div></div><div class="pb">${spark(t.s,400,60,"var(--mark)")}</div>`)}
+ ${panel('Comparable deals',`<div class="pb"><p class="sub" style="margin:0">No deal data yet. rel_contract is schema-only (star_schema.py:206) and loads data/manual/contracts.csv only if that file exists.</p></div>`)}</div></div>`)}`};
+P.claims=()=>`<div class="pagehead"><div><div class="eyebrow">Admin</div><h1 class="h1">Claim review</h1></div><div class="tabs"><button aria-pressed="true">Pending 12</button><button aria-pressed="false">Approved</button><button aria-pressed="false">Rejected</button><button aria-pressed="false">Revoked</button></div></div>
+ <div class="grid g12"><div class="c7">${panel('Queue',`<div class="tw"><table><thead><tr><th>Submitted</th><th>User</th><th>Type</th><th>Entity</th><th class="r">Docs</th><th>Age</th></tr></thead><tbody>${[["09.23","j.park@","Publisher","Studio Nara",3,"1d"],["09.22","hseo@","Author","H. Seo",2,"2d"],["09.21","m.chen@","Investor","Lumen Story Partners",4,"3d"],["09.20","r.okafor@","Author","R. Okafor",1,"4d"]].map((r,i)=>`<tr${i===0?' style="background:var(--raised)"':''}><td class="mono">${r[0]}</td><td>${r[1]}</td><td><span class="pill ${r[2]==='Investor'?'mk':''}">${r[2]}</span></td><td style="font-weight:600">${r[3]}</td><td class="r mono">${r[4]}</td><td class="mono ${parseInt(r[5])>2?'':'fl'}" style="${parseInt(r[5])>2?'color:var(--warn)':''}">${r[5]}</td></tr>`).join("")}</tbody></table></div>`)}</div>
+ <div class="c5">${panel('Studio Nara · publisher claim',`<div class="pb" style="display:grid;gap:12px"><div class="drop" style="padding:40px"><b style="color:var(--text)">business_registration.pdf</b><span class="ip">1 of 3 · admin-only download</span></div><div class="input area">Review note (sent to the user if rejected)</div><div class="acts"><button class="btn">Approve</button><button class="btn gh">Reject</button><button class="btn gh">Request more</button></div></div>`)}</div></div>`;
+P.moderation=()=>`<div class="pagehead"><div><div class="eyebrow">Admin</div><h1 class="h1">Moderation</h1></div></div>
+ ${panel('Reports',`<div class="tw"><table><thead><tr><th>Target</th><th>Gallery</th><th>Reason</th><th class="r">Reports</th><th>Writer</th><th></th></tr></thead><tbody>${[["Post 23140 “leak link inside”","ASH","Piracy link",14,"ㅇㅇ","39.7"],["Comment on 23102","ROMFAN","Harassment",6,"ㅇㅇ","221.150"],["Post 23011 “spoilers in title”","BL","Spoiler",3,"blossom",null]].map(r=>`<tr style="cursor:default"><td style="font-weight:600">${r[0]}</td><td>${r[1]}</td><td><span class="pill ${r[3]>10?'up':''}">${r[2]}</span></td><td class="r mono">${r[3]}</td><td><span class="nick">${r[4]}</span>${r[5]?` <span class="ip">(${r[5]})</span>`:''}</td><td><div class="acts"><button class="btn sm">Remove</button><button class="btn gh sm">Ban IP hash</button></div></td></tr>`).join("")}</tbody></table></div>`)}
+ <p class="sub">Bans apply to a salted hash of the IP. The raw IP is never stored.</p>`;
+
+/* ============ routing, nav, spec ============ */
+const ROUTES=[
+ ["market","Market","m"],["sectors","Sectors","m"],["publishers","Publishers","m"],["listings","New listings","m"],["gallery","Galleries","c"],["wishlist","Wishlist","c"],
+ ["title","Title","h"],["post","Post","h"],["episode","Episode","h"],["credits","Credits","h"],["profile","Profile","h"],
+ ["plans","Plans","p"],["verify","Verify","h"],["dashboard","Dashboard","p"],["compare","Compare","p"],["screener","Screener","p"],["portfolio","Portfolio","p"],["dossier","Dossier","p"],
+ ["claims","Claims","a"],["moderation","Moderation","a"]];
+const SPEC={
+ market:["Market overview (home)","The daily market read: index strip, new-listings banner, a Finviz-style map, breadth, gainers and losers, and fan volume.","Fan activity shows up as market 'volume', which makes it visible and gives fans a reason to post.",[["Genre / composite index","new","agg_genre_daily"],["Breadth","new","fact_title_daily.rank"],["New listings","new","dim_title.first_seen"],["PlotScore, 1D Δ","✔","fact_score"],["Fan volume","new","community + fan"]],"market, community, fan"],
+ sectors:["Sectors","A board for each genre index, like Naver's theme pages.","Genre galleries sit alongside each index.",[["Genre index","new","agg_genre_daily"],["HHI","✔ label","kpi_layers._genre"]],"market"],
+ publishers:["Publisher board","Share of reach and slate performance for each publisher.","Verified publishers post notices in their titles' galleries.",[["Reach share","✔","kpi_layers._publisher"],["Slate index","new","derived"]],"market"],
+ title:["Title quote page","The IMDb title page combined with a stock quote page.","Follow, Rate, Wish and Gallery each write a fan signal. The locked panels turn fans into leads.",[["PlotScore","✔","plotscore.py"],["Fan rating","new","fan"],["Valuation band","🔒","valuation (new)"],["Revenue band","🔒","earnings.py"]],"market, fan, community, kpi"],
+ listings:["IPO calendar","Titles listed when the scraper first sees them.","Watchers on new titles feed scout points.",[["first_seen","✔","dim_title"],["Since listing %","new","fact_score"]],"market, fan"],
+ gallery:["Gallery board","DCInside-style board with a concept tab, guest posts and verified badges.","Low-friction posting. Verified authors draw fans back.",[["Gallery activity","new","community"]],"community, identity"],
+ post:["Post","Post detail with votes, report and replies.","An author reply is the highest-value moment for fans.",[["Votes","new","community"]],"community"],
+ episode:["Episode thread","Created automatically on episode.released.","A daily habit, producing episode-level reactions.",[["Episode reactions","new","community"]],"community, events"],
+ wishlist:["Adaptation wishlist","Votes by medium.","The most direct demand signal for publishers and investors.",[["Wishlist votes","new","fan"]],"fan"],
+ credits:["Author credits","IMDb-style works list.","Creator follows produce follow-growth signals.",[["Track record","🔒","kpi_layers._author"]],"market, fan"],
+ profile:["Fan profile","Scout score and early calls.","Rewards early discovery, producing a leading indicator (hypothesis).",[["Scout lead time","new","fan.ScoutRule"]],"fan"],
+ plans:["Plans","Persona plans. Verification comes before payment.","Destination of the locked panels.",[],"entitlement, billing"],
+ verify:["Verification","Manual document review.","An approved claim switches on the verified badge.",[],"verification, entitlement"],
+ dashboard:["Creator dashboard","Own titles at full depth, with genre benchmarks.","Gallery signals motivate authors to engage.",[["Engagement decay","🔒","unit_stats.py:52-60"],["Cadence","🔒","episode_analytics.py:57"],["HHI / whitespace","🔒","kpi_layers._genre"]],"market, fan, kpi"],
+ compare:["Compare","Any titles at full depth.","Fan rows are data only Plotline has.",[["PlotScore components","🔒","plotscore.py:36"]],"market, fan, kpi"],
+ screener:["Scouting screener","Finviz-style filters over readiness, wishlist and momentum.","Wishlist demand drives the screen.",[["Readiness","🔒","template.html:614"],["Wishlist trend","🔒","fan"]],"market, fan, kpi"],
+ portfolio:["Portfolio","Publisher slate index and titles.","Publishers post notices to fans.",[["Slate rollup","🔒","kpi_layers._publisher"]],"market, verification"],
+ dossier:["IP dossier","Valuation, drivers, demand and comparable deals.","Demand signals set this apart from scraped-only tools.",[["Valuation","🔒 model","valuation"],["Comparable deals","🔒 empty","star_schema.py:206"]],"valuation, market, fan"],
+ claims:["Claim review","The review queue.","claim.approved switches on entitlement and the badge.",[],"verification"],
+ moderation:["Moderation","Reports and bans by hashed IP.","Healthy galleries keep fans coming back.",[],"community"]};
+const STATE={persona:"fan",route:"market",spec:false};
+const $=id=>document.getElementById(id);
+function navFor(){const p=STATE.persona;const show=r=>r[2]==="m"||r[2]==="c"||(r[2]==="p"&&p!=="admin")||(r[2]==="a"&&p==="admin");
+ $("nav").innerHTML=ROUTES.filter(show).map(r=>`<a href="#${r[0]}" class="${r[2]==='p'?'pro':''}" ${STATE.route===r[0]?'aria-current="page"':''}>${r[2]==='p'&&!isPro()&&r[0]!=='plans'?'🔒 ':''}${r[1]}</a>`).join("")}
+function tape(){const l=[...titles].filter(t=>t.d1!=null).sort((a,b)=>Math.abs(b.d1)-Math.abs(a.d1)).slice(0,24);const idx=INDEX.slice(0,3).map(ix=>`<span class="tk"><b>${ix.code}</b><span class="px">${ix.v.toFixed(2)}</span><span class="${cls(ix.d)}">${sgn(ix.d)}</span></span>`).join("");
+ const it=l.map(t=>`<a class="tk" href="#title-${t.tk}"><b>${t.tk}</b><span class="px" data-live="${t.tk}" data-f="pxt">${last(t).toFixed(1)}</span><span class="${cls(t.d1)}" data-live="${t.tk}" data-f="d1t">${sgn(t.d1)}</span></a>`).join("");$("tape").innerHTML=idx+it+idx+it}
+function spec(){const s=SPEC[STATE.route];if(!s){$("drawer").innerHTML="";return}
+ $("drawer").innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow">Spec · ${ROUTES.findIndex(r=>r[0]===STATE.route)+1}/${ROUTES.length}</span><button class="iconbtn" id="specClose">CLOSE</button></div><h2 class="h2">${s[0]}</h2><div><h4>Purpose</h4><p>${s[1]}</p></div><div><h4>Flywheel role</h4><p>${s[2]}</p></div>${s[3].length?`<div><h4>KPIs</h4>${s[3].map(k=>`<div class="kpi"><span>${k[0]} <span class="pill ${k[1].startsWith('🔒')?'mk':k[1]==='new'?'up':''}">${k[1]}</span></span><code>${k[2]}</code></div>`).join("")}</div>`:''}<div><h4>Modules</h4><p class="mono" style="font-size:12px">${s[4]}</p></div><p class="ip">Full spec: docs/product/product-spec.md</p>`;
+ $("specClose").onclick=()=>toggleSpec(false)}
+function toggleSpec(v){STATE.spec=v;$("drawer").classList.toggle("open",v);$("specBtn").setAttribute("aria-pressed",v)}
+function route(){let h=location.hash.slice(1)||"market";let tk=null;if(h.startsWith("title-")){tk=h.slice(6);h="title"}if(!P[h]&&h!=="title")h="market";STATE.route=h;
+ $("view").innerHTML=(h==="title"?titlePage(tk||titles[0].tk):P[h]())+`<div class="foot"><span>PLOTLINE TERMINAL · PHASE 1 PROTOTYPE</span><span class="sample">SAMPLE DATA · *TICKS ARE SIMULATED</span><span>${STATE.persona.toUpperCase()} VIEW</span></div>`;
+ navFor();spec();window.scrollTo(0,0);mount()}
+function mount(){
+ document.querySelectorAll("[data-go]").forEach(r=>r.addEventListener("click",()=>location.hash=r.dataset.go));
+ const tm=$("tm");if(tm){const draw=()=>renderTreemap(tm,$("tmGroup").querySelector('[aria-pressed="true"]').dataset.v,$("tmMetric").querySelector('[aria-pressed="true"]').dataset.v);draw();
+  ["tmGroup","tmMetric"].forEach(id=>$(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{$(id).querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));draw()}));window.onresize=draw}else window.onresize=null;
+ document.querySelectorAll(".tabs:not(#tmGroup):not(#tmMetric)").forEach(g=>g.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)))));
+ if(STATE.route==="title"){const tk=(location.hash.slice(7))||titles[0].tk;wireChart("tc",(byTk[tk]||titles[0]).s)}
+ if(STATE.route==="dashboard")wireChart("dc",titles.filter(t=>t.author===titles[0].author)[0].s)}
+
+/* simulated ticks */
+function tick(){if(document.hidden)return;const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ for(let k=0;k<4;k++){const t=titles[Math.floor(Math.random()*titles.length)];if(t.d1==null)continue;const nv=Math.max(8,Math.min(99.4,+(last(t)+(Math.random()-.5)*.8).toFixed(1)));const dir=nv>last(t)?"up":nv<last(t)?"dn":null;t.s[DAYS-1]=nv;t.d1=chg(t,1);t.d7=chg(t,7);t.d30=chg(t,30);
+  document.querySelectorAll(`[data-live="${t.tk}"]`).forEach(el=>{const f=el.dataset.f;
+   if(f==="px"||f==="pxt"||f==="pxbig")el.textContent=nv.toFixed(1);
+   else if(f==="d1")el.innerHTML=chip(t.d1);else if(f==="d1t"){el.className=cls(t.d1);el.textContent=sgn(t.d1)}else if(f==="d1txt"){el.className="d "+cls(t.d1);el.textContent=sgn(t.d1)+" today"}
+   if(dir&&!reduce){el.classList.remove("flash-up","flash-dn");void el.offsetWidth;el.classList.add("flash-"+dir)}});
+  const tile=document.querySelector(`[data-live-tile="${t.tk}"]`);const tm=$("tm");if(tile&&tm&&tm.dataset.metric==="d1")tile.style.backgroundColor=heat(t.d1)}
+ INDEX=INDEX.map(ix=>mkIndex(ix.code,ix.name,ix.list));INDEX.forEach(ix=>{const a=document.querySelector(`[data-live-idx="${ix.code}"]`),b=document.querySelector(`[data-live-idxd="${ix.code}"]`);if(a)a.textContent=ix.v.toFixed(2);if(b){b.className="d "+cls(ix.d);b.textContent=sgn(ix.d)}})}
+setInterval(tick,2600);
+
+$("persona").onchange=e=>{STATE.persona=e.target.value;if(STATE.persona==="admin")location.hash="claims";else route()};
+function conv(us){document.documentElement.classList.toggle("us",us);$("cvUS").setAttribute("aria-pressed",us);$("cvKR").setAttribute("aria-pressed",!us);try{localStorage.setItem("plt-conv",us?"us":"kr")}catch(e){}const tm=$("tm");if(tm)route()}
+$("cvKR").onclick=()=>conv(false);$("cvUS").onclick=()=>conv(true);
+$("specBtn").onclick=()=>toggleSpec(!STATE.spec);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")toggleSpec(false)});
+window.addEventListener("hashchange",route);
+try{if(localStorage.getItem("plt-conv")==="us")document.documentElement.classList.add("us"),$("cvUS").setAttribute("aria-pressed","true"),$("cvKR").setAttribute("aria-pressed","false")}catch(e){}
+tape();route();
 </script>

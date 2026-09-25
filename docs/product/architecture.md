@@ -61,7 +61,7 @@ src/
   valuation/     base.py (ValuationModel)  revenue_multiple.py  service.py
   community/     rules.py (PromotionRule)  anon.py  moderation.py  service.py  repo.py  router.py
   fan/           ratings.py (RatingAggregator)  scout.py (ScoutRule)  service.py  repo.py  router.py
-  market/        warehouse.py  service.py  router.py
+  market/        warehouse.py  indices.py (genre/composite indices, breadth, new listings)  service.py  router.py
   api/           main.py (app factory: mounts module routers)  billing.py  ratelimit.py
 ```
 The existing `src/api/{auth,billing,config,ratelimit,warehouse_loader}.py` are either absorbed into `core` and `identity` or kept as they are. `src/api/auth.py` (API keys for `/feed`) stays.
